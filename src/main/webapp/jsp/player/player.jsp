@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="ISO-8859-1">
-    <title>Housing Game Playeristration</title>
+    <title>Housing Game Player App</title>
 
     <link rel="stylesheet" type="text/css" href="/housinggame-player/css/player.css" />
     <script src="/housinggame-player/js/player.js"></script>
@@ -29,7 +29,7 @@
     <div class="hg-page">
       <div class="hg-header">
         <span class="hg-game-heading">Housing Game</span>
-        <span class="hg-slogan">Game Playeristration</span>
+        <span class="hg-slogan">Game Player App</span>
       </div>
       <div class="hg-header-right">
         <img src="images/tudelft.png" />
