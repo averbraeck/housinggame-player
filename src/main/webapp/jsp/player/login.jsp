@@ -1,214 +1,121 @@
+<%@page import="nl.tudelft.simulation.housinggame.player.PlayerData"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
- pageEncoding="ISO-8859-1"%>
+	pageEncoding="ISO-8859-1"%>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="ISO-8859-1">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
 <title>Housing Game Player Login</title>
 
+<!-- Bootstrap css-->
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+<!--Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet">
+
+<!-- Propeller css -->
+<link href="../../css/propeller.min.css" rel="stylesheet">
+
+<!-- jQuery before Propeller.js -->
+<script type="text/javascript" src="../../js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../js/propeller.min.js"></script>
+
+<script src="/housinggame-player/js/player.js"></script>
+
 <style>
-html, body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.hg-login-page {
+.form-container {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  position: absolute;
-  top: 20px;
-  bottom: 20px;
-  left: 20px;
-  right: 20px;
-  min-height: 0px;
-}
-
-.hg-header, .hg-body, .hg-footer {
-  flex-shrink: 0;
-}
-
-.hg-login-header {
-  background: navy;
-  padding: 5px;
-  height: 50px;
-  text-align: left;
-  line-height: 50px;
-  color: white;
-  font-weight: bold;
-  font-size: 2em;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.hg-login-header-right {
-  position: absolute;
-  background: white;
-  margin: 2px;
-  height: 46px;
-  width: 300px;
-  right: 20px;
-  border-radius: 20px;
-  flex-direction: row;
-}
-
-.hg-login-header-right > img {
-  margin-left: 20px;
-  margin-top: 3px;
-  height: 40px;
-  width: auto;
-}
-
-.hg-login-body {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  min-height: 0;
-  height: calc(100vh - 200px);
-  width: 600px;
-  margin-left: calc(50vw - 300px);
-  padding-right: 20px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.hg-login-footer {
-  background: navy;
-  padding: 5px;
-  height: 50px;
-  line-height: 50px;
-  color: white;
-  font-weight: bold;
-  font-size: 1em;
-  text-align: right;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
-.hg-login-top-message {
-  font-style: normal;
-  font-size: 1em;
-  margin-bottom: 20px;
-}
-
-.hg-login-top-message > h1 {
-  font-style: normal;
-  font-weight: bold;
-  font-size: 1.8em;
-  text-align: left;
-  color: orange;
-}
-
-.hg-login-top-message > p {
-  text-align: justify;
-  line-height: 1.2;
-}
-
-.hg-login-bottom-message {
-  font-style: normal;
-  font-size: 0.8em;
-  margin-top: 20px;
-}
-
-.hg-login-bottom-message > p {
-  text-align: justify;
-  line-height: 1.2;
-}
-
-.hg-login {
-  width: 595px;
-  border: 3px solid orange;
-  border-radius: 10px;
-  padding-top: 20px;
-  display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 30em;
+  min-width: 20em;
+  margin:auto;
 }
 
-.hg-login-button {
-  display: block;
-  width: 595px;
-  border: none;
-  background-color: orange;
-  padding: 14px 28px;
-  cursor: pointer;
+form {
+  max-width: 30em;
+  
+}
+
+h1 {
+  padding-bottom: 10px;
+}
+
+.hg-button {
   text-align: center;
-  font-size: 1.3em;
-  font-weight: bold;
+  margin: auto;
 }
-
-.hg-logo-right {
-  display: block;
-}
-
-.hg-logo-right > img {
-  width: 150px;
-  float: right;
-  padding-top: 40px;
-}
-
 </style>
+
 </head>
 
 <body>
-  <div class="hg-login-page">
-    <div class="hg-login-header">
-      <div class="hg-login-header-right">
-        <img src="images/tudelft.png" />
-        <span style="font-size: 12px; padding-left: 20px; position:relative; top:-4px; color:black;">v1.3.0</span>
+
+<%
+  if(session.getAttribute("playerData") == null) {
+	  PlayerData playerData = new PlayerData();
+	  session.setAttribute("playerData", playerData);
+  }
+%>
+
+	<div class="form-container">
+		
+		<img src="images/hg-logo.png" width="50%" />
+	
+		<h1>The Housing Game</h1>
+	
+		<form action="/housinggame-player/login" method="post">
+	
+			<div class="form-group pmd-textfield form-group-sm">
+				<label for="gamesession" class="control-label pmd-textfield-floating-label">Session</label> 
+				<select name="gamesession" id="gamesession" class="form-control">
+				   ${playerData.getValidSessionOptions()}
+				</select>
+		  </div>
+				
+      <div class="form-group pmd-textfield pmd-textfield-floating-label form-group-sm">
+				<label for="group" class="control-label">Group</label> 
+				<input type="text" id="group" name="group" class="form-control" /> 
       </div>
-    </div>
-  
-    <div class="hg-login-body">
-    
-      <div class="hg-login-top-message">
-        <div class="hg-logo-right">
-          <img src="images/hg-logo.png" />
-        </div>
-        <h1>Housing Game Player App</h1> 
-        <p>The following functions are available:</p>
-        <ul>
-          <li>Creating and maintaining game scenarios</li>
-          <li>Creating and maintaining game-play instances</li>
-          <li>Creating and maintaining users (also in bulk)</li>
-          <li>Allocating users to game-play instances</li>
-          <li>Viewing and exporting results and log data</li>
-        </ul>
+				
+      <div class="form-group pmd-textfield pmd-textfield-floating-label form-group-sm">
+				<label for="password" class="control-label">Password</label> 
+				<input type="password" id="password" name="password" class="form-control" />
       </div>
 
-      <div class="hg-login">
-        <form action="/housinggame-player/login" method="post">
-         <table>
-           <tr>
-             <td width="60px">&nbsp;</td>
-             <td>UserName &nbsp; </td>
-             <td><input type="text" name="username" /></td>
-           </tr>
-           <tr>
-             <td width="150px">&nbsp;</td>
-             <td>Password &nbsp; </td>
-             <td><input type="password" name="password" /></td>
-           </tr>
-         </table>
-         <br/>
-         <span>
-           <input type="submit" value="ADMINISTRATOR LOGIN" class="hg-login-button" />
-         </span>
-        </form>
+      <div class="form-group pmd-textfield pmd-textfield-floating-label form-group-sm">
+				<label for="username" class="control-label">Username</label> 
+				<input type="text" id="username" name="username" class="form-control" />
       </div>
-  
-      <div class="hg-login-bottom-message">
-        <p> 
-          If you have any questions about the game or the research, feel free to contact 
-          Juliette Cortes-Arevalo at TU Delft (<a href="mailto:v.j.cortesarevalo@tudelft.nl">v.j.cortesarevalo@tudelft.nl</a>).
-        </p>
-      </div>
-  
-    </div>
-    
-    <div class="hg-login-footer">
-      <!-- logo's at top right -->
-    </div>
-    
-  </div>      
+
+			<br /> 
+			
+			<div class="hg-button">
+			  <input type="submit" value="PLAYER LOGIN" class="btn btn-primary" />
+			</div>
+			
+		</form>
+
+		<br />
+
+		<div style="padding-top: 10px;">
+			<p style="font-size: 80%; text-align: center;">
+				If you have any questions about the game or the research, feel free
+				to contact Juliette Cortes-Arevalo at TU Delft (<a
+					href="mailto:v.j.cortesarevalo@tudelft.nl">v.j.cortesarevalo@tudelft.nl</a>).
+			</p>
+		</div>
+	</div>
 </body>
 </html>

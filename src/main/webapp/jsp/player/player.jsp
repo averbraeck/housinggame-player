@@ -38,7 +38,7 @@
       </div>
       <div class="hg-header-game-user">
         <p>&nbsp;</p>
-        <p>User:&nbsp;&nbsp;&nbsp; ${playerData.getUser().getUsername()}</p>
+        <p>User:&nbsp; ${playerData.getPlayerCode()} &nbsp; Group:&nbsp; ${playerData.getGroup().getName()}</p>
       </div>
 
       <div class="hg-body">
