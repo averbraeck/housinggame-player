@@ -5,124 +5,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-<title>Housing Game Welcome</title>
-
-<!-- Bootstrap css -->
-<link href="../../css/bootstrap.min.css" rel="stylesheet">
-
-<!-- MUI symbols -->
-<link href="../../iconfont/filled.css" rel="stylesheet">
-
-<!-- Propeller css -->
-<link href="../../css/propeller.min.css" rel="stylesheet">
-
-<!-- jQuery before Propeller.js -->
-<script type="text/javascript" src="../../js/jquery.min.js"></script>
-
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../../js/propeller.min.js"></script>
-
-<!-- script src="/housinggame-player/js/player.js"></script -->
-
-<script>
-initPage = function() {
-	  /* logged in? */
-	  var rn = String("${playerData.getPlayerCode()}");
-	  if (rn.length == 0 || rn == "null") {
-	    window.location = "/housinggame-player/login";
-	  }
-}
-</script>
-
-<style>
-.form-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  max-width: 30em;
-  min-width: 20em;
-  margin:auto;
-}
-
-form {
-  max-width: 30em;
-  
-}
-
-h1 {
-  padding-bottom: 10px;
-}
-
-.hg-button {
-  text-align: center;
-  margin: auto;
-}
-
-.hg-header {
-  margin: 0 auto;
-  position: -webkit-sticky; /* Safari */
-  position: sticky;
-  top: 10px;
-}
-
-.hg-header-row {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.hg-header-item {
-  display: block;
-  padding: 2px;
-  margin: 2px;
-  border: 1px solid blue;
-  border-radius: 10px;
-}
-
-.hg-header-item > .material-icons {
-  vertical-align: -6px;
- }
-</style>
-
+  <jsp:include page="head.jsp"></jsp:include>
+  <title>Housing Game Welcome</title>
 </head>
 
-<body onLoad = initPage()>
+<body style="background-color: white;" onLoad = initPage()>
 
 	<div class="form-container">
 		
-		<p>Shaga</p>
-	  <!--  header -->
-	  <div class="hg-header">
-	    <div class="hg-header-row">
-	      <div class="hg-header-item" style="background-color: #ABDEEF;">
-	        <span class="material-icons">group</span> 
-	        ${playerData.getGroup().getName() }
-	      </div>
-        <div class="hg-header-item">
-          <i class="material-icons">person</i>
-          ${playerData.getPlayerCode() }
-        </div>
-        <div class="hg-header-item">
-          <i class="material-icons">loop</i>
-          ${playerData.getCurrentRound() }
-        </div>
-        <div class="hg-header-item">
-          <i class="material-icons">stars</i>
-          5
-        </div>
-        <div class="hg-header-item">
-          40k
-        </div>
-	    </div>
-	  </div>
-	  
-	  <h1 style="text-align: center;">${playerData.getLabel("welcome/header") }</h1>
+    <jsp:include page="header.jsp"></jsp:include>
+
+	  <h1 style="text-align: center; color: blue;">${playerData.getLabel("welcome/header") }</h1>
 	  
 	  <!--  accordion -->
 	  
@@ -246,18 +139,16 @@ h1 {
             ${playerData.getLabel("welcome/6/text") }
           </div>
         </div>
-               
       </div>
 		  
 		</div>
 		
-    <form action="/housinggame-player/round" method="post">
-        <div class="hg-button">
-          <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" />
-        </div>
-      </form>
+    <form action="/housinggame-player/news" method="post">
+      <div class="hg-button">
+        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" />
+      </div>
+    </form>
 		
-
 	</div>
 </body>
 </html>
