@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.data.Tables;
+import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
+
 @WebServlet("/get-round-status")
 public class GetRoundStatusServlet extends HttpServlet
 {
@@ -29,8 +32,12 @@ public class GetRoundStatusServlet extends HttpServlet
             return;
         }
 
+        // reload the round with the latest state
+        GrouproundRecord groupRound = SqlUtils.readRecordFromId(data, Tables.GROUPROUND, data.getGroupRound().getId());
+        data.setGroupRound(groupRound);
+
         response.setContentType("text/plain");
-        response.getWriter().write(data.getGroupRound().getRoundState());
+        response.getWriter().write(groupRound.getRoundState());
     }
 
 }
