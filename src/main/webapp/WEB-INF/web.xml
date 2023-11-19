@@ -7,7 +7,7 @@
 
   <servlet>
     <servlet-name>housinggame-player</servlet-name>
-    <servlet-class>nl.tudelft.simulation.housinggame.player.UserLoginServlet</servlet-class>
+    <servlet-class>nl.tudelft.simulation.housinggame.player.PlayerLoginServlet</servlet-class>
   </servlet>
 
 </web-app>

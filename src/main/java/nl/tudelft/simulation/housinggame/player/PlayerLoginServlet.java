@@ -24,7 +24,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.RoundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioRecord;
 
 @WebServlet("/login")
-public class UserLoginServlet extends HttpServlet
+public class PlayerLoginServlet extends HttpServlet
 {
 
     /** */
