@@ -45,7 +45,7 @@ public class PlayerData
     /** the Player record for the logged in player. */
     private PlayerRecord player;
 
-    /** There is always a gamesession to which the player eblongs. */
+    /** There is always a gamesession to which the player belongs. */
     private GamesessionRecord gameSession;
 
     /** There is always a group to which the player belongs. */
