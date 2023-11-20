@@ -26,6 +26,7 @@ h1 {
 }
 
 .hg-header {
+  width: 100%;
   margin: 0 auto;
   position: -webkit-sticky; /* Safari */
   position: sticky;
@@ -45,8 +46,7 @@ h1 {
   display: block;
   padding: 2px;
   margin: 4px;
-  border: 1px solid blue;
-  border-radius: 10px;
+  border: none;
 }
 
 .hg-header-item > .material-icons {

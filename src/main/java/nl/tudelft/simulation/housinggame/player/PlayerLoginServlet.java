@@ -13,6 +13,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GameversionRecord;
@@ -127,36 +128,42 @@ public class PlayerLoginServlet extends HttpServlet
 
         if (ok)
         {
-            switch (data.getPlayerRound().getPlayerState())
+            PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
+            switch (playerState)
             {
-                case "INIT":
-                    response.sendRedirect("jsp/player/welcome.jsp");
+                case INIT:
+                    response.sendRedirect("jsp/player/welcome-wait.jsp");
                     break;
 
-                case "NEWS":
+                case READ_NEWS:
                     response.sendRedirect("jsp/player/news.jsp");
                     break;
 
-                case "HOUSE":
+                case CHECK_HOUSE:
+                case HOUSE:
                     if (data.getCurrentRound() == 1)
                         response.sendRedirect("jsp/player/new-house.jsp");
                     else
                         response.sendRedirect("jsp/player/buy-sell-house.jsp");
                     break;
 
-                case "HOUSECALC":
+                case BOUGHT_HOUSE:
                     response.sendRedirect("jsp/player/house-calc.jsp");
                     break;
 
-                case "MEASURE":
+                case MOVED_IN:
                     response.sendRedirect("jsp/player/measure.jsp");
                     break;
 
-                case "MEASURECALC":
+                case BOUGHT_MEASURES:
                     response.sendRedirect("jsp/player/measure-calc.jsp");
                     break;
 
-                case "DAMAGECALC":
+                case SURVEY:
+                    response.sendRedirect("jsp/player/survey.jsp");
+                    break;
+
+                case DAMAGE:
                     response.sendRedirect("jsp/player/damage-calc.jsp");
                     break;
 

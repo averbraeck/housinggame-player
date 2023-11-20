@@ -2,13 +2,13 @@
 	  <div class="hg-header">
 	    <div class="hg-header-row">
 	      <div class="hg-header-item" style="background-color: white;">
-  	      <img src="images/hg-logo.png" style="width:50px; height:auto" />
+  	      <img src="images/hg-logo.png" style="width:90px; height:auto" />
   	    </div>
   	    <div class="hg-header-item" style="background-color: white;">
-  	      <h1>Where We Move</h1><br />
+  	      <h1>Where We Move</h1>
           <div class="hg-header-row">
             <div class="hg-header-item" style="background-color: white;">
-              <i class="material-icons">news</i> News
+              <i class="material-icons">info</i> News
   	        </div>
             <div class="hg-header-item" style="background-color: white;">
               <i class="material-icons">loop</i> Round ${playerData.getCurrentRound() }
@@ -17,8 +17,8 @@
   	    </div>
   	  </div>
   	  
-  	  <hr />
-  	    
+      <div style="border-top: 1px solid; width:100%; border-color:blue; margin-bottom: 8px;"></div>
+  	  
       <div class="hg-header-row">
 	      <div class="hg-header-item" style="background-color: #abebc6;">
 	        <span class="material-icons">group</span> 
@@ -41,8 +41,10 @@
         </div>
         <div class="hg-header-item" style="background-color: #f9e79f;">
           <i class="material-icons">payments</i>
-          Available income ${playerData.k(playerData.getPlayerRound().getIncome()) }
+          Spendable income ${playerData.k(playerData.getPlayerRound().getIncome()) }
         </div>
       </div>
+
+      <div style="border-top: 1px solid; width:99%; border-color:blue; margin-top: 12px; margin-bottom: 3px;"></div>
 
 	  </div>
