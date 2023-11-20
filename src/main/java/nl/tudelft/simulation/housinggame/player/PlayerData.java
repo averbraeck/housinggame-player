@@ -307,7 +307,8 @@ public class PlayerData
             label = label.replace("$player$", this.getPlayerCode());
             label = label.replace("$round$", Integer.toString(this.getCurrentRound()));
             label = label.replace("$rating$", Integer.toString(this.playerRound.getPreferredHouseRating().intValue()));
-            label = label.replace("$income$", k(this.playerRound.getIncome().intValue()));
+            label = label.replace("$income_per_round$", k(this.playerRound.getIncomePerRound().intValue()));
+            label = label.replace("$spendable_income$", k(this.playerRound.getSpendableIncome().intValue()));
             label = label.replace("$satisfaction$", k(this.playerRound.getSatisfaction().intValue()));
             label = label.replace("$savings$", k(this.playerRound.getSavings().intValue()));
             label = label.replace("$maxmortgage$", k(this.playerRound.getMaximumMortgage().intValue()));
