@@ -148,7 +148,8 @@ public final class SqlUtils
             newPr.setPlayerId(data.getPlayer().getId());
             newPr.setSatisfaction(welfareType.getInitialSatisfaction());
             newPr.setSavings(welfareType.getInitialMoney());
-            newPr.setCurrentWealth(welfareType.getInitialMoney().intValue());
+            newPr.setSpendableIncome(welfareType.getIncomePerRound().intValue() + welfareType.getInitialMoney().intValue() -
+                    welfareType.getLivingCosts().intValue());
             newPr.setDebt(UInteger.valueOf(0));
             newPr.setFluvialDamage(UInteger.valueOf(0));
             newPr.setPluvialDamage(UInteger.valueOf(0));
@@ -156,9 +157,9 @@ public final class SqlUtils
             newPr.setHouseId(null);
             newPr.setHousePriceBought(UInteger.valueOf(0));
             newPr.setHousePriceSold(UInteger.valueOf(0));
-            newPr.setIncome(welfareType.getIncome());
+            newPr.setIncomePerRound(welfareType.getIncomePerRound());
             newPr.setLivingCosts(welfareType.getLivingCosts());
-            newPr.setMeasureBought(UInteger.valueOf(0));
+            newPr.setCostMeasureBought(UInteger.valueOf(0));
             newPr.setMortgage(UInteger.valueOf(0));
             newPr.setMovingReason("");
             newPr.setPaidOffDebt(UInteger.valueOf(0));
