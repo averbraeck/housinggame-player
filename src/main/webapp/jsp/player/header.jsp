@@ -30,7 +30,7 @@
         </div>
         <div class="hg-header-item" style="background-color: #e5e7e9;">
           <i class="material-icons">house</i>
-          House ${playerData.k(playerData.getPlayerRound().getMortgage()) }
+          House ${playerData.getHouseAddress() }
         </div>
       </div>
 
@@ -41,7 +41,7 @@
         </div>
         <div class="hg-header-item" style="background-color: #f9e79f;">
           <i class="material-icons">payments</i>
-          Spendable income ${playerData.k(playerData.getPlayerRound().getIncome()) }
+          Spendable income ${playerData.k(playerData.getPlayerRound().getSpendableIncome()) }
         </div>
       </div>
 

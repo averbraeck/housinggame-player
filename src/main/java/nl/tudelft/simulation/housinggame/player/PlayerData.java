@@ -24,6 +24,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GameversionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LabelRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguageRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguagegroupRecord;
@@ -264,6 +265,16 @@ public class PlayerData
     public void setGameVersion(final GameversionRecord gameVersion)
     {
         this.gameVersion = gameVersion;
+    }
+
+    public String getHouseAddress()
+    {
+        if (this.playerRound == null)
+            return "--";
+        if (this.playerRound.getHouseId() == null)
+            return "--";
+        HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, this.playerRound.getHouseId());
+        return house.getAddress();
     }
 
     /*-

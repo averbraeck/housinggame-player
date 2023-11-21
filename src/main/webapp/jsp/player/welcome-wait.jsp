@@ -19,15 +19,17 @@
 	  
 	  ${playerData.getLabel("welcome/text") }
 	  
-    <form action="/housinggame-player/welcome" method="post">
-      <table style="width:100%;">
-        <tr>
-          <td>
-		        <span style="font-size: 200%; text-color:blue;"><b>${playerData.getLabel("welcome/wait/header") }</b></span><br/>
-		        <b>${playerData.getLabel("welcome/wait/text") }</b>
-          </td>
-        </tr>
-      </table>
+   <form action="/housinggame-player/welcome" method="post">
+      <div style="margin-top:15px; margin-bottom:15px;">
+	      <table style="width:100%; border: 1px solid blue; border-collapse: collapse;">
+	        <tr>
+	          <td style="padding: 10px;">
+			        <span style="font-size: 150%; text-color:blue;"><b>${playerData.getLabel("welcome/wait/header") }</b></span><br/>
+			        <b>${playerData.getLabel("welcome/wait/text") }</b>
+	          </td>
+	        </tr>
+	      </table>
+      </div>
       <div class="hg-button">
         <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" />
       </div>

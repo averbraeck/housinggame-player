@@ -129,6 +129,9 @@ public class PlayerLoginServlet extends HttpServlet
         if (ok)
         {
             PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
+            if (playerState == null)
+                throw new IllegalArgumentException(
+                        "Unexpected value for PlayerState: " + data.getPlayerRound().getPlayerState());
             switch (playerState)
             {
                 case INIT:
@@ -168,7 +171,8 @@ public class PlayerLoginServlet extends HttpServlet
                     break;
 
                 default:
-                    throw new IllegalArgumentException("Unexpected value: " + data.getPlayerRound().getPlayerState());
+                    throw new IllegalArgumentException(
+                            "Unexpected value for PlayerState: " + data.getPlayerRound().getPlayerState());
             }
         }
         else
