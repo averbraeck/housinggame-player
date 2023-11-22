@@ -66,7 +66,7 @@ public class NewHouseServlet extends HttpServlet
             {
                 UInteger id = (UInteger) record.get(0);
                 HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, id);
-                if (house.getAvailableRound().intValue() == data.getCurrentRound())
+                if (house.getAvailableRound().intValue() == data.getPlayerRoundNumber())
                 {
                     houseMap.put(house.getAddress(), house);
                     s.append("<option value=\"" + house.getAddress() + "\">" + house.getAddress() + "</option>\n");

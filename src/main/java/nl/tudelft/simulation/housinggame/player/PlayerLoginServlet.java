@@ -66,8 +66,7 @@ public class PlayerLoginServlet extends HttpServlet
         */
 
         HttpSession session = request.getSession();
-
-        PlayerData data = (PlayerData) session.getAttribute("playerData");
+        PlayerData data = SessionUtils.getData(session);
 
         boolean ok = true;
         int gameSessionId = 0;
@@ -105,22 +104,7 @@ public class PlayerLoginServlet extends HttpServlet
                         ok = false;
                     else
                     {
-                        data.setPlayer(player);
-                        data.setGroup(groupRecord);
-                        data.setGameSession(gs);
-                        ScenarioRecord scenario = SqlUtils.readRecordFromId(data, Tables.SCENARIO, groupRecord.getScenarioId());
-                        data.setScenario(scenario);
-                        GameversionRecord gameVersion =
-                                SqlUtils.readRecordFromId(data, Tables.GAMEVERSION, scenario.getGameversionId());
-                        data.setGameVersion(gameVersion);
-                        GrouproundRecord groupRound = SqlUtils.getOrMakeLatestGroupRound(data, data.getGroup());
-                        RoundRecord round = dslContext.selectFrom(Tables.ROUND)
-                                .where(Tables.ROUND.ID.eq(groupRound.getRoundId())).fetchOne();
-                        data.setRound(round);
-                        data.setGroupRound(groupRound);
-                        PlayerroundRecord playerRound = SqlUtils.getOrMakePlayerRound(data, groupRound);
-                        data.setPlayerRound(playerRound);
-                        data.setLanguageLabels(scenario);
+                        data.readPlayerData(player);
                     }
                 }
             }
@@ -128,52 +112,7 @@ public class PlayerLoginServlet extends HttpServlet
 
         if (ok)
         {
-            PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-            if (playerState == null)
-                throw new IllegalArgumentException(
-                        "Unexpected value for PlayerState: " + data.getPlayerRound().getPlayerState());
-            switch (playerState)
-            {
-                case INIT:
-                    response.sendRedirect("jsp/player/welcome-wait.jsp");
-                    break;
-
-                case READ_NEWS:
-                    response.sendRedirect("jsp/player/news.jsp");
-                    break;
-
-                case CHECK_HOUSE:
-                case HOUSE:
-                    if (data.getCurrentRound() == 1)
-                        response.sendRedirect("jsp/player/new-house.jsp");
-                    else
-                        response.sendRedirect("jsp/player/buy-sell-house.jsp");
-                    break;
-
-                case BOUGHT_HOUSE:
-                    response.sendRedirect("jsp/player/house-calc.jsp");
-                    break;
-
-                case MOVED_IN:
-                    response.sendRedirect("jsp/player/measure.jsp");
-                    break;
-
-                case BOUGHT_MEASURES:
-                    response.sendRedirect("jsp/player/measure-calc.jsp");
-                    break;
-
-                case SURVEY:
-                    response.sendRedirect("jsp/player/survey.jsp");
-                    break;
-
-                case DAMAGE:
-                    response.sendRedirect("jsp/player/damage-calc.jsp");
-                    break;
-
-                default:
-                    throw new IllegalArgumentException(
-                            "Unexpected value for PlayerState: " + data.getPlayerRound().getPlayerState());
-            }
+            PlayerStateUtils.redirect(data, response);
         }
         else
         {

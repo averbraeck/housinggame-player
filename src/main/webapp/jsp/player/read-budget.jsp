@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
   <jsp:include page="head.jsp"></jsp:include>
-  <title>Housing Game Welcome</title>
+  <title>Housing Game Budget Overview</title>
 </head>
 
 <body style="background-color: white;" onLoad = initPage()>
@@ -15,23 +15,15 @@
 		
     <jsp:include page="header.jsp"></jsp:include>
 
-	  <h1 style="text-align: center; color: blue;">${playerData.getLabel("welcome/header") }</h1>
+	  <h1 style="text-align: center; color: blue;">Budget overview</h1>
 	  
-	  ${playerData.getLabel("welcome/text") }
+	  <p>
+	    Budget bla bla
+	  </p>
 	  
-   <form action="/housinggame-player/check-status" method="post">
-      <div style="margin-top:15px; margin-bottom:15px;">
-	      <table style="width:100%; border: 1px solid blue; border-collapse: collapse;">
-	        <tr>
-	          <td style="padding: 10px;">
-			        <span style="font-size: 150%; text-color:blue;"><b>${playerData.getLabel("welcome/wait/header") }</b></span><br/>
-			        <b>${playerData.getLabel("welcome/wait/text") }</b>
-	          </td>
-	        </tr>
-	      </table>
-      </div>
+    <form action="/housinggame-player/check-status" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="welcome-wait" />
+        <input type="hidden" name="okButton" value="read-budget" />
         <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
@@ -43,7 +35,7 @@
       check();
     });
     function check() {
-      $.post("/housinggame-player/get-round-status", {jsp: 'welcome-wait'},
+      $.post("/housinggame-player/get-round-status", {jsp: 'read-budget'}
         function(data, status) {
           if (data == "OK") {
             $("#hg-submit").removeAttr("disabled");

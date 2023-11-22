@@ -18,9 +18,9 @@ import org.jooq.impl.DSL;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 
-@WebServlet("/news")
+@WebServlet("/read-news")
 @MultipartConfig
-public class NewsServlet extends HttpServlet
+public class ReadNewsServlet extends HttpServlet
 {
 
     /** */

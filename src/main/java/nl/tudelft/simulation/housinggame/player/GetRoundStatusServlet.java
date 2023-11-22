@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
-
 @WebServlet("/get-round-status")
 public class GetRoundStatusServlet extends HttpServlet
 {
@@ -33,11 +30,20 @@ public class GetRoundStatusServlet extends HttpServlet
         }
 
         // reload the round with the latest state
-        GrouproundRecord groupRound = SqlUtils.readRecordFromId(data, Tables.GROUPROUND, data.getGroupRound().getId());
-        data.setGroupRound(groupRound);
+        data.readDynamicData();
+
+        // return OK if the button for the current screen can be enabled, an empty string otherwise
+        String jsp = request.getParameter("jsp");
+        boolean ok = jsp == null ? false : PlayerStateUtils.checkOkButton(data, jsp);
+
+        System.out.println("get-round-status for player " + data.getPlayerCode() + ", jsp=" + jsp + ", ok=" + ok + ", error="
+                + data.getError());
+
+        if (!ok && data.getError().length() > 0)
+            System.err.println("checkOkButton for player " + data.getPlayerCode() + ": " + data.getError());
 
         response.setContentType("text/plain");
-        response.getWriter().write(groupRound.getRoundState());
+        response.getWriter().write(ok ? "OK" : "");
     }
 
 }

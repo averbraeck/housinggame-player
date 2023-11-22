@@ -11,7 +11,7 @@
               <i class="material-icons">info</i> News
   	        </div>
             <div class="hg-header-item" style="background-color: white;">
-              <i class="material-icons">loop</i> Round ${playerData.getCurrentRound() }
+              <i class="material-icons">loop</i> Round ${playerData.getPlayerRoundNumber() }
             </div>
   	      </div>  
   	    </div>

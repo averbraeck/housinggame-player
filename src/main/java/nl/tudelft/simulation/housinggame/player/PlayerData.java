@@ -1,6 +1,7 @@
 package nl.tudelft.simulation.housinggame.player;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,32 +44,38 @@ public class PlayerData
      */
     private DataSource dataSource;
 
-    /** the Player record for the logged in player. */
+    /** the Player record for the logged in player. Static during session. */
     private PlayerRecord player;
 
-    /** There is always a gamesession to which the player belongs. */
+    /** There is always a gamesession to which the player belongs. Static during session. */
     private GamesessionRecord gameSession;
 
-    /** There is always a group to which the player belongs. */
+    /** There is always a group to which the player belongs. Static during session. */
     private GroupRecord group;
 
-    /** labels in the language of the game session (or the player!). */
-    private Map<String, String> labelMap = new HashMap<>();
-
-    /** The game might not have started, but a player ALWAYS has a highest player round (0 if not started). */
-    private PlayerroundRecord playerRound;
-
-    /** The game might not have started, but a groep ALWAYS has a highest group round (0 if not started). */
-    private GrouproundRecord groupRound;
-
-    /** the current round as a record. Always there. */
-    private RoundRecord round;
-
-    /** The scenario. Always there. */
+    /** The scenario. Static during session. */
     private ScenarioRecord scenario;
 
-    /** The game version. Always there. */
+    /** The game version. Static during session. */
     private GameversionRecord gameVersion;
+
+    /** labels in the language of the game session (or the player!). Static during session. */
+    private Map<String, String> labelMap = new HashMap<>();
+
+    /** List of all rounds (static during session). */
+    private List<RoundRecord> roundList = new ArrayList<>();
+
+    /** The current round of the group. This is DYNAMIC. */
+    private int groupRoundNumber = -1;
+
+    /** The game might not have started, but a groep ALWAYS has a highest group round (null if not started). */
+    private GrouproundRecord groupRound;
+
+    /** The current round of the player. This is DYNAMIC. */
+    private int playerRoundNumber = -1;
+
+    /** The game might not have started, but a player ALWAYS has a highest player round (null if not started). */
+    private PlayerroundRecord playerRound;
 
     /* ================================= */
     /* FULLY DYNAMIC INFO IN THE SESSION */
@@ -82,6 +89,9 @@ public class PlayerData
 
     /** client info (dynamic) for popup. */
     private String modalWindowHtml = "";
+
+    /** error message for error servlet. */
+    private String error = "";
 
     /* ******************* */
     /* GETTERS AND SETTERS */
@@ -127,7 +137,7 @@ public class PlayerData
                     throw new RuntimeException(new ServletException(e));
                 }
 
-                setDataSource((DataSource) new InitialContext().lookup("/housinggame-player_datasource"));
+                this.dataSource = (DataSource) new InitialContext().lookup("/housinggame-player_datasource");
             }
             catch (NamingException e)
             {
@@ -137,9 +147,65 @@ public class PlayerData
         return this.dataSource;
     }
 
-    public void setDataSource(final DataSource dataSource)
+    public void readPlayerData(final PlayerRecord player)
     {
-        this.dataSource = dataSource;
+        DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
+        this.player = player;
+        this.group = SqlUtils.readRecordFromId(this, Tables.GROUP, player.getGroupId());
+        this.gameSession = SqlUtils.readRecordFromId(this, Tables.GAMESESSION, this.group.getGamesessionId());
+        this.scenario = SqlUtils.readRecordFromId(this, Tables.SCENARIO, this.group.getScenarioId());
+        this.gameVersion = SqlUtils.readRecordFromId(this, Tables.GAMEVERSION, this.scenario.getGameversionId());
+        setLanguageLabels(this.scenario);
+        this.roundList.clear();
+        for (int i = 0; i <= this.scenario.getHighestRoundNumber().intValue(); i++)
+        {
+            this.roundList.add(dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.ROUND_NUMBER.eq(i))
+                    .and(Tables.ROUND.SCENARIO_ID.eq(this.scenario.getId())).fetchAny());
+        }
+        readDynamicData();
+    }
+
+    public void readDynamicData()
+    {
+        DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
+        this.groupRound = null;
+        this.groupRoundNumber = -1;
+        List<GrouproundRecord> grList = new ArrayList<>();
+        for (int i = 0; i <= this.scenario.getHighestRoundNumber().intValue(); i++)
+        {
+            GrouproundRecord gr =
+                    dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_ID.eq(this.roundList.get(i).getId()))
+                            .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
+            if (gr != null)
+            {
+                this.groupRound = gr;
+                this.groupRoundNumber = i;
+                grList.add(gr);
+            }
+        }
+        this.playerRound = null;
+        this.playerRoundNumber = -1;
+        for (int i = 0; i < grList.size(); i++)
+        {
+            PlayerroundRecord pr =
+                    dslContext.selectFrom(Tables.PLAYERROUND).where(Tables.PLAYERROUND.GROUPROUND_ID.eq(grList.get(i).getId()))
+                            .and(Tables.PLAYERROUND.PLAYER_ID.eq(this.player.getId())).fetchAny();
+            if (pr != null)
+            {
+                this.playerRound = pr;
+                this.playerRoundNumber = i;
+            }
+        }
+    }
+
+    public ScenarioRecord getScenario()
+    {
+        return this.scenario;
+    }
+
+    public GameversionRecord getGameVersion()
+    {
+        return this.gameVersion;
     }
 
     public String getPlayerCode()
@@ -152,19 +218,9 @@ public class PlayerData
         return this.player;
     }
 
-    public void setPlayer(final PlayerRecord player)
-    {
-        this.player = player;
-    }
-
     public GamesessionRecord getGameSession()
     {
         return this.gameSession;
-    }
-
-    public void setGameSession(final GamesessionRecord gameSession)
-    {
-        this.gameSession = gameSession;
     }
 
     public GroupRecord getGroup()
@@ -172,9 +228,34 @@ public class PlayerData
         return this.group;
     }
 
-    public void setGroup(final GroupRecord group)
+    public PlayerroundRecord getPlayerRound()
     {
-        this.group = group;
+        return this.playerRound;
+    }
+
+    public void setPlayerRound(final PlayerroundRecord playerRound)
+    {
+        this.playerRound = playerRound;
+    }
+
+    public GrouproundRecord getGroupRound()
+    {
+        return this.groupRound;
+    }
+
+    public int getPlayerRoundNumber()
+    {
+        return this.playerRoundNumber;
+    }
+
+    public int getGroupRoundNumber()
+    {
+        return this.groupRoundNumber;
+    }
+
+    public RoundRecord getRound()
+    {
+        return this.playerRoundNumber >= 0 ? this.roundList.get(this.playerRoundNumber) : null;
     }
 
     public int getShowModalWindow()
@@ -207,64 +288,14 @@ public class PlayerData
         this.modalWindowHtml = modalClientWindowHtml;
     }
 
-    public void setLabelMap(final Map<String, String> labelMap)
+    public String getError()
     {
-        this.labelMap = labelMap;
+        return this.error;
     }
 
-    public PlayerroundRecord getPlayerRound()
+    public void setError(final String error)
     {
-        return this.playerRound;
-    }
-
-    public void setPlayerRound(final PlayerroundRecord playerRound)
-    {
-        this.playerRound = playerRound;
-    }
-
-    public GrouproundRecord getGroupRound()
-    {
-        return this.groupRound;
-    }
-
-    public void setGroupRound(final GrouproundRecord groupRound)
-    {
-        this.groupRound = groupRound;
-    }
-
-    public int getCurrentRound()
-    {
-        return this.round.getRoundNumber();
-    }
-
-    public RoundRecord getRound()
-    {
-        return this.round;
-    }
-
-    public void setRound(final RoundRecord round)
-    {
-        this.round = round;
-    }
-
-    public ScenarioRecord getScenario()
-    {
-        return this.scenario;
-    }
-
-    public void setScenario(final ScenarioRecord scenario)
-    {
-        this.scenario = scenario;
-    }
-
-    public GameversionRecord getGameVersion()
-    {
-        return this.gameVersion;
-    }
-
-    public void setGameVersion(final GameversionRecord gameVersion)
-    {
-        this.gameVersion = gameVersion;
+        this.error = error;
     }
 
     public String getHouseAddress()
@@ -316,7 +347,7 @@ public class PlayerData
         {
             label = label.replace("$group$", this.group.getName());
             label = label.replace("$player$", this.getPlayerCode());
-            label = label.replace("$round$", Integer.toString(this.getCurrentRound()));
+            label = label.replace("$round$", Integer.toString(this.getPlayerRoundNumber()));
             label = label.replace("$rating$", Integer.toString(this.playerRound.getPreferredHouseRating().intValue()));
             label = label.replace("$income_per_round$", k(this.playerRound.getIncomePerRound().intValue()));
             label = label.replace("$spendable_income$", k(this.playerRound.getSpendableIncome().intValue()));
@@ -375,7 +406,7 @@ public class PlayerData
             };
             labelMap.put(key, value);
         }
-        setLabelMap(labelMap);
+        this.labelMap = labelMap;
     }
 
 }

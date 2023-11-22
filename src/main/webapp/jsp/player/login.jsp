@@ -1,3 +1,4 @@
+<%@page import="nl.tudelft.simulation.housinggame.player.SessionUtils"%>
 <%@page import="nl.tudelft.simulation.housinggame.player.PlayerData"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
@@ -64,8 +65,8 @@ h1 {
 
 <%
   if(session.getAttribute("playerData") == null) {
-	  PlayerData playerData = new PlayerData();
-	  session.setAttribute("playerData", playerData);
+    PlayerData playerData = new PlayerData();
+    session.setAttribute("playerData", playerData);
   }
 %>
 

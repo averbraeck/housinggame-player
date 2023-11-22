@@ -3,7 +3,6 @@ package nl.tudelft.simulation.housinggame.player;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.DSLContext;
@@ -14,7 +13,6 @@ import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 
 import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.RoundRecord;
@@ -72,61 +70,6 @@ public final class SqlUtils
     }
 
     /**
-     * Return the latest GroupRound for the given group, or create a GroupRound for round 0.
-     * @param data PlayerData; session data
-     * @param group GroupRecord; the group for which we want to know the latest GroupRound
-     * @return GrouproundRecord; the latest GroupRound or a newly created GroupRound for round 0
-     */
-    public static GrouproundRecord getOrMakeLatestGroupRound(final PlayerData data, final GroupRecord group)
-    {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        // is there a current (highest) groupRound? Execute this code with a database lock around it (!)
-        List<GrouproundRecord> grList = new ArrayList<>();
-        try
-        {
-            dslContext.execute("LOCK TABLES groupround WRITE, round WRITE WAIT 10;");
-            grList = dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.GROUP_ID.eq(group.getId())).fetch();
-            if (grList.isEmpty())
-            {
-                GrouproundRecord newGr = dslContext.newRecord(Tables.GROUPROUND);
-                newGr.setGroupId(group.getId());
-                // find the round with the lowest number: SELECT * from round WHERE round.scenario_id=3
-                // AND round_number=(SELECT MIN(round_number) FROM round WHERE round.scenario_id=3 );
-                int minRoundNumber = dslContext
-                        .execute("SELECT MIN(round_number) FROM round WHERE round.scenario_id=" + group.getScenarioId());
-                RoundRecord lowestRound =
-                        dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.SCENARIO_ID.eq(group.getScenarioId()))
-                                .and(Tables.ROUND.ROUND_NUMBER.eq(minRoundNumber)).fetchOne();
-                newGr.setRoundId(lowestRound.getId());
-                newGr.setFluvialFloodIntensity(0);
-                newGr.setPluvialFloodIntensity(0);
-                // newGr.setStartTime(LocalDateTime.now());
-                newGr.store();
-                grList.add(newGr);
-            }
-        }
-        finally
-        {
-            dslContext.execute("UNLOCK TABLES;");
-        }
-
-        // find the GrouproundRecord with the highest associated round number
-        GrouproundRecord groupRound = null;
-        int currentRound = -1;
-        for (int i = 0; i < grList.size(); i++)
-        {
-            UInteger roundId = grList.get(i).getRoundId();
-            RoundRecord roundRecord = SqlUtils.readRecordFromId(data, Tables.ROUND, roundId);
-            if (roundRecord.getRoundNumber().intValue() > currentRound)
-            {
-                currentRound = roundRecord.getRoundNumber().intValue();
-                groupRound = grList.get(i);
-            }
-        }
-        return groupRound;
-    }
-
-    /**
      * Return or create the PlayerRound for the given GroupRound. When there is an earlier PlayerRound, copy the latest. When
      * this is the first PlayerRound record created for this player, initialize a blank one. make sure the playerState is
      * "INIT".
@@ -171,7 +114,6 @@ public final class SqlUtils
             newPr.setMaximumMortgage(welfareType.getMaximumMortgage());
             newPr.store();
             prList.add(newPr);
-
         }
 
         PlayerroundRecord playerRound =
