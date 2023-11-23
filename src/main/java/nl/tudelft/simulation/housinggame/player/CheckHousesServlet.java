@@ -23,7 +23,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
 
 @WebServlet("/new-house")
 @MultipartConfig
-public class NewHouseServlet extends HttpServlet
+public class CheckHousesServlet extends HttpServlet
 {
 
     /** */
