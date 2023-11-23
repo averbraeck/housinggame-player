@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
   <jsp:include page="head.jsp"></jsp:include>
-  <title>Housing Game Budget Overview</title>
+  <title>Housing Game Survey</title>
 </head>
 
 <body style="background-color: white;" onLoad = initPage()>
@@ -18,12 +18,12 @@
 	  <h1 style="text-align: center; color: blue;">Budget overview</h1>
 	  
 	  <p>
-	    Budget bla bla
+	    Answer the survey questions:
 	  </p>
 	  
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="read-budget" />
+        <input type="hidden" name="okButton" value="answer-survey" />
         <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
@@ -35,7 +35,7 @@
       check();
     });
     function check() {
-      $.post("/housinggame-player/get-round-status", {jsp: 'read-budget'},
+      $.post("/housinggame-player/get-round-status", {jsp: 'answer-survey'},
         function(data, status) {
           if (data == "OK") {
             $("#hg-submit").removeAttr("disabled");

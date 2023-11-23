@@ -25,7 +25,7 @@
 		${playerData.getContentHtml("news/content/1") }
 		</p>
 		
-    <form action="/housinggame-player/check-status" method="post">
+   <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="read-news" />
         <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
