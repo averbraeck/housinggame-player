@@ -29,6 +29,8 @@ public class ReadBudgetServlet extends HttpServlet
             return;
         }
 
+        ContentUtils.makeBudgetAccordion(data);
+
         response.sendRedirect("jsp/player/read-budget.jsp");
     }
 

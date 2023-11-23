@@ -91,6 +91,7 @@ public final class PlayerStateUtils
     public static void redirect(final PlayerData data, final HttpServletResponse response) throws IOException, ServletException
     {
         data.setError("");
+        data.readDynamicData();
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
         RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
         if (playerState == null)

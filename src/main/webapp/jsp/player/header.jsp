@@ -20,7 +20,7 @@
       <div style="border-top: 1px solid; width:100%; border-color:blue; margin-bottom: 8px;"></div>
   	  
       <div class="hg-header-row">
-	      <div class="hg-header-item" style="background-color: #abebc6;">
+	      <div class="hg-header-item" style="background-color: #f9e79f;">
 	        <span class="material-icons">group</span> 
 	        ${playerData.getGroup().getName() }
 	      </div>
@@ -28,18 +28,18 @@
           <i class="material-icons">person</i>
           Player ${playerData.getPlayerCode() }
         </div>
-        <div class="hg-header-item" style="background-color: #e5e7e9;">
+        <div class="hg-header-item" style="background-color: #84aff7;">
           <i class="material-icons">house</i>
           House ${playerData.getHouseAddress() }
         </div>
       </div>
 
       <div class="hg-header-row">
-        <div class="hg-header-item" style="background-color: #abebc6;">
+        <div class="hg-header-item" style="background-color: #e1aca4;">
           <i class="material-icons">stars</i>
           Satisfaction ${playerData.getPlayerRound().getSatisfaction() }
         </div>
-        <div class="hg-header-item" style="background-color: #f9e79f;">
+        <div class="hg-header-item" style="background-color: #e1aca4;">
           <i class="material-icons">payments</i>
           Spendable income ${playerData.k(playerData.getPlayerRound().getSpendableIncome()) }
         </div>

@@ -319,6 +319,15 @@ public class PlayerData
         this.error = error;
     }
 
+    public HouseRecord getHouse()
+    {
+        if (this.playerRound == null)
+            return null;
+        if (this.playerRound.getHouseId() == null)
+            return null;
+        return SqlUtils.readRecordFromId(this, Tables.HOUSE, this.playerRound.getHouseId());
+    }
+
     public String getHouseAddress()
     {
         if (this.playerRound == null)
@@ -428,6 +437,26 @@ public class PlayerData
             labelMap.put(key, value);
         }
         this.labelMap = labelMap;
+    }
+
+    public int getExpectedMortgage()
+    {
+        HouseRecord house = getHouse();
+        if (house == null)
+            return 0;
+        // TODO: bid?
+        ScenarioparametersRecord spr =
+                SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
+        return (int) (house.getPrice().intValue() / spr.getMortgagePercentage());
+    }
+
+    public int getExpectedTaxes()
+    {
+        HouseRecord house = getHouse();
+        if (house == null)
+            return 0;
+        // TODO: get mid score from database
+        return 15000;
     }
 
 }
