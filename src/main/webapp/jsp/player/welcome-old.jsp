@@ -46,7 +46,6 @@
           <h4 class="panel-title">
             <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse2" aria-expanded="false" 
               aria-controls="collapse2" data-expandable="false">
-              <span class="badge badge-info pmd-ripple-effect">2</span>
               ${playerData.getLabel("welcome/2/header") }
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
                 keyboard_arrow_down
