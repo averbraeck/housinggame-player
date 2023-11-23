@@ -1,7 +1,6 @@
 package nl.tudelft.simulation.housinggame.player;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,13 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
-import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 
 @WebServlet("/read-news")
 public class ReadNewsServlet extends HttpServlet
@@ -37,19 +29,9 @@ public class ReadNewsServlet extends HttpServlet
             return;
         }
 
-        // get the news record(s) for the current round
         data.getContentHtml().clear();
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<NewsitemRecord> newsList =
-                dslContext.selectFrom(Tables.NEWSITEM).where(Tables.NEWSITEM.ROUND_ID.eq(data.getRound().getId())).fetch();
-        int nr = 1;
-        for (NewsitemRecord news : newsList)
-        {
-            data.getContentHtml().put("news/name/" + nr, news.getName());
-            data.getContentHtml().put("news/summary/" + nr, news.getSummary());
-            data.getContentHtml().put("news/content/" + nr, news.getContent());
-            nr++;
-        }
+        ContentUtils.makeBudgetAccordion(data);
+        ContentUtils.makeNewsAccordion(data);
 
         response.sendRedirect("jsp/player/read-news.jsp");
     }
