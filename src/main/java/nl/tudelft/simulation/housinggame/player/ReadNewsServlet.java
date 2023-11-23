@@ -39,7 +39,7 @@ public class ReadNewsServlet extends HttpServlet
             return;
         }
 
-        // get the news record(s)
+        // get the news record(s) for the current round
         data.getContentHtml().clear();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<NewsitemRecord> newsList =
@@ -53,7 +53,7 @@ public class ReadNewsServlet extends HttpServlet
             nr++;
         }
 
-        response.sendRedirect("jsp/player/news.jsp");
+        response.sendRedirect("jsp/player/read-news.jsp");
     }
 
 }
