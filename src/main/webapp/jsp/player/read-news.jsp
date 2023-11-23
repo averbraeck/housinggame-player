@@ -15,7 +15,7 @@
 		
 		<jsp:include page="header.jsp"></jsp:include>
 		
-		<h1>NEWS</h1>
+		<h1>News for the current round</h1>
 		
 		<b>
 		${playerData.getContentHtml("news/summary/1") }

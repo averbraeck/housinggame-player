@@ -32,7 +32,7 @@
 		
 		<jsp:include page="header.jsp"></jsp:include>
 		
-		<h1>HOUSE SELECTION</h1>
+		<h1>Check available houses</h1>
 		
     <form action="/housinggame-player/advance-state" method="post">
       <div class="form-group pmd-textfield form-group-sm">

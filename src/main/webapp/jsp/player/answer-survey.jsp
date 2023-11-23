@@ -15,7 +15,7 @@
 		
     <jsp:include page="header.jsp"></jsp:include>
 
-	  <h1 style="text-align: center; color: blue;">Budget overview</h1>
+	  <h1 style="text-align: center; color: blue;">Answer survey questions</h1>
 	  
 	  <p>
 	    Answer the survey questions:

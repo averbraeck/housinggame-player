@@ -15,7 +15,7 @@
 		
     <jsp:include page="header.jsp"></jsp:include>
 
-	  <h1 style="text-align: center; color: blue;">Budget overview</h1>
+	  <h1 style="text-align: center; color: blue;">View taxes for your community</h1>
 	  
 	  <p>
 	    View Taxes

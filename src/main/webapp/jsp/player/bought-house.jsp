@@ -15,7 +15,7 @@
 		
     <jsp:include page="header.jsp"></jsp:include>
 
-	  <h1 style="text-align: center; color: blue;">Budget overview</h1>
+	  <h1 style="text-align: center; color: blue;">View the status of your house</h1>
 	  
 	  <p>
 	    House status
