@@ -147,4 +147,10 @@ public class CheckHousesServlet extends HttpServlet
         }
     }
 
+    @Override
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException
+    {
+        doPost(req, resp);
+    }
+
 }

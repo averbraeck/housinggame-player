@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +18,6 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 
 @WebServlet("/read-news")
-@MultipartConfig
 public class ReadNewsServlet extends HttpServlet
 {
 
@@ -54,6 +52,12 @@ public class ReadNewsServlet extends HttpServlet
         }
 
         response.sendRedirect("jsp/player/read-news.jsp");
+    }
+
+    @Override
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException
+    {
+        doPost(req, resp);
     }
 
 }
