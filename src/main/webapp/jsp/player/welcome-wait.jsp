@@ -19,7 +19,7 @@
 	  
 	  ${playerData.getLabel("welcome/text") }
 	  
-   <form action="/housinggame-player/check-status" method="post">
+   <form action="/housinggame-player/advance-state" method="post">
       <div style="margin-top:15px; margin-bottom:15px;">
 	      <table style="width:100%; border: 1px solid blue; border-collapse: collapse;">
 	        <tr>
