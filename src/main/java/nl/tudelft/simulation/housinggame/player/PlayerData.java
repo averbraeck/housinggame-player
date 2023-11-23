@@ -65,6 +65,9 @@ public class PlayerData
     /** List of all rounds (static during session). */
     private List<RoundRecord> roundList = new ArrayList<>();
 
+    /** The list of groupRoundRecords until now. This list is DYNAMIC. */
+    private List<GrouproundRecord> groupRoundList = new ArrayList<>();
+
     /** The current round of the group. This is DYNAMIC. */
     private int groupRoundNumber = -1;
 
@@ -170,7 +173,7 @@ public class PlayerData
         DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
         this.groupRound = null;
         this.groupRoundNumber = -1;
-        List<GrouproundRecord> grList = new ArrayList<>();
+        this.groupRoundList.clear();
         for (int i = 0; i <= this.scenario.getHighestRoundNumber().intValue(); i++)
         {
             GrouproundRecord gr =
@@ -180,22 +183,30 @@ public class PlayerData
             {
                 this.groupRound = gr;
                 this.groupRoundNumber = i;
-                grList.add(gr);
+                this.groupRoundList.add(gr);
             }
         }
+
+        if (this.groupRound == null)
+        {
+            this.groupRound = SqlUtils.makeGroupRound0(this);
+            this.groupRoundList.add(this.groupRound);
+            this.groupRoundNumber = 0;
+        }
+
         this.playerRound = null;
         this.playerRoundNumber = -1;
-        for (int i = 0; i < grList.size(); i++)
+        for (int i = 0; i < this.groupRoundList.size(); i++)
         {
-            PlayerroundRecord pr =
-                    dslContext.selectFrom(Tables.PLAYERROUND).where(Tables.PLAYERROUND.GROUPROUND_ID.eq(grList.get(i).getId()))
-                            .and(Tables.PLAYERROUND.PLAYER_ID.eq(this.player.getId())).fetchAny();
-            if (pr != null)
-            {
-                this.playerRound = pr;
-                this.playerRoundNumber = i;
-            }
+            PlayerroundRecord pr = dslContext.selectFrom(Tables.PLAYERROUND)
+                    .where(Tables.PLAYERROUND.GROUPROUND_ID.eq(this.groupRoundList.get(i).getId()))
+                    .and(Tables.PLAYERROUND.PLAYER_ID.eq(this.player.getId())).fetchAny();
+            if (pr == null)
+                pr = SqlUtils.makePlayerRound(this, this.groupRoundList.get(i));
+            this.playerRound = pr;
+            this.playerRoundNumber = i;
         }
+
     }
 
     public ScenarioRecord getScenario()
@@ -253,9 +264,19 @@ public class PlayerData
         return this.groupRoundNumber;
     }
 
+    public List<GrouproundRecord> getGroupRoundList()
+    {
+        return this.groupRoundList;
+    }
+
     public RoundRecord getRound()
     {
         return this.playerRoundNumber >= 0 ? this.roundList.get(this.playerRoundNumber) : null;
+    }
+
+    public List<RoundRecord> getRoundList()
+    {
+        return this.roundList;
     }
 
     public int getShowModalWindow()

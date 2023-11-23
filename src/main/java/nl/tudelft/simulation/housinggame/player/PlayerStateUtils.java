@@ -33,8 +33,7 @@ public final class PlayerStateUtils
 
         if (jsp.equals("welcome-wait"))
         {
-            if (!data.getPlayerRound().getPlayerState().equals(PlayerState.INIT.toString())
-                    && !data.getPlayerRound().getPlayerState().equals(PlayerState.LOGIN.toString()))
+            if (!data.getPlayerRound().getPlayerState().equals(PlayerState.LOGIN.toString()))
             {
                 data.setError("jsp = 'welcome-wait', but player state is '" + data.getPlayerRound().getPlayerState() + "'");
                 return false;
@@ -82,21 +81,11 @@ public final class PlayerStateUtils
             throw new IllegalArgumentException("Unexpected value for PlayerState: " + data.getPlayerRound().getPlayerState());
         switch (playerState)
         {
-            case INIT:
-                if (data.getPlayerRoundNumber() != 0)
-                {
-                    data.setError("Player " + data.getPlayerCode() + " is in INIT state, but not in round 0");
-                    response.sendRedirect("/housinggame-player/jsp/error.jsp");
-                }
-                else
-                    response.sendRedirect("/housinggame-player/welcome-wait");
-                break;
-
             case LOGIN:
                 if (data.getPlayerRoundNumber() != 0)
                 {
-                    data.setError("Player " + data.getPlayerCode() + " is in INIT state, but not in round 0");
-                    response.sendRedirect("/housinggame-player/jsp/error.jsp");
+                    data.setError("Player " + data.getPlayerCode() + " is in LOGIN state, but not in round 0");
+                    response.sendRedirect("/housinggame-player/error");
                 }
                 else
                     response.sendRedirect("/housinggame-player/welcome-wait");

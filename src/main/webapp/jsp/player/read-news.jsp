@@ -25,12 +25,30 @@
 		${playerData.getContentHtml("news/content/1") }
 		</p>
 		
-    <form action="/housinggame-player/new-house" method="post">
+    <form action="/housinggame-player/check-status" method="post">
       <div class="hg-button">
-        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" />
+        <input type="hidden" name="okButton" value="read-news" />
+        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
-		
-	</div>
+    
+  </div>
+  
+  <script>
+    $(document).ready(function() {
+      check();
+    });
+    function check() {
+      $.post("/housinggame-player/get-round-status", {jsp: 'read-news'},
+        function(data, status) {
+          if (data == "OK") {
+            $("#hg-submit").removeAttr("disabled");
+          } else {
+            setTimeout(check, 5000);
+          }
+        });
+    }
+  </script>
+
 </body>
 </html>

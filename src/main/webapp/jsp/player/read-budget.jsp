@@ -35,7 +35,7 @@
       check();
     });
     function check() {
-      $.post("/housinggame-player/get-round-status", {jsp: 'read-budget'}
+      $.post("/housinggame-player/get-round-status", {jsp: 'read-budget'},
         function(data, status) {
           if (data == "OK") {
             $("#hg-submit").removeAttr("disabled");

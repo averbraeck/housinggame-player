@@ -49,8 +49,7 @@ public class CheckStatusServlet extends HttpServlet
 
         if (okButton.equals("welcome-wait"))
         {
-            if (!data.getPlayerRound().getPlayerState().equals(PlayerState.INIT.toString())
-                    && !data.getPlayerRound().getPlayerState().equals(PlayerState.LOGIN.toString()))
+            if (!data.getPlayerRound().getPlayerState().equals(PlayerState.LOGIN.toString()))
                 System.err.println(
                         "playerFinish = 'welcome-wait', but player state is '" + data.getPlayerRound().getPlayerState() + "'");
             if (RoundState.lt(data.getGroupRound().getRoundState(), RoundState.NEW_ROUND.toString()))
