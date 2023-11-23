@@ -28,14 +28,30 @@ public final class PlayerStateUtils
     public static boolean checkOkButton(final PlayerData data, final String jsp)
     {
         data.setError("");
+        PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
+        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
 
         System.out.println("checkOkButton for player " + data.getPlayerCode() + ", jsp = " + jsp);
 
+        if (data.getGroupRoundNumber() < data.getPlayerRoundNumber())
+        {
+            data.setError("jsp = " + jsp + ", but group round " + data.getGroupRoundNumber() + " is less than player round "
+                    + data.getPlayerRoundNumber() + ", and player state is '" + playerState + "'");
+            return false;
+        }
+        if (data.getGroupRoundNumber() == data.getPlayerRoundNumber() && playerState.nr > roundState.nr)
+        {
+            data.setError("jsp = " + jsp + ", but player state " + playerState + " is larger than round state " + roundState
+                    + ", and player round nr is " + data.getPlayerRoundNumber());
+            return false;
+        }
+
         if (jsp.equals("welcome-wait"))
         {
-            if (!data.getPlayerRound().getPlayerState().equals(PlayerState.LOGIN.toString()))
+            if (!playerState.equals(PlayerState.LOGIN) || data.getPlayerRoundNumber() != 0)
             {
-                data.setError("jsp = 'welcome-wait', but player state is '" + data.getPlayerRound().getPlayerState() + "'");
+                data.setError("jsp = 'welcome-wait', but player round is " + data.getPlayerRoundNumber()
+                        + ", and player state is '" + playerState + "'");
                 return false;
             }
             if (data.getGroupRound() == null)
@@ -43,33 +59,31 @@ public final class PlayerStateUtils
                 data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
                 return false;
             }
-            if (RoundState.lt(data.getGroupRound().getRoundState(), RoundState.NEW_ROUND.toString()))
+            if (data.getGroupRound() == null)
             {
-                data.setError("jsp = 'welcome-wait', but group state is '" + data.getGroupRound().getRoundState() + "'");
+                data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
                 return false;
             }
-            if (data.getGroupRoundNumber() == 0)
+            if (roundState.nr < RoundState.NEW_ROUND.nr)
             {
-                data.setError("jsp = 'welcome-wait', but GroupRoundNumber = 0");
+                data.setError("jsp = 'welcome-wait', but GroupRound state is " + roundState);
                 return false;
             }
-            if (data.getGroupRoundNumber() > 1)
-            {
-                data.setError("jsp = 'welcome-wait', but GroupRoundNumber > 1");
-                return false;
-            }
+
+            // advance player to round 1 and state to READ_BUDGET
             data.getPlayerRound().setPlayerState(PlayerState.READ_BUDGET.toString());
             data.getPlayerRound().store();
             return true;
         }
 
-        // are we in the same round as the group?
-        if (data.getPlayerRoundNumber() != data.getGroupRoundNumber())
-        {
-            data.setError("data.getPlayerRoundNumber(" + data.getPlayerRoundNumber() + ") != data.getGroupRoundNumber("
-                    + data.getGroupRoundNumber() + ")");
+        // for all other states, the same 'ok' rule holds
+        if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
+            return true;
+        if (roundState.nr > playerState.nr)
+            return true;
+        // summary screen in last round: OK should not be true there
+        if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber().intValue() && jsp.equals("summary"))
             return false;
-        }
 
         return false;
     }
@@ -96,9 +110,8 @@ public final class PlayerStateUtils
         }
         if (data.getPlayerRoundNumber() == data.getGroupRoundNumber() && playerState.nr > roundState.nr)
         {
-            data.setError("Player " + data.getPlayerCode() + " is in State " + playerState
-                    + ", but group is only in State " + roundState
-                    + "<br>Log out and log in again when group has advanced to the same state.");
+            data.setError("Player " + data.getPlayerCode() + " is in State " + playerState + ", but group is only in State "
+                    + roundState + "<br>Log out and log in again when group has advanced to the same state.");
             response.sendRedirect("/housinggame-player/error");
             return;
         }
