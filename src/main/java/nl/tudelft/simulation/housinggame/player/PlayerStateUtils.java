@@ -76,19 +76,37 @@ public final class PlayerStateUtils
 
     public static void redirect(final PlayerData data, final HttpServletResponse response) throws IOException, ServletException
     {
+        data.setError("");
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
+        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
         if (playerState == null)
-            throw new IllegalArgumentException("Unexpected value for PlayerState: " + data.getPlayerRound().getPlayerState());
+        {
+            data.setError("Player " + data.getPlayerCode() + " is in illegal state: " + data.getPlayerRound().getPlayerState()
+                    + "<br>Log out and log in again when problem has been corrected.");
+            response.sendRedirect("/housinggame-player/error");
+            return;
+        }
+        if (data.getPlayerRoundNumber() > data.getGroupRoundNumber())
+        {
+            data.setError("Player " + data.getPlayerCode() + " is in Round " + data.getPlayerRoundNumber()
+                    + ", but group is only in Round " + data.getGroupRoundNumber()
+                    + "<br>Log out and log in again when group has advanced to the same round.");
+            response.sendRedirect("/housinggame-player/error");
+            return;
+        }
+        if (data.getPlayerRoundNumber() == data.getGroupRoundNumber() && playerState.nr > roundState.nr)
+        {
+            data.setError("Player " + data.getPlayerCode() + " is in State " + playerState
+                    + ", but group is only in State " + roundState
+                    + "<br>Log out and log in again when group has advanced to the same state.");
+            response.sendRedirect("/housinggame-player/error");
+            return;
+        }
+
         switch (playerState)
         {
             case LOGIN:
-                if (data.getPlayerRoundNumber() != 0)
-                {
-                    data.setError("Player " + data.getPlayerCode() + " is in LOGIN state, but not in round 0");
-                    response.sendRedirect("/housinggame-player/error");
-                }
-                else
-                    response.sendRedirect("/housinggame-player/welcome-wait");
+                response.sendRedirect("/housinggame-player/welcome-wait");
                 break;
 
             case READ_BUDGET:

@@ -12,8 +12,17 @@ import javax.servlet.http.HttpSession;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.RoundState;
 
-@WebServlet("/check-status")
-public class CheckStatusServlet extends HttpServlet
+/**
+ * AdvanceStateServlet is called when the OK button at the bottom of the player scren is pressed, and the player wants to
+ * advances to a next state.
+ * <p>
+ * Copyright (c) 2020-2020 Delft University of Technology, PO Box 5, 2600 AA, Delft, the Netherlands. All rights reserved. <br>
+ * BSD-style license.
+ * </p>
+ * @author <a href="https://www.tudelft.nl/averbraeck">Alexander Verbraeck</a>
+ */
+@WebServlet("/advance-state")
+public class AdvanceStateServlet extends HttpServlet
 {
     /** */
     private static final long serialVersionUID = 1L;
