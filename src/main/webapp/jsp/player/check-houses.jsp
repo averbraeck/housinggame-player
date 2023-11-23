@@ -34,7 +34,7 @@
 		
 		<h1>HOUSE SELECTION</h1>
 		
-    <form action="/housinggame-player/house-calc" method="post">
+    <form action="/housinggame-player/advance-state" method="post">
       <div class="form-group pmd-textfield form-group-sm">
         <label for="gamesession" class="control-label pmd-textfield-floating-label">Select house</label> 
         <select name="houses" id="houses" class="form-control">
@@ -87,6 +87,7 @@
       </div>
 		
       <div class="hg-button">
+        <input type="hidden" name="okButton" value="check-houses" />
         <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
@@ -111,15 +112,15 @@
           }
         });
 	  });
-	  function check() {
-		  $.post("/housinggame-player/get-round-status",
-				function(data, status) {
-					if (data !== "INIT" && $("#houses").val() !== "NONE") {
-						$("#hg-submit").removeAttr("disabled");
-					} else {
-            setTimeout(check, 5000);
-		      }
-				});
+    function check() {
+        $.post("/housinggame-player/get-round-status", {jsp: 'check-houses'},
+          function(data, status) {
+            if (data == "OK") {
+              $("#hg-submit").removeAttr("disabled");
+            } else {
+              setTimeout(check, 5000);
+            }
+          });
 	  }
 	</script>
 	

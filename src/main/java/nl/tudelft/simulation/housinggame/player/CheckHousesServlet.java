@@ -5,7 +5,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +20,7 @@ import org.jooq.types.UInteger;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
 
-@WebServlet("/new-house")
-@MultipartConfig
+@WebServlet("/check-houses")
 public class CheckHousesServlet extends HttpServlet
 {
 
@@ -140,7 +138,7 @@ public class CheckHousesServlet extends HttpServlet
             }
             data.getContentHtml().put("house/details", s.toString());
 
-            response.sendRedirect("jsp/player/new-house.jsp");
+            response.sendRedirect("jsp/player/check-houses.jsp");
         }
         catch (Exception e)
         {

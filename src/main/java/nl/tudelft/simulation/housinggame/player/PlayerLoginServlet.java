@@ -13,16 +13,10 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.GameversionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.RoundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioRecord;
 
 @WebServlet("/login")
 public class PlayerLoginServlet extends HttpServlet
