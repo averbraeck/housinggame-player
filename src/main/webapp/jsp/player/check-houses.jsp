@@ -34,61 +34,94 @@
 		
 		<h1>Check available houses</h1>
 		
-    <form action="/housinggame-player/advance-state" method="post">
-      <div class="form-group pmd-textfield form-group-sm">
-        <label for="gamesession" class="control-label pmd-textfield-floating-label">Select house</label> 
-        <select name="houses" id="houses" class="form-control">
-           ${playerData.getContentHtml("house/options") }
-        </select>
+		  <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
+      
+      <div class="panel panel-default"> 
+        <div class="panel-heading" role="tab" id="heading1">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse1" aria-expanded="true" 
+              aria-controls="collapse1" data-expandable="false">
+              1. Your budget and expectations
+              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
+                keyboard_arrow_down
+              </i>
+            </a>
+          </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
+          <div class="panel-body">
+            ${playerData.getContentHtml("panel/budget") }
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default"> 
+        <div class="panel-heading" role="tab" id="heading2">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse2" aria-expanded="false" 
+              aria-controls="collapse2" data-expandable="false">
+              2. News for this round
+              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
+                keyboard_arrow_down
+              </i>
+            </a>
+          </h4>
+        </div>
+        <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
+          <div class="panel-body">
+            ${playerData.getContentHtml("news/summary/1") }
+          </div>
+        </div>
       </div>
       
-      <div>
-        ${playerData.getContentHtml("house/details") }
-        <!-- div class="house-details" id="house-details-D01" style="display: none;">
-          <div class="hg-house-row">
-            <div class="hg-house-icon"><i class="material-icons md-36">euro</i></div>
-            <div class="hg-house-text">
-              Price:425k<br>Yearly Mortgage (payment per round): 42.5k
-            </div>
-          </div>
-          <div class="hg-house-row">
-            <div class="hg-house-icon"><i class="material-icons md-36">star</i></div>
-            <div class="hg-house-text">
-              House Rate: 9<br>Your satisfaction will be affected by this
-            </div>
-          </div>
-          <div class="hg-house-row">
-            <div class="hg-house-icon"><i class="material-icons md-36">thunderstorm</i></div>
-            <div class="hg-house-text">
-              Pluvial protection: 0<br>Amount of protection from rain flooding
-            </div>
-          </div>
-          <div class="hg-house-row">
-            <div class="hg-house-icon"><i class="material-icons md-36">houseboat</i></div>
-            <div class="hg-house-text">
-              Fluvial protection: 0<br>Amount of protection from river flooding
+      <div class="panel panel-default"> 
+        <div class="panel-heading" role="tab" id="heading3">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse3" aria-expanded="false" 
+              aria-controls="collapse3" data-expandable="false">
+              3. Your house choice
+              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
+                keyboard_arrow_down
+              </i>
+            </a>
+          </h4>
+        </div>
+        <div id="collapse3" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading3">
+          <div class="panel-body">
+            <p>
+              Select a house from the list to check the key features. 
+              You will pay ${playerData.getMortgagePercentage() }% 
+              of the house price as the yearly mortgage. 
+              You cannot select a house whose price is higher than the maximum mortgage
+               (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) }) 
+              + your savings (${playerData.k(playerData.getPlayerRound().getSavings()) }) 
+              = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }
+            </p>
+            
+            <form action="/housinggame-player/advance-state" method="post">
+			        <div class="form-group pmd-textfield form-group-sm">
+			          <label for="gamesession" class="control-label pmd-textfield-floating-label">Select house</label> 
+			          <select name="houses" id="houses" class="form-control">
+			             ${playerData.getContentHtml("house/options") }
+		  	        </select>
+			        </div>
+            </form>
+            
+            <div>
+              ${playerData.getContentHtml("house/details") }
             </div>
           </div>
         </div>
-        <div class="house-details" id="house-details-N04" style="display: none;">
-          <div>
-            Price:200k<br>Yearly Mortgage (payment per round): 20k
-          </div>
-          <div>
-            House Rate: 6<br>Your satisfaction will be affected by this
-          </div>
-          <div>
-            Pluvial protection: 0<br>This is the amount of protection you have from rain flooding
-          </div>
-          <div>
-            Fluvial protection: 0<br>This is the amount of protection you have from river flooding
-          </div>
-        </div -->
       </div>
+      
+
+
+    </div>
 		
+		<form>
       <div class="hg-button">
         <input type="hidden" name="okButton" value="check-houses" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="submit" value='${playerData.getLabel("welcome/button/continue") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
 		

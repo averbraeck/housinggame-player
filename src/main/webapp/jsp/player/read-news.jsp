@@ -7,6 +7,13 @@
 <head>
 	<jsp:include page="head.jsp"></jsp:include>
 	<title>Housing Game News</title>
+	
+	<style>
+.btn:disabled {
+  background-color:#c9c9c9 !important;
+  opacity: 1.0 !important;
+}
+	</style>
 </head>
 
 <body style="background-color: white;" onLoad = initPage()>
@@ -31,7 +38,7 @@
             </a>
           </h4>
         </div>
-        <div id="collapse1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading1">
+        <div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
           <div class="panel-body">
             ${playerData.getContentHtml("panel/budget") }
           </div>
@@ -52,10 +59,7 @@
         </div>
         <div id="collapse2" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading2">
           <div class="panel-body">
-            <b>${playerData.getContentHtml("news/summary/1") }</b>
-            <p style="margin-top: 1em;">
-              ${playerData.getContentHtml("news/content/1") }
-            </p>
+            ${playerData.getContentHtml("news/summary/1") }
           </div>
         </div>
       </div>
@@ -65,7 +69,7 @@
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="read-news" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="submit" value='${playerData.getLabel("welcome/button/continue") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
     

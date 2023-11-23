@@ -133,6 +133,7 @@ public final class PlayerStateUtils
 
             case CHECK_HOUSES:
                 response.sendRedirect("/housinggame-player/check-houses");
+                break;
 
             case BOUGHT_HOUSE:
                 response.sendRedirect("/housinggame-player/bought-house");

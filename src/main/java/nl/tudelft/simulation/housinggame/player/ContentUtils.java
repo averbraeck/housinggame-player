@@ -1,13 +1,18 @@
 package nl.tudelft.simulation.housinggame.player;
 
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.jooq.DSLContext;
+import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.jooq.types.UInteger;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
+import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 
 /**
@@ -130,6 +135,120 @@ public class ContentUtils
             data.getContentHtml().put("news/summary/" + nr, news.getSummary());
             data.getContentHtml().put("news/content/" + nr, news.getContent());
             nr++;
+        }
+    }
+
+    public static boolean makeHousesAccordion(final PlayerData data)
+    {
+        // fill the options list
+
+        /*-
+           <option value="NONE"></option>
+           <option value="D01">D01</option>
+           <option value="N04">N04</option>
+         */
+
+        // loop through the houses that are valid for this round
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        try
+        {
+            Result<org.jooq.Record> resultList =
+                    dslContext.fetch("SELECT house.id FROM house INNER JOIN community ON house.community_id=community.id "
+                            + "WHERE community.gameversion_id=3;");
+            SortedMap<String, HouseRecord> houseMap = new TreeMap<>();
+
+            // fill the house names
+            StringBuilder s = new StringBuilder();
+            s.append("<option value=\"NONE\"></option>\n");
+            for (org.jooq.Record record : resultList)
+            {
+                UInteger id = (UInteger) record.get(0);
+                HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, id);
+                if (house.getAvailableRound().intValue() == data.getPlayerRoundNumber())
+                {
+                    houseMap.put(house.getAddress(), house);
+                    s.append("<option value=\"" + house.getAddress() + "\">" + house.getAddress() + "</option>\n");
+                }
+            }
+            data.getContentHtml().put("house/options", s.toString());
+
+            // fill the house details
+            s = new StringBuilder();
+            for (HouseRecord house : houseMap.values())
+            {
+                s.append("        <div class=\"house-details\" id=\"house-details-" + house.getAddress()
+                        + "\" style=\"display: none;\">\n");
+                s.append("          <div class=\"hg-house-row\">\n");
+                s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">euro</i></div>\n");
+                s.append("            <div class=\"hg-house-text\">\n");
+                s.append("              Price: " + data.k(house.getPrice().intValue())
+                        + "<br>Yearly Mortgage (payment per round): " + data.k(house.getPrice().intValue() / 10) + "\n");
+                s.append("            </div>\n");
+                s.append("          </div>\n");
+                s.append("          <div class=\"hg-house-row\">\n");
+                s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">star</i></div>\n");
+                s.append("            <div class=\"hg-house-text\">\n");
+                s.append("              House Rating: " + house.getRating()
+                        + "<br>Your satisfaction will be affected by this\n");
+                s.append("            </div>\n");
+                s.append("          </div>\n");
+                s.append("          <div class=\"hg-house-row\">\n");
+                s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">thunderstorm</i></div>\n");
+                s.append("            <div class=\"hg-house-text\">\n");
+                s.append("              Pluvial protection: ");
+                if (data.getScenario().getInformationAmount() < 1)
+                    s.append("?");
+                else
+                    s.append(house.getInitialPluvialProtection());
+                s.append("<br>Amount of protection from rain flooding\n");
+                s.append("            </div>\n");
+                s.append("          </div>\n");
+                s.append("          <div class=\"hg-house-row\">\n");
+                s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">houseboat</i></div>\n");
+                s.append("            <div class=\"hg-house-text\">\n");
+                s.append("              Fluvial protection: ");
+                if (data.getScenario().getInformationAmount() < 1)
+                    s.append("?");
+                else
+                    s.append(house.getInitialFluvialProtection());
+                s.append("<br>Amount of protection from river flooding\n");
+                s.append("            </div>\n");
+                s.append("          </div>\n");
+
+                s.append("<br />\n");
+                s.append("Measures implemented: \n");
+                s.append("- None\n"); // TODO: iterate over measures
+                s.append("<br /><br />\n");
+
+                if (data.getMaxMortgagePlusSavings() >= house.getPrice().intValue())
+                    s.append("Great! Your available income is enough for this house.\n");
+                else
+                    s.append("Oops, you do not have enough available income for this house.\n");
+
+                int phr = data.getPlayerRound().getPreferredHouseRating().intValue();
+                int hr = house.getRating().intValue();
+                if (hr == phr)
+                    s.append("<br /><br />The rating of the house equals your preferred rating. "
+                            + "You will not get extra satisfaction points.\n");
+                else if (hr < phr)
+                    s.append("<br /><br />The rating of the house is below your preferred rating. " + "You will lose: "
+                            + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
+                            + " house satisfaction points.\n");
+                else
+                    s.append("<br /><br />The rating of the house is above your preferred rating. " + "You will gain: "
+                            + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
+                            + " house satisfaction points.\n");
+                s.append("<br /><br />If you found your preferred house, put your pawn on the map.\n");
+
+                s.append("        </div>\n\n");
+            }
+            data.getContentHtml().put("house/details", s.toString());
+            return true;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return false;
         }
     }
 }

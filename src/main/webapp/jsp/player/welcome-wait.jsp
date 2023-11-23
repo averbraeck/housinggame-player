@@ -32,7 +32,7 @@
       </div>
       <div class="hg-button">
         <input type="hidden" name="okButton" value="welcome-wait" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="submit" value='${playerData.getLabel("welcome/button/start") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
 		

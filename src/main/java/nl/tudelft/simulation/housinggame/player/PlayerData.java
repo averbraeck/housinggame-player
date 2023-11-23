@@ -459,4 +459,15 @@ public class PlayerData
         return 15000;
     }
 
+    public int getMaxMortgagePlusSavings()
+    {
+        return this.playerRound.getMaximumMortgage().intValue() + this.playerRound.getSavings().intValue();
+    }
+
+    public int getMortgagePercentage()
+    {
+        ScenarioparametersRecord spr =
+                SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
+        return spr.getMortgagePercentage().intValue();
+    }
 }
