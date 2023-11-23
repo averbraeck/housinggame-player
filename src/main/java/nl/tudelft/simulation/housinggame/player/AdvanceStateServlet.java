@@ -127,7 +127,7 @@ public class AdvanceStateServlet extends HttpServlet
             return;
         }
 
-        if (okButton.equals("improvements"))
+        if (okButton.equals("asnwer-survey"))
         {
             // TODO handle the entered survey answers, create answer records
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_DAMAGE.toString());
