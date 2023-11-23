@@ -12,6 +12,8 @@ import org.jooq.TableField;
 import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 
+import nl.tudelft.simulation.housinggame.common.PlayerState;
+import nl.tudelft.simulation.housinggame.common.RoundState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
@@ -77,12 +79,16 @@ public final class SqlUtils
      * @param group GrouproundRecord; the GroupRound for which we want to get/create the PlayerRound
      * @return PlayerroundRecord; the PlayerRound or a newly created PlayerRound for the GroupRound
      */
-    public static PlayerroundRecord getOrMakePlayerRound(final PlayerData data, final GrouproundRecord groupRound)
+    public static PlayerroundRecord makePlayerRound(final PlayerData data, final GrouproundRecord groupRound)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        RoundRecord round = readRecordFromId(data, Tables.ROUND, groupRound.getRoundId());
         // is there a playerRound belonging to the current groupRound?
         List<PlayerroundRecord> prList = dslContext.selectFrom(Tables.PLAYERROUND)
                 .where(Tables.PLAYERROUND.PLAYER_ID.eq(data.getPlayer().getId())).fetch();
+
+        // make round 0 data
+        GrouproundRecord groupRound0 = data.getGroupRoundList().get(0);
         if (prList.isEmpty())
         {
             PlayerroundRecord newPr = dslContext.newRecord(Tables.PLAYERROUND);
@@ -91,12 +97,12 @@ public final class SqlUtils
             newPr.setPlayerId(data.getPlayer().getId());
             newPr.setSatisfaction(welfareType.getInitialSatisfaction());
             newPr.setSavings(welfareType.getInitialMoney());
-            newPr.setSpendableIncome(welfareType.getIncomePerRound().intValue() + welfareType.getInitialMoney().intValue() -
-                    welfareType.getLivingCosts().intValue());
+            newPr.setSpendableIncome(welfareType.getIncomePerRound().intValue() + welfareType.getInitialMoney().intValue()
+                    - welfareType.getLivingCosts().intValue());
             newPr.setDebt(UInteger.valueOf(0));
             newPr.setFluvialDamage(UInteger.valueOf(0));
             newPr.setPluvialDamage(UInteger.valueOf(0));
-            newPr.setGrouproundId(groupRound.getId());
+            newPr.setGrouproundId(groupRound0.getId());
             newPr.setHouseId(null);
             newPr.setHousePriceBought(UInteger.valueOf(0));
             newPr.setHousePriceSold(UInteger.valueOf(0));
@@ -112,8 +118,30 @@ public final class SqlUtils
             newPr.setSatisfactionPointBought(UInteger.valueOf(0));
             newPr.setSpentSavingsForBuyingHouse(UInteger.valueOf(0));
             newPr.setMaximumMortgage(welfareType.getMaximumMortgage());
+            newPr.setPlayerState(PlayerState.LOGIN.toString());
             newPr.store();
             prList.add(newPr);
+        }
+
+        if (round.getRoundNumber() > 0)
+        {
+            PlayerroundRecord oldPlayerRound = null;
+            for (PlayerroundRecord prr : prList)
+            {
+                GrouproundRecord gr = SqlUtils.readRecordFromId(data, Tables.GROUPROUND, prr.getGrouproundId());
+                RoundRecord rr = SqlUtils.readRecordFromId(data, Tables.ROUND, gr.getRoundId());
+                if (rr.getRoundNumber().intValue() == round.getRoundNumber() - 1)
+                {
+                    oldPlayerRound = prr;
+                    break;
+                }
+            }
+            PlayerroundRecord newPr = oldPlayerRound.copy();
+            newPr.setGrouproundId(groupRound.getId());
+            newPr.setSpendableIncome(newPr.getIncomePerRound().intValue() + newPr.getSavings().intValue()
+                    - newPr.getLivingCosts().intValue() - newPr.getDebt().intValue());
+            newPr.setPlayerState(PlayerState.READ_BUDGET.toString());
+            newPr.store();
         }
 
         PlayerroundRecord playerRound =
@@ -122,4 +150,16 @@ public final class SqlUtils
         return playerRound;
     }
 
+    public static GrouproundRecord makeGroupRound0(final PlayerData data)
+    {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        GrouproundRecord groupRound = dslContext.newRecord(Tables.GROUPROUND);
+        groupRound.setGroupId(data.getGroup().getId());
+        groupRound.setRoundId(data.getRoundList().get(0).getId());
+        groupRound.setFluvialFloodIntensity(0);
+        groupRound.setPluvialFloodIntensity(0);
+        groupRound.setRoundState(RoundState.LOGIN.toString());
+        groupRound.store();
+        return groupRound;
+    }
 }
