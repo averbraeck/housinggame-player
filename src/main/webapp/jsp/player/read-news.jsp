@@ -7,13 +7,6 @@
 <head>
 	<jsp:include page="head.jsp"></jsp:include>
 	<title>Housing Game News</title>
-	
-	<style>
-.btn:disabled {
-  background-color:#c9c9c9 !important;
-  opacity: 1.0 !important;
-}
-	</style>
 </head>
 
 <body style="background-color: white;" onLoad = initPage()>

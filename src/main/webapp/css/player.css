@@ -53,6 +53,10 @@ h1 {
   vertical-align: -6px;
  }
  
+.btn:disabled {
+  background-color:#c9c9c9 !important;
+  opacity: 1.0 !important;
+}
 
 /* ===================================== */
 /* MODAL WINDOWS WITH POP UP INFORMATION */

@@ -125,6 +125,8 @@
       </div>
     </form>
 		
+		<br/>&nbsp;<br/>
+		
 	</div>
 	
 	<script>
@@ -136,14 +138,6 @@
 	  $('#houses').on('change', function() {
 		  $(".house-details").hide();
 		  $("#house-details-" + this.value).show();
-		  $.post("/housinggame-player/get-round-status",
-        function(data, status) {
-          if (data !== "INIT" && $("#houses").val() !== "NONE") {
-            $("#hg-submit").removeAttr("disabled");
-          } else {
-        	  $("#hg-submit").attr("disabled", "");
-          }
-        });
 	  });
     function check() {
         $.post("/housinggame-player/get-round-status", {jsp: 'check-houses'},
