@@ -34,7 +34,7 @@
 		
 		<h1>Check available houses</h1>
 		
-		  <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
+    <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
       
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading1">
@@ -113,12 +113,10 @@
           </div>
         </div>
       </div>
-      
-
 
     </div>
 		
-		<form>
+   <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="check-houses" />
         <input type="submit" value='${playerData.getLabel("welcome/button/continue") }' class="btn btn-primary" id="hg-submit" disabled />

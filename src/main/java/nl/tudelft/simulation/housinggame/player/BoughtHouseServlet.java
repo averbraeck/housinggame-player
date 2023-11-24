@@ -29,6 +29,11 @@ public class BoughtHouseServlet extends HttpServlet
             return;
         }
 
+        data.getContentHtml().clear();
+        ContentUtils.makeBudgetAccordion(data);
+        ContentUtils.makeNewsAccordion(data);
+        ContentUtils.makeHouseConfirmationAccordion(data);
+
         response.sendRedirect("jsp/player/bought-house.jsp");
     }
 

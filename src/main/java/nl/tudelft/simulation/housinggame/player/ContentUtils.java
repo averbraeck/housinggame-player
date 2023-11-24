@@ -119,7 +119,6 @@ public class ContentUtils
         s.append("            </div>\n");
         // @formatter:on
         data.getContentHtml().put("panel/budget", s.toString());
-        System.out.println("SAVED BUDGET");
     }
 
     public static void makeNewsAccordion(final PlayerData data)
@@ -250,5 +249,46 @@ public class ContentUtils
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static void makeHouseConfirmationAccordion(final PlayerData data)
+    {
+        StringBuilder s = new StringBuilder();
+        // @formatter:off
+        s.append("            <div>\n");
+        if (data.getHouse() == null)
+        {
+            s.append("You have not been allocated a house in this round or an earlier round.\n");
+            s.append("Without a house, you cannot fully participate in the game, since you cannot \n");
+            s.append("experience the effect of flooding, nor buy measures to improve your house.\n");
+            s.append("Get a house allocation in the next round!\n");
+        }
+        else
+        {
+            s.append("You live in house " + data.getHouse().getAddress() + "<br/>\n");
+            if (data.getPlayerRound().getHousePriceBought() != null)
+            {
+                s.append("The house was bought in this round.<br/>\n");
+                s.append("The price you paid was " +
+                    data.k(data.getPlayerRound().getHousePriceBought().intValue()) + ".<br/>\n");
+                s.append("The mortgage is " +
+                    data.k(data.getPlayerRound().getMortgage().intValue()) + ".<br/>\n");
+                s.append("Your maximum mortgage is " +
+                    data.k(data.getPlayerRound().getMaximumMortgage().intValue()) + ".<br/>\n");
+                s.append("Savings used to buy the house are " +
+                    data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse().intValue()) + ".<br/>\n");
+                s.append("Your preferred house rating is " +
+                    data.getPlayerRound().getPreferredHouseRating() + ".<br/>\n");
+                s.append("The rating of the house is " +
+                    data.getHouse().getRating() + ".<br/>\n");
+            }
+            else
+            {
+                s.append("You did not change houses in this round.<br/>\n");
+            }
+        }
+        s.append("            </div>\n");
+        // @formatter:on
+        data.getContentHtml().put("house/confirmation", s.toString());
     }
 }
