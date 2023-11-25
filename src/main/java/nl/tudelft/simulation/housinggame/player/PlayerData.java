@@ -15,7 +15,6 @@ import javax.sql.DataSource;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.jooq.types.UInteger;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -160,7 +159,7 @@ public class PlayerData
         this.gameVersion = SqlUtils.readRecordFromId(this, Tables.GAMEVERSION, this.scenario.getGameversionId());
         setLanguageLabels(this.scenario);
         this.roundList.clear();
-        for (int i = 0; i <= this.scenario.getHighestRoundNumber().intValue(); i++)
+        for (int i = 0; i <= this.scenario.getHighestRoundNumber(); i++)
         {
             this.roundList.add(dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.ROUND_NUMBER.eq(i))
                     .and(Tables.ROUND.SCENARIO_ID.eq(this.scenario.getId())).fetchAny());
@@ -174,7 +173,7 @@ public class PlayerData
         this.groupRound = null;
         this.groupRoundNumber = -1;
         this.groupRoundList.clear();
-        for (int i = 0; i <= this.scenario.getHighestRoundNumber().intValue(); i++)
+        for (int i = 0; i <= this.scenario.getHighestRoundNumber(); i++)
         {
             GrouproundRecord gr =
                     dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_ID.eq(this.roundList.get(i).getId()))
@@ -355,7 +354,7 @@ public class PlayerData
                 if (gs.getEndTime() == null || now.isBefore(gs.getEndTime()))
                 {
                     s.append("<option value=\"");
-                    s.append(gs.getId().intValue());
+                    s.append(gs.getId());
                     s.append("\">");
                     s.append(gs.getName());
                     s.append("</option>\n");
@@ -378,12 +377,12 @@ public class PlayerData
             label = label.replace("$group$", this.group.getName());
             label = label.replace("$player$", this.getPlayerCode());
             label = label.replace("$round$", Integer.toString(this.getPlayerRoundNumber()));
-            label = label.replace("$rating$", Integer.toString(this.playerRound.getPreferredHouseRating().intValue()));
-            label = label.replace("$income_per_round$", k(this.playerRound.getIncomePerRound().intValue()));
-            label = label.replace("$spendable_income$", k(this.playerRound.getSpendableIncome().intValue()));
-            label = label.replace("$satisfaction$", k(this.playerRound.getSatisfaction().intValue()));
-            label = label.replace("$savings$", k(this.playerRound.getSavings().intValue()));
-            label = label.replace("$maxmortgage$", k(this.playerRound.getMaximumMortgage().intValue()));
+            label = label.replace("$rating$", Integer.toString(this.playerRound.getPreferredHouseRating()));
+            label = label.replace("$income_per_round$", k(this.playerRound.getIncomePerRound()));
+            label = label.replace("$spendable_income$", k(this.playerRound.getSpendableIncome()));
+            label = label.replace("$satisfaction$", k(this.playerRound.getSatisfaction()));
+            label = label.replace("$savings$", k(this.playerRound.getSavings()));
+            label = label.replace("$maxmortgage$", k(this.playerRound.getMaximumMortgage()));
         }
         return label;
     }
@@ -407,7 +406,7 @@ public class PlayerData
         ScenarioparametersRecord spr =
                 SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, scenario.getScenarioparametersId());
         GameversionRecord gameVersion = SqlUtils.readRecordFromId(this, Tables.GAMEVERSION, scenario.getGameversionId());
-        UInteger languageId = spr.getDefaultLanguageId();
+        int languageId = spr.getDefaultLanguageId();
         LanguageRecord language = SqlUtils.readRecordFromId(this, Tables.LANGUAGE, languageId);
         LanguagegroupRecord languageGroup =
                 SqlUtils.readRecordFromId(this, Tables.LANGUAGEGROUP, gameVersion.getLanguagegroupId());
@@ -447,7 +446,7 @@ public class PlayerData
         // TODO: bid?
         ScenarioparametersRecord spr =
                 SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
-        return (int) (house.getPrice().intValue() / spr.getMortgagePercentage());
+        return (int) (house.getPrice() / spr.getMortgagePercentage());
     }
 
     public int getExpectedTaxes()
@@ -461,7 +460,7 @@ public class PlayerData
 
     public int getMaxMortgagePlusSavings()
     {
-        return this.playerRound.getMaximumMortgage().intValue() + this.playerRound.getSavings().intValue();
+        return this.playerRound.getMaximumMortgage() + this.playerRound.getSavings();
     }
 
     public int getMortgagePercentage()

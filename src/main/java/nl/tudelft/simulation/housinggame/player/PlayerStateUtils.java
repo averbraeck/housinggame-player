@@ -82,7 +82,7 @@ public final class PlayerStateUtils
         if (roundState.nr > playerState.nr)
             return true;
         // summary screen in last round: OK should not be true there
-        if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber().intValue() && jsp.equals("summary"))
+        if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber() && jsp.equals("summary"))
             return false;
 
         return false;

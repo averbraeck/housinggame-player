@@ -10,7 +10,6 @@ import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.DSL;
-import org.jooq.types.UInteger;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.RoundState;
@@ -39,16 +38,16 @@ public final class SqlUtils
         return DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
     }
 
-    public static RoundRecord readRoundFromRoundId(final PlayerData data, final Integer roundId)
+    public static RoundRecord readRoundFromRoundId(final PlayerData data, final int roundId)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.ID.eq(UInteger.valueOf(roundId))).fetchAny();
+        return dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.ID.eq(roundId)).fetchAny();
     }
 
-    public static UserRecord readUserFromUserId(final PlayerData data, final Integer userId)
+    public static UserRecord readUserFromUserId(final PlayerData data, final int userId)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(UInteger.valueOf(userId))).fetchAny();
+        return dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(userId)).fetchAny();
     }
 
     public static UserRecord readUserFromUsername(final PlayerData data, final String username)
@@ -57,18 +56,12 @@ public final class SqlUtils
         return dslContext.selectFrom(Tables.USER).where(Tables.USER.USERNAME.eq(username)).fetchAny();
     }
 
+    @SuppressWarnings("unchecked")
     public static <R extends org.jooq.UpdatableRecord<R>> R readRecordFromId(final PlayerData data, final Table<R> table,
             final int recordId)
     {
-        return readRecordFromId(data, table, UInteger.valueOf(recordId));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <R extends org.jooq.UpdatableRecord<R>> R readRecordFromId(final PlayerData data, final Table<R> table,
-            final UInteger recordId)
-    {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(table).where(((TableField<R, UInteger>) table.field("id")).eq(recordId)).fetchOne();
+        return dslContext.selectFrom(table).where(((TableField<R, Integer>) table.field("id")).eq(recordId)).fetchOne();
     }
 
     /**
@@ -97,26 +90,26 @@ public final class SqlUtils
             newPr.setPlayerId(data.getPlayer().getId());
             newPr.setSatisfaction(welfareType.getInitialSatisfaction());
             newPr.setSavings(welfareType.getInitialMoney());
-            newPr.setSpendableIncome(welfareType.getIncomePerRound().intValue() + welfareType.getInitialMoney().intValue()
-                    - welfareType.getLivingCosts().intValue());
-            newPr.setDebt(UInteger.valueOf(0));
-            newPr.setFluvialDamage(UInteger.valueOf(0));
-            newPr.setPluvialDamage(UInteger.valueOf(0));
+            newPr.setSpendableIncome(
+                    welfareType.getIncomePerRound() + welfareType.getInitialMoney() - welfareType.getLivingCosts());
+            newPr.setDebt(0);
+            newPr.setFluvialDamage(0);
+            newPr.setPluvialDamage(0);
             newPr.setGrouproundId(groupRound0.getId());
             newPr.setHouseId(null);
-            newPr.setHousePriceBought(UInteger.valueOf(0));
-            newPr.setHousePriceSold(UInteger.valueOf(0));
+            newPr.setHousePriceBought(0);
+            newPr.setHousePriceSold(0);
             newPr.setIncomePerRound(welfareType.getIncomePerRound());
             newPr.setLivingCosts(welfareType.getLivingCosts());
-            newPr.setCostMeasureBought(UInteger.valueOf(0));
-            newPr.setMortgage(UInteger.valueOf(0));
+            newPr.setCostMeasureBought(0);
+            newPr.setMortgage(0);
             newPr.setMovingReason("");
-            newPr.setPaidOffDebt(UInteger.valueOf(0));
+            newPr.setPaidOffDebt(0);
             newPr.setPreferredHouseRating(welfareType.getPreferredHouseRating());
             newPr.setRepairedDamage(null);
             newPr.setSatisfactionCostPerPoint(welfareType.getSatisfactionCostPerPoint());
-            newPr.setSatisfactionPointBought(UInteger.valueOf(0));
-            newPr.setSpentSavingsForBuyingHouse(UInteger.valueOf(0));
+            newPr.setSatisfactionPointBought(0);
+            newPr.setSpentSavingsForBuyingHouse(0);
             newPr.setMaximumMortgage(welfareType.getMaximumMortgage());
             newPr.setPlayerState(PlayerState.LOGIN.toString());
             newPr.store();
@@ -130,7 +123,7 @@ public final class SqlUtils
             {
                 GrouproundRecord gr = SqlUtils.readRecordFromId(data, Tables.GROUPROUND, prr.getGrouproundId());
                 RoundRecord rr = SqlUtils.readRecordFromId(data, Tables.ROUND, gr.getRoundId());
-                if (rr.getRoundNumber().intValue() == round.getRoundNumber() - 1)
+                if (rr.getRoundNumber() == round.getRoundNumber() - 1)
                 {
                     oldPlayerRound = prr;
                     break;
@@ -138,8 +131,7 @@ public final class SqlUtils
             }
             PlayerroundRecord newPr = oldPlayerRound.copy();
             newPr.setGrouproundId(groupRound.getId());
-            newPr.setSpendableIncome(newPr.getIncomePerRound().intValue() + newPr.getSavings().intValue()
-                    - newPr.getLivingCosts().intValue() - newPr.getDebt().intValue());
+            newPr.setSpendableIncome(newPr.getIncomePerRound() + newPr.getSavings() - newPr.getLivingCosts() - newPr.getDebt());
             newPr.setPlayerState(PlayerState.READ_BUDGET.toString());
             newPr.store();
         }

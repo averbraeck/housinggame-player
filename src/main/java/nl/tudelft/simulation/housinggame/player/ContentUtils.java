@@ -8,7 +8,6 @@ import org.jooq.DSLContext;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.jooq.types.UInteger;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
@@ -72,16 +71,16 @@ public class ContentUtils
         // @formatter:off
         s.append("            <div style=\"display: flex; flex-direction: row; justify-content: space-between;\">\n");
         s.append("              <div>\n");
-        s.append("                Annual income: " + data.k(data.getPlayerRound().getIncomePerRound().intValue()) + " <br/>\n");
+        s.append("                Annual income: " + data.k(data.getPlayerRound().getIncomePerRound()) + " <br/>\n");
         s.append("                Preferred house rating: " + data.getPlayerRound().getPreferredHouseRating() + " <br/>\n");
-        s.append("                Max mortgage: " + data.k(data.getPlayerRound().getMaximumMortgage().intValue()) + " <br/>\n");
-        s.append("                Current mortgage: " + data.k(data.getPlayerRound().getMortgage().intValue()) + " <br/>\n");
+        s.append("                Max mortgage: " + data.k(data.getPlayerRound().getMaximumMortgage()) + " <br/>\n");
+        s.append("                Current mortgage: " + data.k(data.getPlayerRound().getMortgage()) + " <br/>\n");
         s.append("              </div>\n");
         s.append("              <div>\n");
-        s.append("                Annual living costs: " + data.k(data.getPlayerRound().getLivingCosts().intValue()) + " <br/>\n");
-        s.append("                Satisfaction increase: " + data.k(data.getPlayerRound().getSatisfactionCostPerPoint().intValue()) + " <br/>\n");
-        s.append("                Savings: " + data.k(data.getPlayerRound().getSavings().intValue()) + " <br/>\n");
-        s.append("                Debt: " + data.k(data.getPlayerRound().getDebt().intValue()) + " <br />\n");
+        s.append("                Annual living costs: " + data.k(data.getPlayerRound().getLivingCosts()) + " <br/>\n");
+        s.append("                Satisfaction increase: " + data.k(data.getPlayerRound().getSatisfactionCostPerPoint()) + " <br/>\n");
+        s.append("                Savings: " + data.k(data.getPlayerRound().getSavings()) + " <br/>\n");
+        s.append("                Debt: " + data.k(data.getPlayerRound().getDebt()) + " <br />\n");
         s.append("              </div>\n");
         s.append("            </div>\n");
         s.append("            <br />\n");
@@ -106,14 +105,14 @@ public class ContentUtils
         s.append("                  <br />\n");
         s.append("              </div>\n");
         s.append("              <div>\n");
-        s.append("                + " + data.k(data.getPlayerRound().getIncomePerRound().intValue()) + " <br/>\n");
-        s.append("                + " + data.k(data.getPlayerRound().getSavings().intValue()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getLivingCosts().intValue()) + " <br />\n");
+        s.append("                + " + data.k(data.getPlayerRound().getIncomePerRound()) + " <br/>\n");
+        s.append("                + " + data.k(data.getPlayerRound().getSavings()) + " <br />\n");
+        s.append("                - " + data.k(data.getPlayerRound().getLivingCosts()) + " <br />\n");
         s.append("                - " + data.k(data.getExpectedMortgage()) + " <br />\n");
         s.append("                - " + data.k(data.getExpectedTaxes()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getCostMeasureBought().intValue()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getFluvialDamage().intValue()
-                                             + data.getPlayerRound().getFluvialDamage().intValue()) + " <br />\n");
+        s.append("                - " + data.k(data.getPlayerRound().getCostMeasureBought()) + " <br />\n");
+        s.append("                - " + data.k(data.getPlayerRound().getFluvialDamage()
+                                             + data.getPlayerRound().getFluvialDamage()) + " <br />\n");
         s.append("                = " + data.k(data.getPlayerRound().getSpendableIncome()) + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
@@ -161,9 +160,9 @@ public class ContentUtils
             s.append("<option value=\"NONE\"></option>\n");
             for (org.jooq.Record record : resultList)
             {
-                UInteger id = (UInteger) record.get(0);
+                int id = Integer.valueOf(record.get(0).toString());
                 HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, id);
-                if (house.getAvailableRound().intValue() == data.getPlayerRoundNumber())
+                if (house.getAvailableRound() == data.getPlayerRoundNumber())
                 {
                     houseMap.put(house.getAddress(), house);
                     s.append("<option value=\"" + house.getAddress() + "\">" + house.getAddress() + "</option>\n");
@@ -180,8 +179,8 @@ public class ContentUtils
                 s.append("          <div class=\"hg-house-row\">\n");
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">euro</i></div>\n");
                 s.append("            <div class=\"hg-house-text\">\n");
-                s.append("              Price: " + data.k(house.getPrice().intValue())
-                        + "<br>Yearly Mortgage (payment per round): " + data.k(house.getPrice().intValue() / 10) + "\n");
+                s.append("              Price: " + data.k(house.getPrice()) + "<br>Yearly Mortgage (payment per round): "
+                        + data.k(house.getPrice() / 10) + "\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
                 s.append("          <div class=\"hg-house-row\">\n");
@@ -219,13 +218,13 @@ public class ContentUtils
                 s.append("- None\n"); // TODO: iterate over measures
                 s.append("<br /><br />\n");
 
-                if (data.getMaxMortgagePlusSavings() >= house.getPrice().intValue())
+                if (data.getMaxMortgagePlusSavings() >= house.getPrice())
                     s.append("Great! Your available income is enough for this house.\n");
                 else
                     s.append("Oops, you do not have enough available income for this house.\n");
 
-                int phr = data.getPlayerRound().getPreferredHouseRating().intValue();
-                int hr = house.getRating().intValue();
+                int phr = data.getPlayerRound().getPreferredHouseRating();
+                int hr = house.getRating();
                 if (hr == phr)
                     s.append("<br /><br />The rating of the house equals your preferred rating. "
                             + "You will not get extra satisfaction points.\n");
@@ -270,13 +269,13 @@ public class ContentUtils
             {
                 s.append("The house was bought in this round.<br/>\n");
                 s.append("The price you paid was " +
-                    data.k(data.getPlayerRound().getHousePriceBought().intValue()) + ".<br/>\n");
+                    data.k(data.getPlayerRound().getHousePriceBought()) + ".<br/>\n");
                 s.append("The mortgage is " +
-                    data.k(data.getPlayerRound().getMortgage().intValue()) + ".<br/>\n");
+                    data.k(data.getPlayerRound().getMortgage()) + ".<br/>\n");
                 s.append("Your maximum mortgage is " +
-                    data.k(data.getPlayerRound().getMaximumMortgage().intValue()) + ".<br/>\n");
+                    data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
                 s.append("Savings used to buy the house are " +
-                    data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse().intValue()) + ".<br/>\n");
+                    data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + ".<br/>\n");
                 s.append("Your preferred house rating is " +
                     data.getPlayerRound().getPreferredHouseRating() + ".<br/>\n");
                 s.append("The rating of the house is " +
