@@ -38,12 +38,6 @@ public final class SqlUtils
         return DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
     }
 
-    public static RoundRecord readRoundFromRoundId(final PlayerData data, final int roundId)
-    {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.ID.eq(roundId)).fetchAny();
-    }
-
     public static UserRecord readUserFromUserId(final PlayerData data, final int userId)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
@@ -75,7 +69,6 @@ public final class SqlUtils
     public static PlayerroundRecord makePlayerRound(final PlayerData data, final GrouproundRecord groupRound)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        RoundRecord round = readRecordFromId(data, Tables.ROUND, groupRound.getRoundId());
         // is there a playerRound belonging to the current groupRound?
         List<PlayerroundRecord> prList = dslContext.selectFrom(Tables.PLAYERROUND)
                 .where(Tables.PLAYERROUND.PLAYER_ID.eq(data.getPlayer().getId())).fetch();

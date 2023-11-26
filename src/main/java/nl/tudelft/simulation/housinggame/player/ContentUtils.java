@@ -124,8 +124,8 @@ public class ContentUtils
     {
         // get the news record(s) for the current round
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<NewsitemRecord> newsList =
-                dslContext.selectFrom(Tables.NEWSITEM).where(Tables.NEWSITEM.ROUND_ID.eq(data.getRound().getId())).fetch();
+        List<NewsitemRecord> newsList = dslContext.selectFrom(Tables.NEWSITEM)
+                .where(Tables.NEWSITEM.ROUND_NUMBER.eq(data.getPlayerRoundNumber())).fetch();
         int nr = 1;
         for (NewsitemRecord news : newsList)
         {

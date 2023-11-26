@@ -30,7 +30,6 @@ import nl.tudelft.simulation.housinggame.data.tables.records.LanguageRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguagegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.RoundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioparametersRecord;
 
@@ -60,9 +59,6 @@ public class PlayerData
 
     /** labels in the language of the game session (or the player!). Static during session. */
     private Map<String, String> labelMap = new HashMap<>();
-
-    /** List of all rounds (static during session). */
-    private List<RoundRecord> roundList = new ArrayList<>();
 
     /** The list of groupRoundRecords until now. This list is DYNAMIC. */
     private List<GrouproundRecord> groupRoundList = new ArrayList<>();
@@ -151,19 +147,12 @@ public class PlayerData
 
     public void readPlayerData(final PlayerRecord player)
     {
-        DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
         this.player = player;
         this.group = SqlUtils.readRecordFromId(this, Tables.GROUP, player.getGroupId());
         this.gameSession = SqlUtils.readRecordFromId(this, Tables.GAMESESSION, this.group.getGamesessionId());
         this.scenario = SqlUtils.readRecordFromId(this, Tables.SCENARIO, this.group.getScenarioId());
         this.gameVersion = SqlUtils.readRecordFromId(this, Tables.GAMEVERSION, this.scenario.getGameversionId());
         setLanguageLabels(this.scenario);
-        this.roundList.clear();
-        for (int i = 0; i <= this.scenario.getHighestRoundNumber(); i++)
-        {
-            this.roundList.add(dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.ROUND_NUMBER.eq(i))
-                    .and(Tables.ROUND.SCENARIO_ID.eq(this.scenario.getId())).fetchAny());
-        }
         readDynamicData();
     }
 
@@ -175,15 +164,13 @@ public class PlayerData
         this.groupRoundList.clear();
         for (int i = 0; i <= this.scenario.getHighestRoundNumber(); i++)
         {
-            GrouproundRecord gr =
-                    dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_ID.eq(this.roundList.get(i).getId()))
-                            .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
-            if (gr != null)
-            {
-                this.groupRound = gr;
-                this.groupRoundNumber = i;
-                this.groupRoundList.add(gr);
-            }
+            GrouproundRecord gr = dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(i))
+                    .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
+            if (gr == null)
+                break;
+            this.groupRound = gr;
+            this.groupRoundNumber = i;
+            this.groupRoundList.add(gr);
         }
 
         if (this.groupRound == null)
@@ -266,16 +253,6 @@ public class PlayerData
     public List<GrouproundRecord> getGroupRoundList()
     {
         return this.groupRoundList;
-    }
-
-    public RoundRecord getRound()
-    {
-        return this.playerRoundNumber >= 0 ? this.roundList.get(this.playerRoundNumber) : null;
-    }
-
-    public List<RoundRecord> getRoundList()
-    {
-        return this.roundList;
     }
 
     public int getShowModalWindow()
