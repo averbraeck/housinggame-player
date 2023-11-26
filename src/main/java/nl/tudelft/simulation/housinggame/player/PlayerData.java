@@ -334,7 +334,7 @@ public class PlayerData
         if (this.playerRound.getHouseId() == null)
             return "--";
         HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, this.playerRound.getHouseId());
-        return house.getAddress();
+        return house.getCode();
     }
 
     /*-

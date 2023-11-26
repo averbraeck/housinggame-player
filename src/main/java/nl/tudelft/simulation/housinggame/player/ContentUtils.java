@@ -164,8 +164,8 @@ public class ContentUtils
                 HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, id);
                 if (house.getAvailableRound() == data.getPlayerRoundNumber())
                 {
-                    houseMap.put(house.getAddress(), house);
-                    s.append("<option value=\"" + house.getAddress() + "\">" + house.getAddress() + "</option>\n");
+                    houseMap.put(house.getCode(), house);
+                    s.append("<option value=\"" + house.getCode() + "\">" + house.getCode() + "</option>\n");
                 }
             }
             data.getContentHtml().put("house/options", s.toString());
@@ -174,7 +174,7 @@ public class ContentUtils
             s = new StringBuilder();
             for (HouseRecord house : houseMap.values())
             {
-                s.append("        <div class=\"house-details\" id=\"house-details-" + house.getAddress()
+                s.append("        <div class=\"house-details\" id=\"house-details-" + house.getCode()
                         + "\" style=\"display: none;\">\n");
                 s.append("          <div class=\"hg-house-row\">\n");
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">euro</i></div>\n");
@@ -264,7 +264,7 @@ public class ContentUtils
         }
         else
         {
-            s.append("You live in house " + data.getHouse().getAddress() + "<br/>\n");
+            s.append("You live in house " + data.getHouse().getCode() + "<br/>\n");
             if (data.getPlayerRound().getHousePriceBought() != null)
             {
                 s.append("The house was bought in this round.<br/>\n");
