@@ -25,6 +25,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.GameversionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HouseroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LabelRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguageRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguagegroupRecord;
@@ -299,18 +300,24 @@ public class PlayerData
     {
         if (this.playerRound == null)
             return null;
-        if (this.playerRound.getHouseId() == null)
-            return null;
-        return SqlUtils.readRecordFromId(this, Tables.HOUSE, this.playerRound.getHouseId());
+        if (this.playerRound.getFinalHouseroundId() != null)
+        {
+            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getFinalHouseroundId());
+            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hrr.getHouseId());
+        }
+        if (this.playerRound.getStartHouseroundId() != null)
+        {
+            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getStartHouseroundId());
+            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hrr.getHouseId());
+        }
+        return null;
     }
 
-    public String getHouseAddress()
+    public String getHouseCode()
     {
-        if (this.playerRound == null)
+        HouseRecord house = getHouse();
+        if (house == null)
             return "--";
-        if (this.playerRound.getHouseId() == null)
-            return "--";
-        HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, this.playerRound.getHouseId());
         return house.getCode();
     }
 
@@ -355,10 +362,10 @@ public class PlayerData
             label = label.replace("$player$", this.getPlayerCode());
             label = label.replace("$round$", Integer.toString(this.getPlayerRoundNumber()));
             label = label.replace("$rating$", Integer.toString(this.playerRound.getPreferredHouseRating()));
-            label = label.replace("$income_per_round$", k(this.playerRound.getIncomePerRound()));
-            label = label.replace("$spendable_income$", k(this.playerRound.getSpendableIncome()));
-            label = label.replace("$satisfaction$", k(this.playerRound.getSatisfaction()));
-            label = label.replace("$savings$", k(this.playerRound.getSavings()));
+            label = label.replace("$income_per_round$", k(this.playerRound.getRoundIncome()));
+            label = label.replace("$satisfaction$",
+                    k(this.playerRound.getStartPersonalSatisfaction() + this.playerRound.getStartHouseSatisfaction()));
+            label = label.replace("$savings$", k(this.playerRound.getStartSavings()));
             label = label.replace("$maxmortgage$", k(this.playerRound.getMaximumMortgage()));
         }
         return label;
@@ -437,7 +444,7 @@ public class PlayerData
 
     public int getMaxMortgagePlusSavings()
     {
-        return this.playerRound.getMaximumMortgage() + this.playerRound.getSavings();
+        return this.playerRound.getMaximumMortgage() + this.playerRound.getStartSavings();
     }
 
     public int getMortgagePercentage()
