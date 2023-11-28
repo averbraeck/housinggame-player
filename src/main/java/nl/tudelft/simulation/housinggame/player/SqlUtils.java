@@ -16,7 +16,6 @@ import nl.tudelft.simulation.housinggame.common.RoundState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.RoundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.UserRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 
@@ -74,59 +73,21 @@ public final class SqlUtils
                 .where(Tables.PLAYERROUND.PLAYER_ID.eq(data.getPlayer().getId())).fetch();
 
         // make round 0 data
-        GrouproundRecord groupRound0 = data.getGroupRoundList().get(0);
         if (prList.isEmpty())
         {
-            PlayerroundRecord newPr = dslContext.newRecord(Tables.PLAYERROUND);
-            WelfaretypeRecord welfareType = dslContext.selectFrom(Tables.WELFARETYPE)
-                    .where(Tables.WELFARETYPE.ID.eq(data.getPlayer().getWelfaretypeId())).fetchAny();
-            newPr.setPlayerId(data.getPlayer().getId());
-            newPr.setSatisfaction(welfareType.getInitialSatisfaction());
-            newPr.setSavings(welfareType.getInitialMoney());
-            newPr.setSpendableIncome(
-                    welfareType.getIncomePerRound() + welfareType.getInitialMoney() - welfareType.getLivingCosts());
-            newPr.setDebt(0);
-            newPr.setFluvialDamage(0);
-            newPr.setPluvialDamage(0);
-            newPr.setGrouproundId(groupRound0.getId());
-            newPr.setHouseId(null);
-            newPr.setHousePriceBought(0);
-            newPr.setHousePriceSold(0);
-            newPr.setIncomePerRound(welfareType.getIncomePerRound());
-            newPr.setLivingCosts(welfareType.getLivingCosts());
-            newPr.setCostMeasureBought(0);
-            newPr.setMortgage(0);
-            newPr.setMovingReason("");
-            newPr.setPaidOffDebt(0);
-            newPr.setPreferredHouseRating(welfareType.getPreferredHouseRating());
-            newPr.setRepairedDamage(null);
-            newPr.setSatisfactionCostPerPoint(welfareType.getSatisfactionCostPerPoint());
-            newPr.setSatisfactionPointBought(0);
-            newPr.setSpentSavingsForBuyingHouse(0);
-            newPr.setMaximumMortgage(welfareType.getMaximumMortgage());
-            newPr.setPlayerState(PlayerState.LOGIN.toString());
-            newPr.store();
+            GrouproundRecord groupRound0 = data.getGroupRoundList().get(0);
+            PlayerroundRecord newPr = makePlayerRound0(data, groupRound0);
             prList.add(newPr);
         }
 
-        if (round.getRoundNumber() > 0)
+        // make data up to current round of the game (fill missing rounds if necessary)
+        for (int roundNumber = 1; roundNumber <= groupRound.getRoundNumber(); roundNumber++)
         {
-            PlayerroundRecord oldPlayerRound = null;
-            for (PlayerroundRecord prr : prList)
+            if (roundNumber >= prList.size())
             {
-                GrouproundRecord gr = SqlUtils.readRecordFromId(data, Tables.GROUPROUND, prr.getGrouproundId());
-                RoundRecord rr = SqlUtils.readRecordFromId(data, Tables.ROUND, gr.getRoundId());
-                if (rr.getRoundNumber() == round.getRoundNumber() - 1)
-                {
-                    oldPlayerRound = prr;
-                    break;
-                }
+                PlayerroundRecord newPr = copyPlayerRound(data, prList.get(roundNumber - 1), roundNumber);
+                prList.add(newPr);
             }
-            PlayerroundRecord newPr = oldPlayerRound.copy();
-            newPr.setGrouproundId(groupRound.getId());
-            newPr.setSpendableIncome(newPr.getIncomePerRound() + newPr.getSavings() - newPr.getLivingCosts() - newPr.getDebt());
-            newPr.setPlayerState(PlayerState.READ_BUDGET.toString());
-            newPr.store();
         }
 
         PlayerroundRecord playerRound =
@@ -135,12 +96,128 @@ public final class SqlUtils
         return playerRound;
     }
 
+    public static PlayerroundRecord makePlayerRound0(final PlayerData data, final GrouproundRecord groupRound0)
+    {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        PlayerroundRecord newPr = dslContext.newRecord(Tables.PLAYERROUND);
+        WelfaretypeRecord welfareType = dslContext.selectFrom(Tables.WELFARETYPE)
+                .where(Tables.WELFARETYPE.ID.eq(data.getPlayer().getWelfaretypeId())).fetchAny();
+        newPr.setPlayerId(data.getPlayer().getId());
+
+        // finances
+        newPr.setStartSavings(welfareType.getInitialMoney());
+        newPr.setStartDebt(0);
+        newPr.setRoundIncome(welfareType.getIncomePerRound());
+        newPr.setLivingCosts(welfareType.getLivingCosts());
+        newPr.setPaidDebt(0);
+        newPr.setPaidMortgage(0);
+        newPr.setProfitSoldHouse(0);
+        newPr.setSpentSavingsForBuyingHouse(0);
+        newPr.setCostTaxes(0);
+        newPr.setCostMeasuresBought(0);
+        newPr.setSatisfactionBought(0);
+        newPr.setCostFluvialDamage(0);
+        newPr.setCostPluvialDamage(0);
+        newPr.setFinalSpendableIncome(
+                welfareType.getInitialMoney() + welfareType.getIncomePerRound() - welfareType.getLivingCosts());
+
+        // satisfaction
+        newPr.setStartPersonalSatisfaction(welfareType.getInitialSatisfaction());
+        newPr.setStartHouseSatisfaction(0);
+        newPr.setSatisfactionMovePenalty(0);
+        newPr.setSatisfactionHouseRatingDelta(0);
+        newPr.setSatisfactionHouseMeasures(0);
+        newPr.setSatisfactionBought(0);
+        newPr.setSatisfactionFluvialDamage(0);
+        newPr.setSatisfactionPluvialDamage(0);
+        newPr.setSatisfactionDebtPenalty(0);
+        newPr.setFinalPersonalSatisfaction(welfareType.getInitialSatisfaction());
+        newPr.setFinalHouseSatisfaction(0);
+
+        // house
+        newPr.setStartHouseroundId(null);
+        newPr.setStartMortgage(0);
+        newPr.setMaximumMortgage(welfareType.getMaximumMortgage());
+        newPr.setPreferredHouseRating(welfareType.getPreferredHouseRating());
+        newPr.setMortgageLeft(0);
+        newPr.setHousePriceSold(0);
+        newPr.setHousePriceBought(0);
+        newPr.setFinalHouseroundId(null);
+        newPr.setMovingReason("");
+        newPr.setNewMortgage(0);
+
+        // flood
+        newPr.setFluvialDamage(0);
+        newPr.setPluvialDamage(0);
+
+        // general
+        newPr.setGrouproundId(groupRound0.getId());
+        newPr.setPlayerState(PlayerState.LOGIN.toString());
+
+        newPr.store();
+        return newPr;
+    }
+
+    public static PlayerroundRecord copyPlayerRound(final PlayerData data, final PlayerroundRecord oldPr, final int roundNumber)
+    {
+        GrouproundRecord groupRound = data.getGroupRoundList().get(roundNumber);
+        PlayerroundRecord newPr = oldPr.copy();
+
+        if (roundNumber > 1) // round 0 -> round 1 is a straight copy except for playerstate and grouproundid
+        {
+            // finance
+            newPr.setStartSavings(oldPr.getFinalSpendableIncome() >= 0 ? oldPr.getFinalSpendableIncome() : 0);
+            newPr.setStartDebt(oldPr.getFinalSpendableIncome() < 0 ? -oldPr.getFinalSpendableIncome() : 0);
+            newPr.setPaidDebt(0);
+            newPr.setPaidMortgage(0);
+            newPr.setProfitSoldHouse(0);
+            newPr.setSpentSavingsForBuyingHouse(0);
+            newPr.setCostTaxes(0);
+            newPr.setCostMeasuresBought(0);
+            newPr.setSatisfactionBought(0);
+            newPr.setCostFluvialDamage(0);
+            newPr.setCostPluvialDamage(0);
+            newPr.setFinalSpendableIncome(oldPr.getFinalSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
+
+            // satisfaction
+            newPr.setStartPersonalSatisfaction(oldPr.getFinalPersonalSatisfaction());
+            newPr.setStartHouseSatisfaction(oldPr.getFinalHouseSatisfaction());
+            newPr.setSatisfactionMovePenalty(0);
+            newPr.setSatisfactionHouseRatingDelta(0);
+            newPr.setSatisfactionHouseMeasures(0);
+            newPr.setSatisfactionBought(0);
+            newPr.setSatisfactionFluvialDamage(0);
+            newPr.setSatisfactionPluvialDamage(0);
+            newPr.setSatisfactionDebtPenalty(0);
+
+            // house
+            newPr.setStartHouseroundId(oldPr.getFinalHouseroundId());
+            newPr.setStartMortgage(oldPr.getMortgageLeft());
+            newPr.setHousePriceSold(0);
+            newPr.setHousePriceBought(0);
+            newPr.setFinalHouseroundId(oldPr.getFinalHouseroundId());
+            newPr.setMovingReason("");
+            newPr.setNewMortgage(oldPr.getMortgageLeft()); // TODO: is this what is meant?
+
+            // flood
+            newPr.setFluvialDamage(0);
+            newPr.setPluvialDamage(0);
+        }
+
+        // general
+        newPr.setGrouproundId(groupRound.getId());
+        newPr.setPlayerState(PlayerState.READ_BUDGET.toString());
+        newPr.store();
+
+        return newPr;
+    }
+
     public static GrouproundRecord makeGroupRound0(final PlayerData data)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         GrouproundRecord groupRound = dslContext.newRecord(Tables.GROUPROUND);
         groupRound.setGroupId(data.getGroup().getId());
-        groupRound.setRoundId(data.getRoundList().get(0).getId());
+        groupRound.setRoundNumber(0);
         groupRound.setFluvialFloodIntensity(0);
         groupRound.setPluvialFloodIntensity(0);
         groupRound.setRoundState(RoundState.LOGIN.toString());

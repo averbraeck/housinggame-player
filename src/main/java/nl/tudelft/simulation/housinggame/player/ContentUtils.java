@@ -13,6 +13,7 @@ import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 
 /**
  * ContentUtils.java.
@@ -67,20 +68,22 @@ public class ContentUtils
      */
     public static void makeBudgetAccordion(final PlayerData data)
     {
+        WelfaretypeRecord welfareType =
+                SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
         StringBuilder s = new StringBuilder();
         // @formatter:off
         s.append("            <div style=\"display: flex; flex-direction: row; justify-content: space-between;\">\n");
         s.append("              <div>\n");
-        s.append("                Annual income: " + data.k(data.getPlayerRound().getIncomePerRound()) + " <br/>\n");
+        s.append("                Annual income: " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
         s.append("                Preferred house rating: " + data.getPlayerRound().getPreferredHouseRating() + " <br/>\n");
         s.append("                Max mortgage: " + data.k(data.getPlayerRound().getMaximumMortgage()) + " <br/>\n");
-        s.append("                Current mortgage: " + data.k(data.getPlayerRound().getMortgage()) + " <br/>\n");
+        s.append("                Current mortgage: " + data.k(data.getPlayerRound().getMortgageLeft()) + " <br/>\n");
         s.append("              </div>\n");
         s.append("              <div>\n");
         s.append("                Annual living costs: " + data.k(data.getPlayerRound().getLivingCosts()) + " <br/>\n");
-        s.append("                Satisfaction increase: " + data.k(data.getPlayerRound().getSatisfactionCostPerPoint()) + " <br/>\n");
-        s.append("                Savings: " + data.k(data.getPlayerRound().getSavings()) + " <br/>\n");
-        s.append("                Debt: " + data.k(data.getPlayerRound().getDebt()) + " <br />\n");
+        s.append("                Satisfaction increase: " + data.k(welfareType.getSatisfactionCostPerPoint()) + " <br/>\n");
+        s.append("                Savings: " + data.k(data.getPlayerRound().getStartSavings()) + " <br/>\n");
+        s.append("                Debt: " + data.k(data.getPlayerRound().getStartDebt()) + " <br />\n");
         s.append("              </div>\n");
         s.append("            </div>\n");
         s.append("            <br />\n");
@@ -105,15 +108,15 @@ public class ContentUtils
         s.append("                  <br />\n");
         s.append("              </div>\n");
         s.append("              <div>\n");
-        s.append("                + " + data.k(data.getPlayerRound().getIncomePerRound()) + " <br/>\n");
-        s.append("                + " + data.k(data.getPlayerRound().getSavings()) + " <br />\n");
+        s.append("                + " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
+        s.append("                + " + data.k(data.getPlayerRound().getStartSavings()) + " <br />\n");
         s.append("                - " + data.k(data.getPlayerRound().getLivingCosts()) + " <br />\n");
         s.append("                - " + data.k(data.getExpectedMortgage()) + " <br />\n");
         s.append("                - " + data.k(data.getExpectedTaxes()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getCostMeasureBought()) + " <br />\n");
+        s.append("                - " + data.k(data.getPlayerRound().getCostMeasuresBought()) + " <br />\n");
         s.append("                - " + data.k(data.getPlayerRound().getFluvialDamage()
                                              + data.getPlayerRound().getFluvialDamage()) + " <br />\n");
-        s.append("                = " + data.k(data.getPlayerRound().getSpendableIncome()) + " \n");
+        s.append("                = " + data.k(data.getPlayerRound().getFinalSpendableIncome()) + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
         // @formatter:on
@@ -271,7 +274,7 @@ public class ContentUtils
                 s.append("The price you paid was " +
                     data.k(data.getPlayerRound().getHousePriceBought()) + ".<br/>\n");
                 s.append("The mortgage is " +
-                    data.k(data.getPlayerRound().getMortgage()) + ".<br/>\n");
+                    data.k(data.getPlayerRound().getMortgageLeft()) + ".<br/>\n");
                 s.append("Your maximum mortgage is " +
                     data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
                 s.append("Savings used to buy the house are " +
