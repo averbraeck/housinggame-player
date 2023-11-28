@@ -30,18 +30,18 @@
         </div>
         <div class="hg-header-item" style="background-color: #c9c9c9;">
           <i class="material-icons">house</i>
-          House ${playerData.getHouseAddress() }
+          House ${playerData.getHouseCode() }
         </div>
       </div>
 
       <div class="hg-header-row">
         <div class="hg-header-item" style="background-color: #91c7c9;">
           <i class="material-icons">stars</i>
-          Satisfaction ${playerData.getPlayerRound().getSatisfaction() }
+          Satisfaction ${playerData.getPlayerRound().getFinalPersonalSatisfaction() }
         </div>
         <div class="hg-header-item" style="background-color: #91c7c9;">
           <i class="material-icons">payments</i>
-          Spendable income ${playerData.k(playerData.getPlayerRound().getSpendableIncome()) }
+          Spendable income ${playerData.k(playerData.getPlayerRound().getFinalSpendableIncome()) }
         </div>
       </div>
 
