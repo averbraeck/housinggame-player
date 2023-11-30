@@ -107,10 +107,10 @@ public final class SqlUtils
         // finances
         newPr.setStartSavings(welfareType.getInitialMoney());
         newPr.setStartDebt(0);
-        newPr.setRoundIncome(welfareType.getIncomePerRound());
+        newPr.setRoundIncome(welfareType.getRoundIncome());
         newPr.setLivingCosts(welfareType.getLivingCosts());
         newPr.setPaidDebt(0);
-        newPr.setPaidMortgage(0);
+        newPr.setMortgagePayment(0);
         newPr.setProfitSoldHouse(0);
         newPr.setSpentSavingsForBuyingHouse(0);
         newPr.setCostTaxes(0);
@@ -118,8 +118,8 @@ public final class SqlUtils
         newPr.setSatisfactionBought(0);
         newPr.setCostFluvialDamage(0);
         newPr.setCostPluvialDamage(0);
-        newPr.setFinalSpendableIncome(
-                welfareType.getInitialMoney() + welfareType.getIncomePerRound() - welfareType.getLivingCosts());
+        newPr.setCurrentSpendableIncome(
+                welfareType.getInitialMoney() + welfareType.getRoundIncome() - welfareType.getLivingCosts());
 
         // satisfaction
         newPr.setStartPersonalSatisfaction(welfareType.getInitialSatisfaction());
@@ -128,23 +128,24 @@ public final class SqlUtils
         newPr.setSatisfactionHouseRatingDelta(0);
         newPr.setSatisfactionHouseMeasures(0);
         newPr.setSatisfactionBought(0);
-        newPr.setSatisfactionFluvialDamage(0);
-        newPr.setSatisfactionPluvialDamage(0);
+        newPr.setSatisfactionFluvialPenalty(0);
+        newPr.setSatisfactionPluvialPenalty(0);
         newPr.setSatisfactionDebtPenalty(0);
-        newPr.setFinalPersonalSatisfaction(welfareType.getInitialSatisfaction());
-        newPr.setFinalHouseSatisfaction(0);
+        newPr.setCurrentPersonalSatisfaction(welfareType.getInitialSatisfaction());
+        newPr.setCurrentHouseSatisfaction(0);
 
         // house
         newPr.setStartHouseroundId(null);
-        newPr.setStartMortgage(0);
+        newPr.setMortgageHouseStart(0);
         newPr.setMaximumMortgage(welfareType.getMaximumMortgage());
         newPr.setPreferredHouseRating(welfareType.getPreferredHouseRating());
-        newPr.setMortgageLeft(0);
+        newPr.setMortgageLeftStart(0);
         newPr.setHousePriceSold(0);
         newPr.setHousePriceBought(0);
         newPr.setFinalHouseroundId(null);
         newPr.setMovingReason("");
-        newPr.setNewMortgage(0);
+        newPr.setMortgageHouseEnd(0);
+        newPr.setMortgageLeftEnd(0);
 
         // flood
         newPr.setFluvialDamage(0);
@@ -166,10 +167,10 @@ public final class SqlUtils
         if (roundNumber > 1) // round 0 -> round 1 is a straight copy except for playerstate and grouproundid
         {
             // finance
-            newPr.setStartSavings(oldPr.getFinalSpendableIncome() >= 0 ? oldPr.getFinalSpendableIncome() : 0);
-            newPr.setStartDebt(oldPr.getFinalSpendableIncome() < 0 ? -oldPr.getFinalSpendableIncome() : 0);
+            newPr.setStartSavings(oldPr.getCurrentSpendableIncome() >= 0 ? oldPr.getCurrentSpendableIncome() : 0);
+            newPr.setStartDebt(oldPr.getCurrentSpendableIncome() < 0 ? -oldPr.getCurrentSpendableIncome() : 0);
             newPr.setPaidDebt(0);
-            newPr.setPaidMortgage(0);
+            newPr.setMortgagePayment(0);
             newPr.setProfitSoldHouse(0);
             newPr.setSpentSavingsForBuyingHouse(0);
             newPr.setCostTaxes(0);
@@ -177,27 +178,30 @@ public final class SqlUtils
             newPr.setSatisfactionBought(0);
             newPr.setCostFluvialDamage(0);
             newPr.setCostPluvialDamage(0);
-            newPr.setFinalSpendableIncome(oldPr.getFinalSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
+            newPr.setCurrentSpendableIncome(
+                    oldPr.getCurrentSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
 
             // satisfaction
-            newPr.setStartPersonalSatisfaction(oldPr.getFinalPersonalSatisfaction());
-            newPr.setStartHouseSatisfaction(oldPr.getFinalHouseSatisfaction());
+            newPr.setStartPersonalSatisfaction(oldPr.getCurrentPersonalSatisfaction());
+            newPr.setStartHouseSatisfaction(oldPr.getCurrentHouseSatisfaction());
             newPr.setSatisfactionMovePenalty(0);
             newPr.setSatisfactionHouseRatingDelta(0);
             newPr.setSatisfactionHouseMeasures(0);
             newPr.setSatisfactionBought(0);
-            newPr.setSatisfactionFluvialDamage(0);
-            newPr.setSatisfactionPluvialDamage(0);
+            newPr.setSatisfactionFluvialPenalty(0);
+            newPr.setSatisfactionPluvialPenalty(0);
             newPr.setSatisfactionDebtPenalty(0);
 
             // house
             newPr.setStartHouseroundId(oldPr.getFinalHouseroundId());
-            newPr.setStartMortgage(oldPr.getMortgageLeft());
+            newPr.setMortgageHouseStart(oldPr.getMortgageHouseEnd());
+            newPr.setMortgageLeftStart(oldPr.getMortgageLeftEnd());
             newPr.setHousePriceSold(0);
             newPr.setHousePriceBought(0);
             newPr.setFinalHouseroundId(oldPr.getFinalHouseroundId());
             newPr.setMovingReason("");
-            newPr.setNewMortgage(oldPr.getMortgageLeft()); // TODO: is this what is meant?
+            newPr.setMortgageHouseEnd(oldPr.getMortgageHouseEnd());
+            newPr.setMortgageLeftEnd(oldPr.getMortgageLeftEnd());
 
             // flood
             newPr.setFluvialDamage(0);
