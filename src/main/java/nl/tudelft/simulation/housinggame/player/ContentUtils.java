@@ -273,7 +273,7 @@ public class ContentUtils
                 s.append("The house was bought in this round.<br/>\n");
                 s.append("The price you paid was " +
                     data.k(data.getPlayerRound().getHousePriceBought()) + ".<br/>\n");
-                s.append("The mortgage is " +
+                s.append("The left mortgage is " +
                     data.k(data.getPlayerRound().getMortgageLeftEnd()) + ".<br/>\n");
                 s.append("Your maximum mortgage is " +
                     data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");

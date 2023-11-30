@@ -37,11 +37,11 @@
       <div class="hg-header-row">
         <div class="hg-header-item" style="background-color: #91c7c9;">
           <i class="material-icons">stars</i>
-          Satisfaction ${playerData.getPlayerRound().getFinalPersonalSatisfaction() }
+          Satisfaction ${playerData.getPlayerRound().getCurrentPersonalSatisfaction() }
         </div>
         <div class="hg-header-item" style="background-color: #91c7c9;">
           <i class="material-icons">payments</i>
-          Spendable income ${playerData.k(playerData.getPlayerRound().getFinalSpendableIncome()) }
+          Spendable income ${playerData.k(playerData.getPlayerRound().getCurrentSpendableIncome()) }
         </div>
       </div>
 
