@@ -61,7 +61,7 @@
 		
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="read-news" />
+        <input type="hidden" name="okButton" value='${playerData.getContentHtml("buy-or-sell") }' />
         <input type="submit" value='${playerData.getLabel("welcome/button/continue") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>

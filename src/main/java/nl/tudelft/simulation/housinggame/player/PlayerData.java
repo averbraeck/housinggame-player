@@ -276,6 +276,11 @@ public class PlayerData
         return this.contentHtmlMap;
     }
 
+    public void putContentHtml(final String key, final String value)
+    {
+        this.contentHtmlMap.put(key, value);
+    }
+
     public String getModalWindowHtml()
     {
         return this.modalWindowHtml;

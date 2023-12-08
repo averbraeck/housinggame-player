@@ -118,8 +118,15 @@
 		
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="buy-house" />
-        <input type="submit" value="BUY HOUSE" class="btn btn-primary" id="hg-submit" disabled />
+        <input type="hidden" name="okButton" value="stay" />
+        <input type="submit" value="STAY" class="btn btn-primary" id="hg-submit-stay" disabled />
+      </div>
+    </form>
+
+   <form action="/housinggame-player/advance-state" method="post">
+      <div class="hg-button">
+        <input type="hidden" name="okButton" value="sell-house" />
+        <input type="submit" value="SELL HOUSE" class="btn btn-primary" id="hg-submit-sell" disabled />
       </div>
     </form>
 		
@@ -138,10 +145,11 @@
 		  $("#house-details-" + this.value).show();
 	  });
     function check() {
-        $.post("/housinggame-player/get-round-status", {jsp: 'buy-house'},
+        $.post("/housinggame-player/get-round-status", {jsp: 'check-houses'},
           function(data, status) {
             if (data == "OK") {
-              $("#hg-submit").removeAttr("disabled");
+              $("#hg-submit-stay").removeAttr("disabled");
+              $("#hg-submit-sell").removeAttr("disabled");
             } else {
               setTimeout(check, 5000);
             }

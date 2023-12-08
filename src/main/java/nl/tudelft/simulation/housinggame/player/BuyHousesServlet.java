@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/check-houses")
-public class CheckHousesServlet extends HttpServlet
+@WebServlet("/buy-house")
+public class BuyHousesServlet extends HttpServlet
 {
 
     /** */
@@ -34,7 +34,7 @@ public class CheckHousesServlet extends HttpServlet
         ContentUtils.makeNewsAccordion(data);
 
         if (ContentUtils.makeHousesAccordion(data))
-            response.sendRedirect("jsp/player/check-houses.jsp");
+            response.sendRedirect("jsp/player/buy-house.jsp");
         else
         {
             // TODO: make error screen instead
