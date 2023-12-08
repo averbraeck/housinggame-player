@@ -96,13 +96,15 @@ public class ContentUtils
         s.append("                  savings <br />\n");
         s.append("                  annual living costs <br />\n");
         if (PlayerState.valueOf(data.getPlayerRound().getPlayerState()).nr >= PlayerState.BOUGHT_HOUSE.nr)
+        {
             s.append("                  actual mortgage <br />\n");
-        else
-            s.append("                  expected mortgage <br />\n");
-        if (PlayerState.valueOf(data.getPlayerRound().getPlayerState()).nr >= PlayerState.VIEW_TAXES.nr)
             s.append("                  actual taxes <br />\n");
+        }
         else
+        {
+            s.append("                  expected mortgage <br />\n");
             s.append("                  expected taxes <br />\n");
+        }
         s.append("                  improvements <br />\n");
         s.append("                  house damage <br />\n");
         s.append("                  <br />\n");
