@@ -131,32 +131,52 @@ public final class PlayerStateUtils
                 response.sendRedirect("/housinggame-player/read-news");
                 break;
 
-            case CHECK_HOUSES:
-                response.sendRedirect("/housinggame-player/check-houses");
+            case VIEW_SELL_HOUSE:
+                response.sendRedirect("/housinggame-player/sell-house");
+                break;
+
+            case SELL_HOUSE_WAIT:
+                response.sendRedirect("/housinggame-player/sell-house-wait");
+                break;
+
+            case STAY_HOUSE_WAIT:
+                response.sendRedirect("/housinggame-player/stay-house-wait");
+                break;
+
+            case VIEW_BUY_HOUSE:
+                response.sendRedirect("/housinggame-player/buy-house");
+                break;
+
+            case BUY_HOUSE_WAIT:
+                response.sendRedirect("/housinggame-player/buy-house-wait");
                 break;
 
             case BOUGHT_HOUSE:
                 response.sendRedirect("/housinggame-player/bought-house");
                 break;
 
-            case VIEW_TAXES:
-                response.sendRedirect("/housinggame-player/view-taxes");
+            case STAYED_HOUSE:
+                response.sendRedirect("/housinggame-player/sell-house-stay");
                 break;
 
-            case IMPROVEMENTS:
-                response.sendRedirect("/housinggame-player/improvements");
+            case VIEW_IMPROVEMENTS:
+                response.sendRedirect("/housinggame-player/view-improvements");
                 break;
 
             case ANSWER_SURVEY:
                 response.sendRedirect("/housinggame-player/answer-survey");
                 break;
 
+            case SURVEY_COMPLETED:
+                response.sendRedirect("/housinggame-player/survey-completed");
+                break;
+
             case VIEW_DAMAGE:
                 response.sendRedirect("/housinggame-player/view-damage");
                 break;
 
-            case SUMMARY:
-                response.sendRedirect("/housinggame-player/summary");
+            case VIEW_SUMMARY:
+                response.sendRedirect("/housinggame-player/view-summary");
                 break;
 
             default:
