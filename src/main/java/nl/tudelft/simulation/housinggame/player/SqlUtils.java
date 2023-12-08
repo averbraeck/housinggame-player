@@ -143,7 +143,8 @@ public final class SqlUtils
         newPr.setHousePriceSold(0);
         newPr.setHousePriceBought(0);
         newPr.setFinalHouseroundId(null);
-        newPr.setMovingReason("");
+        newPr.setMovingreasonId(null);
+        newPr.setMovingReasonOther("");
         newPr.setMortgageHouseEnd(0);
         newPr.setMortgageLeftEnd(0);
 
@@ -199,7 +200,8 @@ public final class SqlUtils
             newPr.setHousePriceSold(0);
             newPr.setHousePriceBought(0);
             newPr.setFinalHouseroundId(oldPr.getFinalHouseroundId());
-            newPr.setMovingReason("");
+            newPr.setMovingreasonId(null);
+            newPr.setMovingReasonOther("");
             newPr.setMortgageHouseEnd(oldPr.getMortgageHouseEnd());
             newPr.setMortgageLeftEnd(oldPr.getMortgageLeftEnd());
 
