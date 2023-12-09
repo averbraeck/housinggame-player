@@ -25,14 +25,14 @@
 	        <tr>
 	          <td style="padding: 10px;">
 			        <span style="font-size: 150%; text-color:blue;"><b>${playerData.getLabel("welcome/wait/header") }</b></span><br/>
-			        <b>${playerData.getLabel("welcome/wait/text") }</b>
+			        <b>${playerData.getContentHtml("welcome-wait/wait-or-not") }</b>
 	          </td>
 	        </tr>
 	      </table>
       </div>
       <div class="hg-button">
         <input type="hidden" name="okButton" value="start-game" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/start") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="submit" value="START GAME" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
 		
