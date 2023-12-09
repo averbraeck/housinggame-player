@@ -15,15 +15,10 @@
 		
     <jsp:include page="header.jsp"></jsp:include>
 
-	  <h1 style="text-align: center; color: blue;">Budget overview</h1>
-	  
-	  <p style="text-align: center; padding: 10px;">
-	    The aim is to achieve the highest score possible by increasing 
-	    satisfaction and earning points for the available income.<br>
-      While playing, you will learn which choices you may make for protecting 
-      your house and yourself, given the assigned budget and expectations
-	  </p>
-	  
+    <div class="hg-title">
+      Let's start round ${playerData.getPlayerRoundNumber() }
+    </div>
+    
 	  <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
       
       <div class="panel panel-default"> 
@@ -50,7 +45,7 @@
     <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="read-news" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/continue") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="submit" value="READ NEWS" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
 		

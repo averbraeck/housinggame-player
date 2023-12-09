@@ -58,6 +58,21 @@ h1 {
   opacity: 1.0 !important;
 }
 
+.hg-title {
+  margin-top: 0.6em;
+  margin-bottom: 0.1em;
+  font-size: 1.5em;
+  color: blue;
+  text-align: center;
+}
+
+.hg-header1 {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: black; 
+  margin-top: 0.4em;
+}
+
 /* ===================================== */
 /* MODAL WINDOWS WITH POP UP INFORMATION */
 /* ===================================== */
