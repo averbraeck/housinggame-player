@@ -32,7 +32,7 @@ public class ReadNewsServlet extends HttpServlet
         data.getContentHtml().clear();
         ContentUtils.makeBudgetAccordion(data);
         ContentUtils.makeNewsAccordion(data);
-        data.putContentHtml("buy-or-sell", data.getPlayerRoundNumber() == 1 ? "buy-house" : "sell-house");
+        data.putContentHtml("buy-or-sell", data.getPlayerRoundNumber() == 1 ? "view-buy-house" : "view-sell-house");
 
         response.sendRedirect("jsp/player/read-news.jsp");
     }

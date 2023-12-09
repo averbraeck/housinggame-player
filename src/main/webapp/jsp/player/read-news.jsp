@@ -15,7 +15,7 @@
 		
 		<jsp:include page="header.jsp"></jsp:include>
 		
-		<h1>News for the current round</h1>
+		<div class="header1">Round ${playerData.getPlayerRoundNumber() } news</div>
 		
 		<div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
       
@@ -62,7 +62,7 @@
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value='${playerData.getContentHtml("buy-or-sell") }' />
-        <input type="submit" value='${playerData.getLabel("welcome/button/continue") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="submit" value="VIEW HOUSES" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
     
