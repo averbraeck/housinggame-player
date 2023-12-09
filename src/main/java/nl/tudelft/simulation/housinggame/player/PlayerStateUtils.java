@@ -48,31 +48,17 @@ public final class PlayerStateUtils
 
         if (jsp.equals("welcome-wait"))
         {
-            if (!playerState.equals(PlayerState.LOGIN) || data.getPlayerRoundNumber() != 0)
-            {
-                data.setError("jsp = 'welcome-wait', but player round is " + data.getPlayerRoundNumber()
-                        + ", and player state is '" + playerState + "'");
-                return false;
-            }
             if (data.getGroupRound() == null)
             {
                 data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
                 return false;
             }
-            if (data.getGroupRound() == null)
+            if (data.getGroupRoundNumber() <= 1 && roundState.lt(RoundState.NEW_ROUND))
             {
-                data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
+                data.setError("jsp = 'welcome-wait', but GroupRound state is " + roundState + ", groupround = "
+                        + data.getGroupRoundNumber());
                 return false;
             }
-            if (roundState.nr < RoundState.NEW_ROUND.nr)
-            {
-                data.setError("jsp = 'welcome-wait', but GroupRound state is " + roundState);
-                return false;
-            }
-
-            // advance player to round 1 and state to READ_BUDGET
-            data.getPlayerRound().setPlayerState(PlayerState.READ_BUDGET.toString());
-            data.getPlayerRound().store();
             return true;
         }
 

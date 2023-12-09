@@ -52,7 +52,7 @@ public class AdvanceStateServlet extends HttpServlet
         if (request.getParameter("okButton") != null)
             okButton = request.getParameter("okButton");
 
-        // player clicked START PLAY on wait screen to advance to read-budget
+        // player clicked START GAME on welcome-wait screen to advance to read-budget
         if (okButton.equals("start-game"))
         {
             if (!playerState.equals(PlayerState.LOGIN))
@@ -64,11 +64,13 @@ public class AdvanceStateServlet extends HttpServlet
                 data.setError("jsp = 'welcome-wait', but player round is " + data.getPlayerRoundNumber()
                         + ", and player state is '" + playerState + "'");
                 response.sendRedirect("/housinggame-player/error");
+                return;
             }
             if (data.getGroupRoundNumber() == 0)
             {
                 data.setError("jsp = 'welcome-wait', but group round is " + data.getGroupRoundNumber());
                 response.sendRedirect("/housinggame-player/error");
+                return;
             }
 
             // advance to round 1
@@ -91,7 +93,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked VIEW HOUSES on the read-news screen, and we are in round 1 (buy house)
-        if (okButton.equals("view-houses") && data.getPlayerRoundNumber() == 1)
+        if (okButton.equals("view-buy-house") && data.getPlayerRoundNumber() == 1)
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
             data.getPlayerRound().store();
@@ -100,7 +102,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked VIEW HOUSES on the read-news screen, and we are in round 2 or up (sell/stay house)
-        if (okButton.equals("view-houses") && data.getPlayerRoundNumber() > 1)
+        if (okButton.equals("view-sell-house") && data.getPlayerRoundNumber() > 1)
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_SELL_HOUSE.toString());
             data.getPlayerRound().store();

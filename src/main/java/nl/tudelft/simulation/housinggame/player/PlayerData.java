@@ -188,10 +188,19 @@ public class PlayerData
             PlayerroundRecord pr = dslContext.selectFrom(Tables.PLAYERROUND)
                     .where(Tables.PLAYERROUND.GROUPROUND_ID.eq(this.groupRoundList.get(i).getId()))
                     .and(Tables.PLAYERROUND.PLAYER_ID.eq(this.player.getId())).fetchAny();
-            if (pr == null)
-                pr = SqlUtils.makePlayerRound(this, this.groupRoundList.get(i));
-            this.playerRound = pr;
-            this.playerRoundNumber = i;
+            if (pr != null)
+            {
+                this.playerRound = pr;
+                this.playerRoundNumber = i;
+            }
+        }
+
+        if (this.playerRound == null)
+        {
+            GrouproundRecord groupRound0 = dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(0))
+                    .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
+            this.playerRound = SqlUtils.makePlayerRound0(this, groupRound0);
+            this.playerRoundNumber = 0;
         }
 
     }
