@@ -8,10 +8,10 @@
   	      <h1>Where We Move</h1>
           <div class="hg-header-row">
             <div class="hg-header-item" style="background-color: white;">
-              <i class="material-icons">info</i> News
-  	        </div>
-            <div class="hg-header-item" style="background-color: white;">
               <i class="material-icons">loop</i> Round ${playerData.getPlayerRoundNumber() }
+            </div>
+            <div class="hg-header-item" style="background-color: white;">
+              <i class="material-icons">logout</i> <a href="/housinggame-player" style="color:black;">Logout</a>
             </div>
   	      </div>  
   	    </div>
