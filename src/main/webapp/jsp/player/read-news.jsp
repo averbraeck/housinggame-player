@@ -15,7 +15,7 @@
 		
 		<jsp:include page="header.jsp"></jsp:include>
 		
-		<div class="header1">Round ${playerData.getPlayerRoundNumber() } news</div>
+		<div class="hg-title">Round ${playerData.getPlayerRoundNumber() } news</div>
 		
 		<div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
       
