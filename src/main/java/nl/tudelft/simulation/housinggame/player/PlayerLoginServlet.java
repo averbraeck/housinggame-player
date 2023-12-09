@@ -63,42 +63,49 @@ public class PlayerLoginServlet extends HttpServlet
         PlayerData data = SessionUtils.getData(session);
 
         boolean ok = true;
-        int gameSessionId = 0;
-        if (gamesession == null)
+        if (data == null)
+        {
             ok = false;
+        }
         else
         {
-            try
-            {
-                gameSessionId = Integer.parseInt(gamesession);
-            }
-            catch (Exception e)
-            {
-                ok = false;
-            }
-        }
-        if (ok)
-        {
-            DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-            GamesessionRecord gs = SqlUtils.readRecordFromId(data, Tables.GAMESESSION, gameSessionId);
-            GroupRecord groupRecord = dslContext.selectFrom(Tables.GROUP)
-                    .where(Tables.GROUP.GAMESESSION_ID.eq(gs.getId()).and(Tables.GROUP.NAME.eq(group))).fetchAny();
-            if (groupRecord == null)
+            int gameSessionId = 0;
+            if (gamesession == null)
                 ok = false;
             else
             {
-                if (!groupRecord.getPassword().equals(password))
+                try
+                {
+                    gameSessionId = Integer.parseInt(gamesession);
+                }
+                catch (Exception e)
+                {
+                    ok = false;
+                }
+            }
+            if (ok)
+            {
+                DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+                GamesessionRecord gs = SqlUtils.readRecordFromId(data, Tables.GAMESESSION, gameSessionId);
+                GroupRecord groupRecord = dslContext.selectFrom(Tables.GROUP)
+                        .where(Tables.GROUP.GAMESESSION_ID.eq(gs.getId()).and(Tables.GROUP.NAME.eq(group))).fetchAny();
+                if (groupRecord == null)
                     ok = false;
                 else
                 {
-                    PlayerRecord player =
-                            dslContext.selectFrom(Tables.PLAYER).where(Tables.PLAYER.GROUP_ID.eq(groupRecord.getId()))
-                                    .and(Tables.PLAYER.CODE.eq(username)).fetchAny();
-                    if (player == null)
+                    if (!groupRecord.getPassword().equals(password))
                         ok = false;
                     else
                     {
-                        data.readPlayerData(player);
+                        PlayerRecord player =
+                                dslContext.selectFrom(Tables.PLAYER).where(Tables.PLAYER.GROUP_ID.eq(groupRecord.getId()))
+                                        .and(Tables.PLAYER.CODE.eq(username)).fetchAny();
+                        if (player == null)
+                            ok = false;
+                        else
+                        {
+                            data.readPlayerData(player);
+                        }
                     }
                 }
             }
@@ -111,7 +118,14 @@ public class PlayerLoginServlet extends HttpServlet
         else
         {
             session.removeAttribute("playerData");
-            response.sendRedirect("jsp/player/login.jsp");
+            try
+            {
+                response.sendRedirect("jsp/player/login.jsp");
+            }
+            catch (Exception e)
+            {
+
+            }
         }
     }
 
