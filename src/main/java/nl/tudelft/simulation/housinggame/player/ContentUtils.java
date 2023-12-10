@@ -70,14 +70,16 @@ public class ContentUtils
     {
         WelfaretypeRecord welfareType =
                 SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
+        int startSavings = Math.max(data.getPrevPlayerRound().getSpendableIncome(), 0);
+        int startDebt = -Math.min(data.getPrevPlayerRound().getSpendableIncome(), 0);
         StringBuilder s = new StringBuilder();
         // @formatter:off
         s.append("            <div class=\"hg-header1\">Your budget</div>\n");
         s.append("            <div style=\"background-color:#fafaf0;\">\n");
         s.append("              Maximum mortgage: " + data.k(data.getPlayerRound().getMaximumMortgage()) + " <br/>\n");
         s.append("              Current mortgage: " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + " <br/>\n");
-        s.append("              Savings: " + data.k(data.getPlayerRound().getStartSavings()) + " <br/>\n");
-        s.append("              Debt: " + data.k(data.getPlayerRound().getStartDebt()) + " <br />\n");
+        s.append("              Start savings: " + data.k(startSavings) + " <br/>\n");
+        s.append("              Start debt: " + data.k(startDebt) + " <br />\n");
         s.append("              Round income: " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
         s.append("              Round living costs: " + data.k(data.getPlayerRound().getLivingCosts()) + " <br/>\n");
         s.append("              Satisfaction increase per point: " + data.k(welfareType.getSatisfactionCostPerPoint()) + " <br/>\n");
@@ -91,7 +93,7 @@ public class ContentUtils
                 "background-color:#fafaf0;\">\n");
         s.append("              <div>\n");
         s.append("                  Round income <br/>\n");
-        s.append("                  Savings / debt <br/>\n");
+        s.append("                  Start savings / debt <br/>\n");
         s.append("                  Round living costs <br />\n");
         if (PlayerState.valueOf(data.getPlayerRound().getPlayerState()).nr >= PlayerState.BOUGHT_HOUSE.nr)
         {
@@ -109,10 +111,10 @@ public class ContentUtils
         s.append("              </div>\n");
         s.append("              <div>\n");
         s.append("                + " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
-        if (data.getPlayerRound().getStartSavings() > 0)
-            s.append("                + " + data.k(data.getPlayerRound().getStartSavings()) + " <br/>\n");
-        else if (data.getPlayerRound().getStartDebt() > 0)
-            s.append("                - " + data.k(data.getPlayerRound().getStartDebt()) + " <br/>\n");
+        if (startSavings > 0)
+            s.append("                + " + data.k(startSavings) + " <br/>\n");
+        else if (startDebt > 0)
+            s.append("                - " + data.k(startDebt) + " <br/>\n");
         else
             s.append("                +0 <br/>\n");
         s.append("                - " + data.k(data.getPlayerRound().getLivingCosts()) + " <br />\n");
@@ -121,7 +123,7 @@ public class ContentUtils
         s.append("                - " + data.k(data.getPlayerRound().getCostMeasuresBought()) + " <br />\n");
         s.append("                - " + data.k(data.getPlayerRound().getFluvialDamage()
                                              + data.getPlayerRound().getFluvialDamage()) + " <br />\n");
-        s.append("                = " + data.k(data.getPlayerRound().getCurrentSpendableIncome()) + " \n");
+        s.append("                = " + data.k(data.getPlayerRound().getSpendableIncome()) + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
         s.append("            <div class=\"hg-header1\">Satisfaction</div>\n");
@@ -134,8 +136,8 @@ public class ContentUtils
         s.append("                  <br />\n");
         s.append("              </div>\n");
         s.append("              <div>\n");
-        int psat = data.getPlayerRound().getCurrentPersonalSatisfaction();
-        int hsat = data.getPlayerRound().getCurrentHouseSatisfaction();
+        int psat = data.getPlayerRound().getPersonalSatisfaction();
+        int hsat = data.getHouseSatisfaction();
         int penalty = data.getPlayerRound().getSatisfactionFluvialPenalty() + data.getPlayerRound().getSatisfactionPluvialPenalty();
         s.append("                + " + (psat + penalty) + " <br/>\n");
         s.append("                + " + hsat + " <br />\n");
@@ -163,7 +165,7 @@ public class ContentUtils
         }
     }
 
-    public static boolean makeHousesAccordion(final PlayerData data)
+    public static boolean makeBuyHouseAccordion(final PlayerData data)
     {
         // fill the options list
 
@@ -196,6 +198,23 @@ public class ContentUtils
                 }
             }
             data.getContentHtml().put("house/options", s.toString());
+
+            // Fill the prices list
+            // <label for="house-price">House price (in k)*</label>
+            // <input type="number" id="house-price" name="house-price">
+
+            s = new StringBuilder();
+            for (HouseRecord house : houseMap.values())
+            {
+                String priceLabelId = "\"house-price-label-" + house.getCode() + "\"";
+                String priceInputId = "\"house-price-input-" + house.getCode() + "\"";
+                String houseValue = "\"" + (house.getPrice() / 1000) + "\""; // TODO: discount? Last sold price?
+                s.append("<label for=" + priceInputId + " id=" + priceLabelId
+                        + " class=\"house-price-label\" style=\"display: none;\">House price (in k)*</label>\n");
+                s.append("<input type=\"number\" id=" + priceInputId + " name=" + priceInputId + " value=" + houseValue
+                        + " class=\"house-price-input\" style=\"display: none;\">\n");
+            }
+            data.putContentHtml("house/prices", s.toString());
 
             // fill the house details
             s = new StringBuilder();
