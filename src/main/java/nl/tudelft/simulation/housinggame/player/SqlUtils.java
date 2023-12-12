@@ -105,8 +105,6 @@ public final class SqlUtils
         newPr.setPlayerId(data.getPlayer().getId());
 
         // finances
-        newPr.setStartSavings(welfareType.getInitialMoney());
-        newPr.setStartDebt(0);
         newPr.setRoundIncome(welfareType.getRoundIncome());
         newPr.setLivingCosts(welfareType.getLivingCosts());
         newPr.setPaidDebt(0);
@@ -118,12 +116,10 @@ public final class SqlUtils
         newPr.setSatisfactionBought(0);
         newPr.setCostFluvialDamage(0);
         newPr.setCostPluvialDamage(0);
-        newPr.setCurrentSpendableIncome(
-                welfareType.getInitialMoney() + welfareType.getRoundIncome() - welfareType.getLivingCosts());
+        newPr.setSpendableIncome(welfareType.getInitialMoney());
 
         // satisfaction
-        newPr.setStartPersonalSatisfaction(welfareType.getInitialSatisfaction());
-        newPr.setStartHouseSatisfaction(0);
+        newPr.setPersonalSatisfaction(welfareType.getInitialSatisfaction());
         newPr.setSatisfactionMovePenalty(0);
         newPr.setSatisfactionHouseRatingDelta(0);
         newPr.setSatisfactionHouseMeasures(0);
@@ -131,8 +127,6 @@ public final class SqlUtils
         newPr.setSatisfactionFluvialPenalty(0);
         newPr.setSatisfactionPluvialPenalty(0);
         newPr.setSatisfactionDebtPenalty(0);
-        newPr.setCurrentPersonalSatisfaction(welfareType.getInitialSatisfaction());
-        newPr.setCurrentHouseSatisfaction(0);
 
         // house
         newPr.setStartHouseroundId(null);
@@ -165,50 +159,45 @@ public final class SqlUtils
         GrouproundRecord groupRound = data.getGroupRoundList().get(roundNumber);
         PlayerroundRecord newPr = oldPr.copy();
 
-        if (roundNumber > 1) // round 0 -> round 1 is a straight copy except for playerstate and grouproundid
-        {
-            // finance
-            newPr.setStartSavings(oldPr.getCurrentSpendableIncome() >= 0 ? oldPr.getCurrentSpendableIncome() : 0);
-            newPr.setStartDebt(oldPr.getCurrentSpendableIncome() < 0 ? -oldPr.getCurrentSpendableIncome() : 0);
-            newPr.setPaidDebt(0);
-            newPr.setMortgagePayment(0);
-            newPr.setProfitSoldHouse(0);
-            newPr.setSpentSavingsForBuyingHouse(0);
-            newPr.setCostTaxes(0);
-            newPr.setCostMeasuresBought(0);
-            newPr.setSatisfactionBought(0);
-            newPr.setCostFluvialDamage(0);
-            newPr.setCostPluvialDamage(0);
-            newPr.setCurrentSpendableIncome(
-                    oldPr.getCurrentSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
+        // finance
+        newPr.setPaidDebt(0);
+        newPr.setMortgagePayment(0);
+        newPr.setProfitSoldHouse(0);
+        newPr.setSpentSavingsForBuyingHouse(0);
+        newPr.setCostTaxes(0);
+        newPr.setCostMeasuresBought(0);
+        newPr.setSatisfactionBought(0);
+        newPr.setCostFluvialDamage(0);
+        newPr.setCostPluvialDamage(0);
+        newPr.setSpendableIncome(oldPr.getSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
+        if (oldPr.getSpendableIncome() < 0 && newPr.getSpendableIncome() > oldPr.getSpendableIncome())
+            newPr.setPaidDebt(newPr.getSpendableIncome() - oldPr.getSpendableIncome());
 
-            // satisfaction
-            newPr.setStartPersonalSatisfaction(oldPr.getCurrentPersonalSatisfaction());
-            newPr.setStartHouseSatisfaction(oldPr.getCurrentHouseSatisfaction());
-            newPr.setSatisfactionMovePenalty(0);
-            newPr.setSatisfactionHouseRatingDelta(0);
-            newPr.setSatisfactionHouseMeasures(0);
-            newPr.setSatisfactionBought(0);
-            newPr.setSatisfactionFluvialPenalty(0);
-            newPr.setSatisfactionPluvialPenalty(0);
-            newPr.setSatisfactionDebtPenalty(0);
+        // satisfaction
+        newPr.setPersonalSatisfaction(oldPr.getPersonalSatisfaction());
+        newPr.setSatisfactionMovePenalty(0);
+        newPr.setSatisfactionHouseRatingDelta(0);
+        newPr.setSatisfactionHouseMeasures(0);
+        newPr.setSatisfactionBought(0);
+        newPr.setSatisfactionFluvialPenalty(0);
+        newPr.setSatisfactionPluvialPenalty(0);
+        newPr.setSatisfactionDebtPenalty(0);
 
-            // house
-            newPr.setStartHouseroundId(oldPr.getFinalHouseroundId());
-            newPr.setMortgageHouseStart(oldPr.getMortgageHouseEnd());
-            newPr.setMortgageLeftStart(oldPr.getMortgageLeftEnd());
-            newPr.setHousePriceSold(0);
-            newPr.setHousePriceBought(0);
-            newPr.setFinalHouseroundId(oldPr.getFinalHouseroundId());
-            newPr.setMovingreasonId(null);
-            newPr.setMovingReasonOther("");
-            newPr.setMortgageHouseEnd(oldPr.getMortgageHouseEnd());
-            newPr.setMortgageLeftEnd(oldPr.getMortgageLeftEnd());
+        // house
+        newPr.setStartHouseroundId(oldPr.getFinalHouseroundId());
+        newPr.setMortgageHouseStart(oldPr.getMortgageHouseEnd());
+        newPr.setMortgageLeftStart(oldPr.getMortgageLeftEnd());
+        newPr.setHousePriceSold(0);
+        newPr.setHousePriceBought(0);
+        newPr.setFinalHouseroundId(oldPr.getFinalHouseroundId());
+        newPr.setMovingreasonId(null);
+        newPr.setMovingReasonOther("");
+        newPr.setMortgageHouseEnd(oldPr.getMortgageHouseEnd());
+        newPr.setMortgageLeftEnd(oldPr.getMortgageLeftEnd());
 
-            // flood
-            newPr.setFluvialDamage(0);
-            newPr.setPluvialDamage(0);
-        }
+        // flood
+        newPr.setFluvialDamage(0);
+        newPr.setPluvialDamage(0);
 
         // general
         newPr.setGrouproundId(groupRound.getId());

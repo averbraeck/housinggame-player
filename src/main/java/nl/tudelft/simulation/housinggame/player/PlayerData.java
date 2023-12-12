@@ -76,6 +76,9 @@ public class PlayerData
     /** The game might not have started, but a player ALWAYS has a highest player round (null if not started). */
     private PlayerroundRecord playerRound;
 
+    /** Previous player round; null when not started, same as playerRound in round 0, previous one otherwise. */
+    private PlayerroundRecord prevPlayerRound;
+
     /* ================================= */
     /* FULLY DYNAMIC INFO IN THE SESSION */
     /* ================================= */
@@ -182,6 +185,7 @@ public class PlayerData
         }
 
         this.playerRound = null;
+        this.prevPlayerRound = null;
         this.playerRoundNumber = -1;
         for (int i = 0; i < this.groupRoundList.size(); i++)
         {
@@ -190,6 +194,7 @@ public class PlayerData
                     .and(Tables.PLAYERROUND.PLAYER_ID.eq(this.player.getId())).fetchAny();
             if (pr != null)
             {
+                this.prevPlayerRound = this.playerRound == null ? pr : this.playerRound;
                 this.playerRound = pr;
                 this.playerRoundNumber = i;
             }
@@ -200,6 +205,7 @@ public class PlayerData
             GrouproundRecord groupRound0 = dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(0))
                     .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
             this.playerRound = SqlUtils.makePlayerRound0(this, groupRound0);
+            this.prevPlayerRound = this.playerRound;
             this.playerRoundNumber = 0;
         }
 
@@ -240,9 +246,9 @@ public class PlayerData
         return this.playerRound;
     }
 
-    public void setPlayerRound(final PlayerroundRecord playerRound)
+    public PlayerroundRecord getPrevPlayerRound()
     {
-        this.playerRound = playerRound;
+        return this.prevPlayerRound;
     }
 
     public GrouproundRecord getGroupRound()
@@ -377,9 +383,6 @@ public class PlayerData
             label = label.replace("$round$", Integer.toString(this.getPlayerRoundNumber()));
             label = label.replace("$rating$", Integer.toString(this.playerRound.getPreferredHouseRating()));
             label = label.replace("$income_per_round$", k(this.playerRound.getRoundIncome()));
-            label = label.replace("$satisfaction$",
-                    k(this.playerRound.getStartPersonalSatisfaction() + this.playerRound.getStartHouseSatisfaction()));
-            label = label.replace("$savings$", k(this.playerRound.getStartSavings()));
             label = label.replace("$maxmortgage$", k(this.playerRound.getMaximumMortgage()));
         }
         return label;
@@ -456,9 +459,40 @@ public class PlayerData
         return 15000;
     }
 
+    public int getHouseSatisfaction()
+    {
+        int currentHouseSatisfaction = 0;
+        if (this.playerRound.getFinalHouseroundId() != null)
+        {
+            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getFinalHouseroundId());
+            currentHouseSatisfaction = hrr.getHouseSatisfaction();
+        }
+        else if (this.playerRound.getStartHouseroundId() != null)
+        {
+            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getStartHouseroundId());
+            currentHouseSatisfaction = hrr.getHouseSatisfaction();
+        }
+        return currentHouseSatisfaction;
+    }
+
+    public int getTotalSatisfaction()
+    {
+        return this.playerRound.getPersonalSatisfaction() + getHouseSatisfaction();
+    }
+
+    public int getSavings()
+    {
+        return this.playerRound.getSpendableIncome() > 0 ? this.playerRound.getSpendableIncome() : 0;
+    }
+
+    public int getDebt()
+    {
+        return this.playerRound.getSpendableIncome() < 0 ? this.playerRound.getSpendableIncome() : 0;
+    }
+
     public int getMaxMortgagePlusSavings()
     {
-        return this.playerRound.getMaximumMortgage() + this.playerRound.getStartSavings();
+        return this.playerRound.getMaximumMortgage() + this.playerRound.getSpendableIncome();
     }
 
     public int getMortgagePercentage()
