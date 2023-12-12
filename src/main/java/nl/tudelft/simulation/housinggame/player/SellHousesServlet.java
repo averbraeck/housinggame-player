@@ -33,7 +33,7 @@ public class SellHousesServlet extends HttpServlet
         ContentUtils.makeBudgetAccordion(data);
         ContentUtils.makeNewsAccordion(data);
 
-        if (ContentUtils.makeHousesAccordion(data))
+        if (ContentUtils.makeBuyHouseAccordion(data))
             response.sendRedirect("jsp/player/sell-house.jsp");
         else
         {

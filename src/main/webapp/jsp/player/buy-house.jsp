@@ -1,13 +1,13 @@
 <%@page import="nl.tudelft.simulation.housinggame.player.PlayerData"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+  pageEncoding="ISO-8859-1"%>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<jsp:include page="head.jsp"></jsp:include>
-	<title>Housing Game: Select House</title>
-	
+  <jsp:include page="head.jsp"></jsp:include>
+  <title>Housing Game: Select House</title>
+  
 <style>
 .hg-house-row {
   display: flex;
@@ -28,12 +28,12 @@
 
 <body style="background-color: white;" onLoad = initPage()>
 
-	<div class="form-container">
-		
-		<jsp:include page="header.jsp"></jsp:include>
-		
-		<h1>Check available houses</h1>
-		
+  <div class="form-container">
+    
+    <jsp:include page="header.jsp"></jsp:include>
+    
+    <div class="hg-title">Look for a house to buy</div>
+    
     <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
       
       <div class="panel panel-default"> 
@@ -91,20 +91,24 @@
             <p>
               Select a house from the list to check the key features. 
               You will pay ${playerData.getMortgagePercentage() }% 
-              of the house price as the yearly mortgage. 
+              of the house price as the round mortgage. 
+            </p>
+            <p style="background-color:lightgrey;">
               You cannot select a house whose price is higher than the maximum mortgage
                (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) }) 
-              + your savings (${playerData.k(playerData.getPlayerRound().getSavings()) }) 
+              + your savings (${playerData.k(playerData.getSavings()) })
+              - your debt (${playerData.k(playerData.getDebt()) })
               = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }
             </p>
             
             <form action="/housinggame-player/advance-state" method="post">
-			        <div class="form-group pmd-textfield form-group-sm">
-			          <label for="gamesession" class="control-label pmd-textfield-floating-label">Select house</label> 
-			          <select name="houses" id="houses" class="form-control">
-			             ${playerData.getContentHtml("house/options") }
-		  	        </select>
-			        </div>
+              <div class="form-group pmd-textfield form-group-sm">
+                <label for="houses" class="control-label pmd-textfield-floating-label">Select house*</label> 
+                <select name="houses" id="houses" class="form-control">
+                   ${playerData.getContentHtml("house/options") }
+                </select>
+                ${playerData.getContentHtml("house/prices") }
+              </div>
             </form>
             
             <div>
@@ -115,28 +119,36 @@
       </div>
 
     </div>
-		
+    
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="buy-house" />
         <input type="submit" value="BUY HOUSE" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
-		
-		<br/>&nbsp;<br/>
-		
-	</div>
-	
-	<script>
-	  $(document).ready(function() {
+    
+    <br/>&nbsp;<br/>
+    
+  </div>
+  
+  <script>
+    $(document).ready(function() {
       $(".house-details").hide();
+      $(".house-price-label").hide();
+      $(".house-price-input").hide();
       $("#house-details-" + $("#houses").find(":selected").text()).show();
+      $("#house-price-label-" + $("#houses").find(":selected").text()).show();
+      $("#house-price-input-" + $("#houses").find(":selected").text()).show();
       check();
-	  });
-	  $('#houses').on('change', function() {
-		  $(".house-details").hide();
-		  $("#house-details-" + this.value).show();
-	  });
+    });
+    $('#houses').on('change', function() {
+      $(".house-details").hide();
+      $("#house-details-" + this.value).show();
+      $(".house-price-label").hide();
+      $("#house-price-label-" + this.value).show();
+      $(".house-price-input").hide();
+      $("#house-price-input-" + this.value).show();
+    });
     function check() {
         $.post("/housinggame-player/get-round-status", {jsp: 'buy-house'},
           function(data, status) {
@@ -146,8 +158,8 @@
               setTimeout(check, 5000);
             }
           });
-	  }
-	</script>
-	
+    }
+  </script>
+  
 </body>
 </html>
