@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import nl.tudelft.simulation.housinggame.common.HouseRoundStatus;
+import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
@@ -43,7 +43,7 @@ public class CheckBuyStatus extends HttpServlet
         if (hgrId != 0)
         {
             HousegroupRecord hgr = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, hgrId);
-            if (hgr.getStatus().equals(HouseRoundStatus.REJECTED_BUY))
+            if (hgr.getStatus().equals(TransactionStatus.REJECTED_BUY))
             {
                 response.setContentType("text/plain");
                 response.getWriter().write("REJECTED");
@@ -53,7 +53,7 @@ public class CheckBuyStatus extends HttpServlet
                 prr.setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
                 return;
             }
-            else if (hgr.getStatus().equals(HouseRoundStatus.APPROVED_BUY))
+            else if (hgr.getStatus().equals(TransactionStatus.APPROVED_BUY))
             {
                 response.setContentType("text/plain");
                 response.getWriter().write("APPROVED");

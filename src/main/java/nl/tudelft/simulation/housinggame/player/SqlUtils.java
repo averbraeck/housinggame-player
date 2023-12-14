@@ -11,7 +11,7 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
-import nl.tudelft.simulation.housinggame.common.HouseRoundStatus;
+import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.RoundState;
 import nl.tudelft.simulation.housinggame.data.Tables;
@@ -255,7 +255,7 @@ public final class SqlUtils
         HousetransactionRecord transaction = dslContext.newRecord(Tables.HOUSETRANSACTION);
         transaction.setPrice(price);
         transaction.setComment(null);
-        transaction.setTransactionStatus(HouseRoundStatus.UNAPPROVED_BUY);
+        transaction.setTransactionStatus(TransactionStatus.UNAPPROVED_BUY);
         transaction.setHousegroupId(houseGroup.getId());
         transaction.setPlayerroundId(data.getPlayerRound().getId());
         transaction.store();

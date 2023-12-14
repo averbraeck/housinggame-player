@@ -19,7 +19,7 @@ import org.jooq.impl.DSL;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import nl.tudelft.simulation.housinggame.common.HouseRoundStatus;
+import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GameversionRecord;
@@ -346,7 +346,7 @@ public class PlayerData
         HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         if (house == null)
             return "??";
-        if (hgr.getStatus().equals(HouseRoundStatus.UNAPPROVED_BUY))
+        if (hgr.getStatus().equals(TransactionStatus.UNAPPROVED_BUY))
             return "(in option)";
         return house.getCode();
     }
