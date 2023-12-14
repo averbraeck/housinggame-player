@@ -26,7 +26,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.GameversionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.HouseroundRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LabelRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguageRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguagegroupRecord;
@@ -321,15 +321,15 @@ public class PlayerData
     {
         if (this.playerRound == null)
             return null;
-        if (this.playerRound.getFinalHouseroundId() != null)
+        if (this.playerRound.getFinalHousegroupId() != null)
         {
-            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getFinalHouseroundId());
-            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hrr.getHouseId());
+            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         }
-        if (this.playerRound.getStartHouseroundId() != null)
+        if (this.playerRound.getStartHousegroupId() != null)
         {
-            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getStartHouseroundId());
-            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hrr.getHouseId());
+            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         }
         return null;
     }
@@ -338,15 +338,15 @@ public class PlayerData
     {
         if (this.playerRound == null)
             return "--";
-        if (this.playerRound.getFinalHouseroundId() == null)
+        if (this.playerRound.getFinalHousegroupId() == null)
             return "--";
-        HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getFinalHouseroundId());
-        if (hrr == null)
+        HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+        if (hgr == null)
             return "??";
-        HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, hrr.getHouseId());
+        HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         if (house == null)
             return "??";
-        if (hrr.getStatus().equals(HouseRoundStatus.UNAPPROVED_BUY))
+        if (hgr.getStatus().equals(HouseRoundStatus.UNAPPROVED_BUY))
             return "(in option)";
         return house.getCode();
     }
@@ -472,15 +472,15 @@ public class PlayerData
     public int getHouseSatisfaction()
     {
         int currentHouseSatisfaction = 0;
-        if (this.playerRound.getFinalHouseroundId() != null)
+        if (this.playerRound.getFinalHousegroupId() != null)
         {
-            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getFinalHouseroundId());
-            currentHouseSatisfaction = hrr.getHouseSatisfaction();
+            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+            currentHouseSatisfaction = hgr.getHouseSatisfaction();
         }
-        else if (this.playerRound.getStartHouseroundId() != null)
+        else if (this.playerRound.getStartHousegroupId() != null)
         {
-            HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getStartHouseroundId());
-            currentHouseSatisfaction = hrr.getHouseSatisfaction();
+            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+            currentHouseSatisfaction = hgr.getHouseSatisfaction();
         }
         return currentHouseSatisfaction;
     }

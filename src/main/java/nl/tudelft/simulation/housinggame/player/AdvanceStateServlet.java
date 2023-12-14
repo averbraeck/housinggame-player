@@ -1,7 +1,6 @@
 package nl.tudelft.simulation.housinggame.player;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -174,7 +173,7 @@ public class AdvanceStateServlet extends HttpServlet
             // handle the entered buy-house data: Parameter house[N07], Parameter price[105]
             String house = request.getParameter("house");
             String price = request.getParameter("price");
-            if (!SqlUtils.makeHouseRound(data, house, price))
+            if (!SqlUtils.makeHouseTransaction(data, house, price))
             {
                 response.sendRedirect("/housinggame-player/buy-house");
                 return;

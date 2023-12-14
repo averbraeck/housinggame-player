@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import nl.tudelft.simulation.housinggame.common.HouseRoundStatus;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.HouseroundRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 
 @WebServlet("/check-buy-status")
@@ -39,21 +39,21 @@ public class CheckBuyStatus extends HttpServlet
         data.readDynamicData();
 
         PlayerroundRecord prr = data.getPlayerRound();
-        int hrrId = prr.getFinalHouseroundId();
-        if (hrrId != 0)
+        int hgrId = prr.getFinalHousegroupId();
+        if (hgrId != 0)
         {
-            HouseroundRecord hrr = SqlUtils.readRecordFromId(data, Tables.HOUSEROUND, hrrId);
-            if (hrr.getStatus().equals(HouseRoundStatus.REJECTED_BUY))
+            HousegroupRecord hgr = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, hgrId);
+            if (hgr.getStatus().equals(HouseRoundStatus.REJECTED_BUY))
             {
                 response.setContentType("text/plain");
                 response.getWriter().write("REJECTED");
-                prr.setFinalHouseroundId(null);
+                prr.setFinalHousegroupId(null);
                 prr.store();
-                hrr.delete();
+                hgr.delete();
                 prr.setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
                 return;
             }
-            else if (hrr.getStatus().equals(HouseRoundStatus.APPROVED_BUY))
+            else if (hgr.getStatus().equals(HouseRoundStatus.APPROVED_BUY))
             {
                 response.setContentType("text/plain");
                 response.getWriter().write("APPROVED");

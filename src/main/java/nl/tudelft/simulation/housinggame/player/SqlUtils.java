@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.jooq.DSLContext;
-import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -17,8 +16,8 @@ import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.RoundState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.HouseroundRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.UserRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
@@ -133,14 +132,14 @@ public final class SqlUtils
         newPr.setSatisfactionDebtPenalty(0);
 
         // house
-        newPr.setStartHouseroundId(null);
+        newPr.setStartHousegroupId(null);
         newPr.setMortgageHouseStart(0);
         newPr.setMaximumMortgage(welfareType.getMaximumMortgage());
         newPr.setPreferredHouseRating(welfareType.getPreferredHouseRating());
         newPr.setMortgageLeftStart(0);
         newPr.setHousePriceSold(0);
         newPr.setHousePriceBought(0);
-        newPr.setFinalHouseroundId(null);
+        newPr.setFinalHousegroupId(null);
         newPr.setMovingreasonId(null);
         newPr.setMovingReasonOther("");
         newPr.setMortgageHouseEnd(0);
@@ -188,12 +187,12 @@ public final class SqlUtils
         newPr.setSatisfactionDebtPenalty(0);
 
         // house
-        newPr.setStartHouseroundId(oldPr.getFinalHouseroundId());
+        newPr.setStartHousegroupId(oldPr.getFinalHousegroupId());
         newPr.setMortgageHouseStart(oldPr.getMortgageHouseEnd());
         newPr.setMortgageLeftStart(oldPr.getMortgageLeftEnd());
         newPr.setHousePriceSold(0);
         newPr.setHousePriceBought(0);
-        newPr.setFinalHouseroundId(oldPr.getFinalHouseroundId());
+        newPr.setFinalHousegroupId(oldPr.getFinalHousegroupId());
         newPr.setMovingreasonId(null);
         newPr.setMovingReasonOther("");
         newPr.setMortgageHouseEnd(oldPr.getMortgageHouseEnd());
@@ -224,30 +223,22 @@ public final class SqlUtils
         return groupRound;
     }
 
-    public static boolean makeHouseRound(final PlayerData data, final String houseCode, final String priceStr)
+    public static boolean makeHouseTransaction(final PlayerData data, final String houseCode, final String priceStr)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
 
-        // is the house valid?
-        Result<org.jooq.Record> resultList = dslContext
-                .fetch("SELECT house.id, house.code FROM house INNER JOIN community ON house.community_id=community.id "
-                        + "WHERE community.gameversion_id=" + data.getGameVersion().getId());
-        HouseRecord house = null;
-        for (org.jooq.Record record : resultList)
-        {
-            int id = Integer.valueOf(record.get(0).toString());
-            String code = record.get(1).toString();
-            if (code.equals(houseCode))
-            {
-                house = SqlUtils.readRecordFromId(data, Tables.HOUSE, id);
-                break;
-            }
-        }
-        if (house == null)
+        Integer houseGroupId =
+                dslContext.selectFrom(Tables.HOUSEGROUP.join(Tables.HOUSE).on(Tables.HOUSEGROUP.HOUSE_ID.eq(Tables.HOUSE.ID)))
+                        .where(Tables.HOUSE.CODE.eq(houseCode)).fetchOne(Tables.HOUSEGROUP.ID);
+
+        if (houseGroupId == null)
         {
             System.err.println("Could not locate house " + houseCode);
             return false;
         }
+
+        HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, houseGroupId);
+        // HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
 
         int price;
         try
@@ -260,20 +251,16 @@ public final class SqlUtils
             return false;
         }
 
-        // make HouseRound record
-        HouseroundRecord hrr = dslContext.newRecord(Tables.HOUSEROUND);
-        hrr.setBidPrice(price);
-        hrr.setBidExplanation(null);
-        hrr.setHousePriceBought(price);
-        hrr.setDamageReduction(0); // TODO
-        hrr.setHouseSatisfaction(0); // TODO
-        hrr.setStatus(HouseRoundStatus.UNAPPROVED_BUY);
-        hrr.setGrouproundId(data.getGroupRound().getId());
-        hrr.setHouseId(house.getId());
-        hrr.setPlayerroundId(data.getPlayerRound().getId());
-        hrr.store();
+        // make HouseTransaction record
+        HousetransactionRecord transaction = dslContext.newRecord(Tables.HOUSETRANSACTION);
+        transaction.setPrice(price);
+        transaction.setComment(null);
+        transaction.setTransactionStatus(HouseRoundStatus.UNAPPROVED_BUY);
+        transaction.setHousegroupId(houseGroup.getId());
+        transaction.setPlayerroundId(data.getPlayerRound().getId());
+        transaction.store();
 
-        data.getPlayerRound().setFinalHouseroundId(hrr.getId());
+        data.getPlayerRound().setActiveTransactionId(transaction.getId());
         data.getPlayerRound().store();
 
         return true;
