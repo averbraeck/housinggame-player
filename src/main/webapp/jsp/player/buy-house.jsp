@@ -123,6 +123,8 @@
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="buy-house" />
+        <input type="hidden" id="form-house-code" name="house" value="" />
+        <input type="hidden" id="form-house-price" name="price" value="" />
         <input type="submit" value="BUY HOUSE" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
@@ -142,12 +144,22 @@
       check();
     });
     $('#houses').on('change', function() {
+    	// hide all house details
       $(".house-details").hide();
-      $("#house-details-" + this.value).show();
       $(".house-price-label").hide();
-      $("#house-price-label-" + this.value).show();
       $(".house-price-input").hide();
+    	
+    	// show the house details of the chosen house  
+      $("#house-details-" + this.value).show();
+      $("#house-price-label-" + this.value).show();
       $("#house-price-input-" + this.value).show();
+      
+      // fill return values
+      $("#form-house-code").val(this.value);
+      $("#form-house-price").val($("#house-price-input-" + this.value).val());
+    });
+    $('.house-price-input').on('input', function() {
+      $("#form-house-price").val($("#house-price-input-" + $("#form-house-code").val()).val());
     });
     function check() {
         $.post("/housinggame-player/get-round-status", {jsp: 'buy-house'},
