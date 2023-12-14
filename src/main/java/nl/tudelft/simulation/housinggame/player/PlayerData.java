@@ -19,6 +19,7 @@ import org.jooq.impl.DSL;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import nl.tudelft.simulation.housinggame.common.HouseRoundStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GameversionRecord;
@@ -335,9 +336,18 @@ public class PlayerData
 
     public String getHouseCode()
     {
-        HouseRecord house = getHouse();
-        if (house == null)
+        if (this.playerRound == null)
             return "--";
+        if (this.playerRound.getFinalHouseroundId() == null)
+            return "--";
+        HouseroundRecord hrr = SqlUtils.readRecordFromId(this, Tables.HOUSEROUND, this.playerRound.getFinalHouseroundId());
+        if (hrr == null)
+            return "??";
+        HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, hrr.getHouseId());
+        if (house == null)
+            return "??";
+        if (hrr.getStatus().equals(HouseRoundStatus.UNAPPROVED_BUY))
+            return "(in option)";
         return house.getCode();
     }
 
@@ -395,7 +405,7 @@ public class PlayerData
      */
     public String k(final int nr)
     {
-        if (nr < 1000)
+        if (Math.abs(nr) < 1000)
             return Integer.toString(nr);
         else
             return Integer.toString(nr / 1000) + " k";
@@ -455,7 +465,7 @@ public class PlayerData
         HouseRecord house = getHouse();
         if (house == null)
             return 0;
-        // TODO: get mid score from database
+        // TODO: get mid score from database?
         return 15000;
     }
 

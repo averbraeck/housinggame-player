@@ -74,27 +74,31 @@ public class ContentUtils
         int startDebt = -Math.min(data.getPrevPlayerRound().getSpendableIncome(), 0);
         StringBuilder s = new StringBuilder();
         // @formatter:off
-        s.append("            <div class=\"hg-header1\">Your budget</div>\n");
+        s.append("            <div class=\"hg-header1\">Your mortgage</div>\n");
         s.append("            <div style=\"background-color:#fafaf0;\">\n");
         s.append("              Maximum mortgage: " + data.k(data.getPlayerRound().getMaximumMortgage()) + " <br/>\n");
         s.append("              Current mortgage: " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + " <br/>\n");
-        s.append("              Start savings: " + data.k(startSavings) + " <br/>\n");
-        s.append("              Start debt: " + data.k(startDebt) + " <br />\n");
-        s.append("              Round income: " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
-        s.append("              Round living costs: " + data.k(data.getPlayerRound().getLivingCosts()) + " <br/>\n");
-        s.append("              Satisfaction increase per point: " + data.k(welfareType.getSatisfactionCostPerPoint()) + " <br/>\n");
         s.append("            </div>\n");
+
         s.append("            <div class=\"hg-header1\">House expectations</div>\n");
         s.append("            <div style=\"background-color:#fafaf0;\">\n");
         s.append("              Preferred house rating: " + data.getPlayerRound().getPreferredHouseRating() + " <br/>\n");
         s.append("            </div>\n");
+
+        s.append("            <div class=\"hg-header1\">Satisfaction costs</div>\n");
+        s.append("            <div style=\"background-color:#fafaf0;\">\n");
+        s.append("              Satisfaction increase per point: " + data.k(welfareType.getSatisfactionCostPerPoint()) + " <br/>\n");
+        s.append("            </div>\n");
+
         s.append("            <div class=\"hg-header1\">Spendable income</div>\n");
         s.append("            <div style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 10px; " +
                 "background-color:#fafaf0;\">\n");
         s.append("              <div>\n");
-        s.append("                  Round income <br/>\n");
         s.append("                  Start savings / debt <br/>\n");
+        s.append("                  Round income <br/>\n");
         s.append("                  Round living costs <br />\n");
+        s.append("                  Profit sold house <br />\n");
+        s.append("                  Spent savings to buy house <br />\n");
         if (PlayerState.valueOf(data.getPlayerRound().getPlayerState()).nr >= PlayerState.BOUGHT_HOUSE.nr)
         {
             s.append("                  Actual mortgage payment <br />\n");
@@ -105,28 +109,42 @@ public class ContentUtils
             s.append("                  Expected mortgage payment<br />\n");
             s.append("                  Expected taxes <br />\n");
         }
-        s.append("                  Improvements <br />\n");
+        s.append("                  Personal improvements <br />\n");
+        s.append("                  House improvements <br />\n");
         s.append("                  House damage <br />\n");
         s.append("                  <br />\n");
         s.append("              </div>\n");
+
         s.append("              <div>\n");
-        s.append("                + " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
         if (startSavings > 0)
             s.append("                + " + data.k(startSavings) + " <br/>\n");
         else if (startDebt > 0)
             s.append("                - " + data.k(startDebt) + " <br/>\n");
         else
             s.append("                +0 <br/>\n");
+        s.append("                + " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
         s.append("                - " + data.k(data.getPlayerRound().getLivingCosts()) + " <br />\n");
-        s.append("                - " + data.k(data.getExpectedMortgage()) + " <br />\n");
-        s.append("                - " + data.k(data.getExpectedTaxes()) + " <br />\n");
+        s.append("                + " + data.k(data.getPlayerRound().getProfitSoldHouse()) + " <br />\n");
+        s.append("                - " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + " <br />\n");
+        if (PlayerState.valueOf(data.getPlayerRound().getPlayerState()).nr >= PlayerState.BOUGHT_HOUSE.nr)
+        {
+            s.append("                - " + data.k(data.getPlayerRound().getMortgagePayment()) + " <br />\n");
+            s.append("                - " + data.k(data.getPlayerRound().getCostTaxes()) + " <br />\n");
+        }
+        else
+        {
+            s.append("                - " + data.k(data.getExpectedMortgage()) + " <br />\n");
+            s.append("                - " + data.k(data.getExpectedTaxes()) + " <br />\n");
+        }
+        s.append("                - " + data.k(data.getPlayerRound().getCostSatisfactionBought()) + " <br />\n");
         s.append("                - " + data.k(data.getPlayerRound().getCostMeasuresBought()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getFluvialDamage()
-                                             + data.getPlayerRound().getFluvialDamage()) + " <br />\n");
+        s.append("                - " + data.k(data.getPlayerRound().getCostPluvialDamage()
+                                             + data.getPlayerRound().getCostFluvialDamage()) + " <br />\n");
         s.append("                = " + data.k(data.getPlayerRound().getSpendableIncome()) + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
-        s.append("            <div class=\"hg-header1\">Satisfaction</div>\n");
+
+        s.append("            <div class=\"hg-header1\">Satisfaction points</div>\n");
         s.append("            <div style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 10px; "
                 + "background-color:#fafaf0;\">\n");
         s.append("              <div>\n");
@@ -181,7 +199,7 @@ public class ContentUtils
         {
             Result<org.jooq.Record> resultList =
                     dslContext.fetch("SELECT house.id FROM house INNER JOIN community ON house.community_id=community.id "
-                            + "WHERE community.gameversion_id=3;");
+                            + "WHERE community.gameversion_id=" + data.getGameVersion().getId());
             SortedMap<String, HouseRecord> houseMap = new TreeMap<>();
 
             // fill the house names
@@ -226,7 +244,7 @@ public class ContentUtils
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">euro</i></div>\n");
                 s.append("            <div class=\"hg-house-text\">\n");
                 s.append("              Price: " + data.k(house.getPrice()) + "<br>Yearly Mortgage (payment per round): "
-                        + data.k(house.getPrice() / 10) + "\n");
+                        + data.k(house.getPrice() / data.getMortgagePercentage()) + "\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
                 s.append("          <div class=\"hg-house-row\">\n");
