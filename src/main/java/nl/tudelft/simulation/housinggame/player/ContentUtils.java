@@ -5,13 +5,13 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.jooq.DSLContext;
-import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import nl.tudelft.simulation.housinggame.common.HouseGroupStatus;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 
@@ -197,22 +197,19 @@ public class ContentUtils
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         try
         {
-            Result<org.jooq.Record> resultList =
-                    dslContext.fetch("SELECT house.id FROM house INNER JOIN community ON house.community_id=community.id "
-                            + "WHERE community.gameversion_id=" + data.getGameVersion().getId());
-            SortedMap<String, HouseRecord> houseMap = new TreeMap<>();
+            List<HousegroupRecord> houseGroupList = dslContext.selectFrom(Tables.HOUSEGROUP)
+                    .where(Tables.HOUSEGROUP.GROUP_ID.eq(data.getGroup().getId())).fetch();
+            SortedMap<String, HousegroupRecord> houseGroupMap = new TreeMap<>();
 
             // fill the house names
             StringBuilder s = new StringBuilder();
             s.append("<option value=\"NONE\"></option>\n");
-            for (org.jooq.Record record : resultList)
+            for (var houseGroup: houseGroupList)
             {
-                int id = Integer.valueOf(record.get(0).toString());
-                HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, id);
-                if (house.getAvailableRound() == data.getPlayerRoundNumber())
+                if (HouseGroupStatus.isAvailableOrOccupied(houseGroup.getStatus()))
                 {
-                    houseMap.put(house.getCode(), house);
-                    s.append("<option value=\"" + house.getCode() + "\">" + house.getCode() + "</option>\n");
+                    houseGroupMap.put(houseGroup.getCode(), houseGroup);
+                    s.append("<option value=\"" + houseGroup.getCode() + "\">" + houseGroup.getCode() + "</option>\n");
                 }
             }
             data.getContentHtml().put("house/options", s.toString());
@@ -222,11 +219,11 @@ public class ContentUtils
             // <input type="number" id="house-price" name="house-price">
 
             s = new StringBuilder();
-            for (HouseRecord house : houseMap.values())
+            for (HousegroupRecord houseGroup : houseGroupMap.values())
             {
-                String priceLabelId = "\"house-price-label-" + house.getCode() + "\"";
-                String priceInputId = "\"house-price-input-" + house.getCode() + "\"";
-                String houseValue = "\"" + (house.getPrice() / 1000) + "\""; // TODO: discount? Last sold price?
+                String priceLabelId = "\"house-price-label-" + houseGroup.getCode() + "\"";
+                String priceInputId = "\"house-price-input-" + houseGroup.getCode() + "\"";
+                String houseValue = "\"" + (houseGroup.getMarketValue() / 1000) + "\"";
                 s.append("<label for=" + priceInputId + " id=" + priceLabelId
                         + " class=\"house-price-label\" style=\"display: none;\">House price (in k)*</label>\n");
                 s.append("<input type=\"number\" id=" + priceInputId + " name=" + priceInputId + " value=" + houseValue
@@ -236,21 +233,21 @@ public class ContentUtils
 
             // fill the house details
             s = new StringBuilder();
-            for (HouseRecord house : houseMap.values())
+            for (HousegroupRecord houseGroup : houseGroupMap.values())
             {
-                s.append("        <div class=\"house-details\" id=\"house-details-" + house.getCode()
+                s.append("        <div class=\"house-details\" id=\"house-details-" + houseGroup.getCode()
                         + "\" style=\"display: none;\">\n");
                 s.append("          <div class=\"hg-house-row\">\n");
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">euro</i></div>\n");
                 s.append("            <div class=\"hg-house-text\">\n");
-                s.append("              Price: " + data.k(house.getPrice()) + "<br>Yearly Mortgage (payment per round): "
-                        + data.k(house.getPrice() / data.getMortgagePercentage()) + "\n");
+                s.append("              Price: " + data.k(houseGroup.getMarketValue()) + "<br>Yearly Mortgage (payment per round): "
+                        + data.k(houseGroup.getMarketValue() * data.getMortgagePercentage() / 100) + "\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
                 s.append("          <div class=\"hg-house-row\">\n");
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">star</i></div>\n");
                 s.append("            <div class=\"hg-house-text\">\n");
-                s.append("              House Rating: " + house.getRating()
+                s.append("              House Rating: " + houseGroup.getRating()
                         + "<br>Your satisfaction will be affected by this\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
@@ -261,7 +258,7 @@ public class ContentUtils
                 if (data.getScenario().getInformationAmount() < 1)
                     s.append("?");
                 else
-                    s.append(house.getInitialPluvialProtection());
+                    s.append(houseGroup.getPluvialBaseProtection() + houseGroup.getPluvialHouseProtection());
                 s.append("<br>Amount of protection from rain flooding\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
@@ -272,23 +269,23 @@ public class ContentUtils
                 if (data.getScenario().getInformationAmount() < 1)
                     s.append("?");
                 else
-                    s.append(house.getInitialFluvialProtection());
+                    s.append(houseGroup.getFluvialBaseProtection() + houseGroup.getFluvialHouseProtection());
                 s.append("<br>Amount of protection from river flooding\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
 
                 s.append("<br />\n");
-                s.append("Measures implemented: \n");
+                s.append("Measures implemented:<br/> \n");
                 s.append("- None\n"); // TODO: iterate over measures
                 s.append("<br /><br />\n");
 
-                if (data.getMaxMortgagePlusSavings() >= house.getPrice())
+                if (data.getMaxMortgagePlusSavings() >= houseGroup.getMarketValue())
                     s.append("Great! Your available income is enough for this house.\n");
                 else
                     s.append("Oops, you do not have enough available income for this house.\n");
 
                 int phr = data.getPlayerRound().getPreferredHouseRating();
-                int hr = house.getRating();
+                int hr = houseGroup.getRating();
                 if (hr == phr)
                     s.append("<br /><br />The rating of the house equals your preferred rating. "
                             + "You will not get extra satisfaction points.\n");

@@ -144,6 +144,7 @@ public final class SqlUtils
         newPr.setMovingReasonOther("");
         newPr.setMortgageHouseEnd(0);
         newPr.setMortgageLeftEnd(0);
+        newPr.setActiveTransactionId(null);
 
         // flood
         newPr.setFluvialDamage(0);
@@ -197,6 +198,7 @@ public final class SqlUtils
         newPr.setMovingReasonOther("");
         newPr.setMortgageHouseEnd(oldPr.getMortgageHouseEnd());
         newPr.setMortgageLeftEnd(oldPr.getMortgageLeftEnd());
+        newPr.setActiveTransactionId(null);
 
         // flood
         newPr.setFluvialDamage(0);
@@ -227,18 +229,14 @@ public final class SqlUtils
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
 
-        Integer houseGroupId =
-                dslContext.selectFrom(Tables.HOUSEGROUP.join(Tables.HOUSE).on(Tables.HOUSEGROUP.HOUSE_ID.eq(Tables.HOUSE.ID)))
-                        .where(Tables.HOUSE.CODE.eq(houseCode)).fetchOne(Tables.HOUSEGROUP.ID);
+        HousegroupRecord houseGroup =
+                dslContext.selectFrom(Tables.HOUSEGROUP).where(Tables.HOUSEGROUP.CODE.eq(houseCode)).fetchOne();
 
-        if (houseGroupId == null)
+        if (houseGroup == null)
         {
             System.err.println("Could not locate house " + houseCode);
             return false;
         }
-
-        HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, houseGroupId);
-        // HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
 
         int price;
         try
@@ -254,14 +252,19 @@ public final class SqlUtils
         // make HouseTransaction record
         HousetransactionRecord transaction = dslContext.newRecord(Tables.HOUSETRANSACTION);
         transaction.setPrice(price);
-        transaction.setComment(null);
+        transaction.setComment("");
         transaction.setTransactionStatus(TransactionStatus.UNAPPROVED_BUY);
         transaction.setHousegroupId(houseGroup.getId());
         transaction.setPlayerroundId(data.getPlayerRound().getId());
+        transaction.setGrouproundId(data.getGroupRound().getId());
         transaction.store();
 
         data.getPlayerRound().setActiveTransactionId(transaction.getId());
         data.getPlayerRound().store();
+
+        PlayerroundRecord playerRound = data.getPlayerRound();
+        playerRound.setActiveTransactionId(transaction.getId());
+        playerRound.store();
 
         return true;
     }
