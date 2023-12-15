@@ -23,8 +23,8 @@
 	  
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="summary" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="hidden" name="okButton" value="read-news" />
+        <input type="submit" value='NEW ROUND' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
 		
@@ -35,7 +35,7 @@
       check();
     });
     function check() {
-      $.post("/housinggame-player/get-round-status", {jsp: 'summary'},
+      $.post("/housinggame-player/get-round-status", {jsp: 'view-summary'},
         function(data, status) {
           if (data == "OK") {
             $("#hg-submit").removeAttr("disabled");

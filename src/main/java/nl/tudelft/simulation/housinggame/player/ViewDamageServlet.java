@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @WebServlet("/view-damage")
-public class VewDamageServlet extends HttpServlet
+public class ViewDamageServlet extends HttpServlet
 {
 
     /** */

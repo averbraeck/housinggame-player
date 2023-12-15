@@ -32,7 +32,7 @@ public class BuyHouseWaitServlet extends HttpServlet
         data.getContentHtml().clear();
         ContentUtils.makeBudgetAccordion(data);
         ContentUtils.makeNewsAccordion(data);
-        ContentUtils.makeHouseConfirmationAccordion(data);
+        ContentUtils.makeHouseWaitConfirmationAccordion(data);
 
         response.sendRedirect("jsp/player/buy-house-wait.jsp");
     }

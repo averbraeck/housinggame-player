@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/improvements")
-public class ImprovementsServlet extends HttpServlet
+@WebServlet("/view-improvements")
+public class ViewImprovementsServlet extends HttpServlet
 {
 
     /** */
@@ -29,7 +29,13 @@ public class ImprovementsServlet extends HttpServlet
             return;
         }
 
-        response.sendRedirect("jsp/player/improvements.jsp");
+        data.getContentHtml().clear();
+        ContentUtils.makeBudgetAccordion(data);
+        ContentUtils.makeNewsAccordion(data);
+        ContentUtils.makeHouseConfirmationAccordion(data);
+        ContentUtils.makeImprovementsAccordion(data);
+
+        response.sendRedirect("jsp/player/view-improvements.jsp");
     }
 
     @Override

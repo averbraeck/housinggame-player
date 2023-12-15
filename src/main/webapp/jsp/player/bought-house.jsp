@@ -82,8 +82,8 @@
 	  
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="bought-house" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/continue") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="hidden" name="okButton" value="view-improvements" />
+        <input type="submit" value='VIEW IMPROVEMENTS' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
 		

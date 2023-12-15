@@ -12,7 +12,11 @@ import nl.tudelft.simulation.housinggame.common.HouseGroupStatus;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.QuestionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 
 /**
@@ -204,7 +208,7 @@ public class ContentUtils
             // fill the house names
             StringBuilder s = new StringBuilder();
             s.append("<option value=\"NONE\"></option>\n");
-            for (var houseGroup: houseGroupList)
+            for (var houseGroup : houseGroupList)
             {
                 if (HouseGroupStatus.isAvailableOrOccupied(houseGroup.getStatus()))
                 {
@@ -240,7 +244,8 @@ public class ContentUtils
                 s.append("          <div class=\"hg-house-row\">\n");
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">euro</i></div>\n");
                 s.append("            <div class=\"hg-house-text\">\n");
-                s.append("              Price: " + data.k(houseGroup.getMarketValue()) + "<br>Yearly Mortgage (payment per round): "
+                s.append("              Price: " + data.k(houseGroup.getMarketValue())
+                        + "<br>Yearly Mortgage (payment per round): "
                         + data.k(houseGroup.getMarketValue() * data.getMortgagePercentage() / 100) + "\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
@@ -311,12 +316,12 @@ public class ContentUtils
         }
     }
 
-    public static void makeHouseConfirmationAccordion(final PlayerData data)
+    public static void makeHouseWaitConfirmationAccordion(final PlayerData data)
     {
+        PlayerroundRecord playerRound = data.getPlayerRound();
         StringBuilder s = new StringBuilder();
-        // @formatter:off
         s.append("            <div>\n");
-        if (data.getHouse() == null)
+        if (playerRound.getActiveTransactionId() == null)
         {
             s.append("You have not been allocated a house in this round or an earlier round.\n");
             s.append("Without a house, you cannot fully participate in the game, since you cannot \n");
@@ -325,30 +330,122 @@ public class ContentUtils
         }
         else
         {
-            s.append("You live in house " + data.getHouse().getCode() + "<br/>\n");
-            if (data.getPlayerRound().getHousePriceBought() != null)
+            HousetransactionRecord transaction =
+                    SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, playerRound.getActiveTransactionId());
+            HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, transaction.getHousegroupId());
+            s.append("You have opted for house " + houseGroup.getCode() + "<br/>\n");
+            s.append("The price you plan to pay is " + data.k(transaction.getPrice()) + ".<br/>\n");
+            s.append("Your maximum mortgage is " + data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
+            int savingsUsed = Math.max(transaction.getPrice() - data.getPlayerRound().getMaximumMortgage(), 0);
+            s.append("Savings used to buy the house are " + data.k(savingsUsed) + ".<br/>\n");
+            if (data.getMaxMortgagePlusSavings() >= transaction.getPrice())
             {
-                s.append("The house was bought in this round.<br/>\n");
-                s.append("The price you paid was " +
-                    data.k(data.getPlayerRound().getHousePriceBought()) + ".<br/>\n");
-                s.append("The left mortgage is " +
-                    data.k(data.getPlayerRound().getMortgageLeftEnd()) + ".<br/>\n");
-                s.append("Your maximum mortgage is " +
-                    data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
-                s.append("Savings used to buy the house are " +
-                    data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + ".<br/>\n");
-                s.append("Your preferred house rating is " +
-                    data.getPlayerRound().getPreferredHouseRating() + ".<br/>\n");
-                s.append("The rating of the house is " +
-                    data.getHouse().getRating() + ".<br/>\n");
+                s.append("Your maximum mortgage and savings are enough for this house.\n");
             }
             else
             {
-                s.append("You did not change houses in this round.<br/>\n");
+                s.append("Actually, you do not have enough available income for this house,\n");
+                s.append("but the facilitator can grant an exceptio if no cheaper houses are available.\n");
             }
+
+            int phr = data.getPlayerRound().getPreferredHouseRating();
+            int hr = houseGroup.getRating();
+            if (hr == phr)
+                s.append("<br /><br />The rating of the house equals your preferred rating. "
+                        + "You will not get extra satisfaction points.\n");
+            else if (hr < phr)
+                s.append("<br /><br />The rating of the house is below your preferred rating. " + "You will lose: "
+                        + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
+                        + " house satisfaction points.\n");
+            else
+                s.append("<br /><br />The rating of the house is above your preferred rating. " + "You will gain: "
+                        + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
+                        + " house satisfaction points.\n");
         }
         s.append("            </div>\n");
-        // @formatter:on
+        data.getContentHtml().put("house/wait-confirmation", s.toString());
+    }
+
+    public static void makeHouseConfirmationAccordion(final PlayerData data)
+    {
+        StringBuilder s = new StringBuilder();
+        s.append("            <div>\n");
+        s.append("You live in house " + data.getHouse().getCode() + "<br/>\n");
+        if (data.getPlayerRound().getHousePriceBought() != null)
+        {
+            s.append("You have bought a house in this round.<br/>\n");
+            s.append("The price you paid is " + data.k(data.getPlayerRound().getHousePriceBought()) + ".<br/>\n");
+            s.append("The left mortgage is " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + ".<br/>\n");
+            s.append("Your maximum mortgage is " + data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
+            s.append("Savings used to buy the house are " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse())
+                    + ".<br/>\n");
+            s.append("Your preferred house rating is " + data.getPlayerRound().getPreferredHouseRating() + ".<br/>\n");
+            s.append("The rating of the house is " + data.getHouse().getRating() + ".<br/>\n");
+            s.append("Satisfaction change: " + (data.getHouse().getRating() - data.getPlayerRound().getPreferredHouseRating())
+                    + " points.<br/>\n");
+        }
+        else
+        {
+            s.append("You did not change houses in this round.<br/>\n");
+        }
+        s.append("            </div>\n");
         data.getContentHtml().put("house/confirmation", s.toString());
     }
+
+    public static void makeImprovementsAccordion(final PlayerData data)
+    {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<MeasuretypeRecord> measureTypeList = dslContext.selectFrom(Tables.MEASURETYPE)
+                .where(Tables.MEASURETYPE.GAMEVERSION_ID.eq(data.getGameVersion().getId())).fetch();
+        StringBuilder s = new StringBuilder();
+        s.append("            <div>\n");
+        s.append("<p>Please select your improvements:</p>\n");
+        for (MeasuretypeRecord measureType : measureTypeList)
+        {
+            s.append("[ ] " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) + "<br/>\n");
+        }
+        s.append("<br/><p>Please select if you want to buy extra satisfaction:</p>\n");
+        WelfaretypeRecord wft = SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
+        s.append("[ ] " + " costs per point: " + data.k(wft.getSatisfactionCostPerPoint()) + "<br/>\n");
+        s.append("            </div>\n");
+        data.getContentHtml().put("house/improvements", s.toString());
+    }
+
+    public static void makeBoughtImprovementsAccordion(final PlayerData data)
+    {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<MeasuretypeRecord> measureTypeList = dslContext.selectFrom(Tables.MEASURETYPE)
+                .where(Tables.MEASURETYPE.GAMEVERSION_ID.eq(data.getGameVersion().getId())).fetch();
+        StringBuilder s = new StringBuilder();
+        s.append("            <div>\n");
+        s.append("<p>You bought the following improvements:</p>\n");
+        for (MeasuretypeRecord measureType : measureTypeList)
+        {
+            s.append("[ ] " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) + "<br/>\n");
+        }
+        s.append("<br/><p>You bought extra satisfaction:</p>\n");
+        WelfaretypeRecord wft = SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
+        s.append("[ ] " + " costs per point: " + data.k(wft.getSatisfactionCostPerPoint()) + "<br/>\n");
+        s.append("            </div>\n");
+        data.getContentHtml().put("house/bought-improvements", s.toString());
+    }
+
+    public static void makeSurveyAccordion(final PlayerData data)
+    {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<QuestionRecord> questionList = dslContext.selectFrom(Tables.QUESTION)
+                .where(Tables.QUESTION.SCENARIO_ID.eq(data.getScenario().getId())).fetch();
+        StringBuilder s = new StringBuilder();
+        s.append("            <div>\n");
+        s.append("<p>Please answer the following questions:</p>\n");
+        for (QuestionRecord question : questionList)
+        {
+            s.append("Question " + question.getQuestionNumber() + ".<br/>" + question.getDescription() + "<br/>\n");
+            s.append("<br/>\n");
+        }
+        s.append("<br/>\n");
+        s.append("            </div>\n");
+        data.getContentHtml().put("house/survey", s.toString());
+    }
+
 }

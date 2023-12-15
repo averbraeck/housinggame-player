@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/summary")
-public class SummaryServlet extends HttpServlet
+@WebServlet("/view-summary")
+public class ViewSummaryServlet extends HttpServlet
 {
 
     /** */
@@ -29,7 +29,7 @@ public class SummaryServlet extends HttpServlet
             return;
         }
 
-        response.sendRedirect("jsp/player/summary.jsp");
+        response.sendRedirect("jsp/player/view-summary.jsp");
     }
 
     @Override

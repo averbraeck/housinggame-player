@@ -29,6 +29,13 @@ public class AnswerSurveyServlet extends HttpServlet
             return;
         }
 
+        data.getContentHtml().clear();
+        ContentUtils.makeBudgetAccordion(data);
+        ContentUtils.makeNewsAccordion(data);
+        ContentUtils.makeHouseConfirmationAccordion(data);
+        ContentUtils.makeBoughtImprovementsAccordion(data);
+        ContentUtils.makeSurveyAccordion(data);
+
         response.sendRedirect("jsp/player/answer-survey.jsp");
     }
 

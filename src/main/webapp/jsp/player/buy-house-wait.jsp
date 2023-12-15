@@ -89,31 +89,8 @@
         <div id="collapse3" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading3">
           <div class="panel-body">
             <p>
-              Select a house from the list to check the key features. 
-              You will pay ${playerData.getMortgagePercentage() }% 
-              of the house price as the round mortgage. 
+              ${playerData.getContentHtml("house/wait-confirmation") }
             </p>
-            <p style="background-color:lightgrey;">
-              You cannot select a house whose price is higher than the maximum mortgage
-               (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) }) 
-              + your savings (${playerData.k(playerData.getSavings()) })
-              - your debt (${playerData.k(playerData.getDebt()) })
-              = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }
-            </p>
-            
-            <form action="/housinggame-player/advance-state" method="post">
-              <div class="form-group pmd-textfield form-group-sm">
-                <label for="houses" class="control-label pmd-textfield-floating-label">Select house*</label> 
-                <select name="houses" id="houses" class="form-control">
-                   ${playerData.getContentHtml("house/options") }
-                </select>
-                ${playerData.getContentHtml("house/prices") }
-              </div>
-            </form>
-            
-            <div>
-              ${playerData.getContentHtml("house/details") }
-            </div>
           </div>
         </div>
       </div>

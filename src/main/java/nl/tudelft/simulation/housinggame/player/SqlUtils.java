@@ -230,7 +230,8 @@ public final class SqlUtils
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
 
         HousegroupRecord houseGroup =
-                dslContext.selectFrom(Tables.HOUSEGROUP).where(Tables.HOUSEGROUP.CODE.eq(houseCode)).fetchOne();
+                dslContext.selectFrom(Tables.HOUSEGROUP).where(Tables.HOUSEGROUP.CODE.eq(houseCode)
+                        .and(Tables.HOUSEGROUP.GROUP_ID.eq(data.getGroup().getId()))).fetchOne();
 
         if (houseGroup == null)
         {
