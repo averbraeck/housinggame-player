@@ -1,13 +1,13 @@
 <%@page import="nl.tudelft.simulation.housinggame.player.PlayerData"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+  pageEncoding="ISO-8859-1"%>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<jsp:include page="head.jsp"></jsp:include>
-	<title>Housing Game: Select House</title>
-	
+  <jsp:include page="head.jsp"></jsp:include>
+  <title>Housing Game: Select House</title>
+  
 <style>
 .hg-house-row {
   display: flex;
@@ -28,12 +28,12 @@
 
 <body style="background-color: white;" onLoad = initPage()>
 
-	<div class="form-container">
-		
-		<jsp:include page="header.jsp"></jsp:include>
-		
-		<h1>Check available houses</h1>
-		
+  <div class="form-container">
+    
+    <jsp:include page="header.jsp"></jsp:include>
+    
+    <h1>Check available houses</h1>
+    
     <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
       
       <div class="panel panel-default"> 
@@ -99,12 +99,12 @@
             </p>
             
             <form action="/housinggame-player/advance-state" method="post">
-			        <div class="form-group pmd-textfield form-group-sm">
-			          <label for="gamesession" class="control-label pmd-textfield-floating-label">Select house</label> 
-			          <select name="houses" id="houses" class="form-control">
-			             ${playerData.getContentHtml("house/options") }
-		  	        </select>
-			        </div>
+              <div class="form-group pmd-textfield form-group-sm">
+                <label for="gamesession" class="control-label pmd-textfield-floating-label">Select house</label> 
+                <select name="houses" id="houses" class="form-control">
+                   ${playerData.getContentHtml("house/options") }
+                </select>
+              </div>
             </form>
             
             <div>
@@ -115,7 +115,7 @@
       </div>
 
     </div>
-		
+    
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="stay" />
@@ -129,21 +129,21 @@
         <input type="submit" value="SELL HOUSE" class="btn btn-primary" id="hg-submit-sell" disabled />
       </div>
     </form>
-		
-		<br/>&nbsp;<br/>
-		
-	</div>
-	
-	<script>
-	  $(document).ready(function() {
+    
+    <br/>&nbsp;<br/>
+    
+  </div>
+  
+  <script>
+    $(document).ready(function() {
       $(".house-details").hide();
       $("#house-details-" + $("#houses").find(":selected").text()).show();
       check();
-	  });
-	  $('#houses').on('change', function() {
-		  $(".house-details").hide();
-		  $("#house-details-" + this.value).show();
-	  });
+    });
+    $('#houses').on('change', function() {
+      $(".house-details").hide();
+      $("#house-details-" + this.value).show();
+    });
     function check() {
         $.post("/housinggame-player/get-round-status", {jsp: 'check-houses'},
           function(data, status) {
@@ -154,8 +154,8 @@
               setTimeout(check, 5000);
             }
           });
-	  }
-	</script>
-	
+    }
+  </script>
+  
 </body>
 </html>

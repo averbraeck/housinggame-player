@@ -1,6 +1,6 @@
 <%@page import="nl.tudelft.simulation.housinggame.player.PlayerData"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+  pageEncoding="ISO-8859-1"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,11 +11,11 @@
 
 <body style="background-color: white;" onLoad = initPage()>
 
-	<div class="form-container">
-		
+  <div class="form-container">
+    
     <jsp:include page="header.jsp"></jsp:include>
 
-	  <h1 style="text-align: center; color: blue;">Select and buy improvements</h1>
+    <h1 style="text-align: center; color: blue;">Select and buy improvements</h1>
     
     <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
       
@@ -107,9 +107,9 @@
         <input type="submit" value='BUY IMPROVEMENTS, ANSWER SURVEY' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
-		
-	</div>
-	
+    
+  </div>
+  
   <script>
     $(document).ready(function() {
       check();

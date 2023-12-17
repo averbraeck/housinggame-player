@@ -144,12 +144,12 @@
       check();
     });
     $('#houses').on('change', function() {
-    	// hide all house details
+      // hide all house details
       $(".house-details").hide();
       $(".house-price-label").hide();
       $(".house-price-input").hide();
-    	
-    	// show the house details of the chosen house  
+      
+      // show the house details of the chosen house  
       $("#house-details-" + this.value).show();
       $("#house-price-label-" + this.value).show();
       $("#house-price-input-" + this.value).show();
