@@ -73,6 +73,10 @@ h1 {
   margin-top: 0.4em;
 }
 
+.hg-grey-box {
+  background-color: #e5e7e9; 
+}
+
 /* ===================================== */
 /* MODAL WINDOWS WITH POP UP INFORMATION */
 /* ===================================== */

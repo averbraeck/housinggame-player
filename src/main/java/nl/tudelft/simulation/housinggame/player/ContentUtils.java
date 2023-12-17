@@ -79,43 +79,57 @@ public class ContentUtils
         StringBuilder s = new StringBuilder();
         // @formatter:off
         s.append("            <div class=\"hg-header1\">Your mortgage</div>\n");
-        s.append("            <div style=\"background-color:#fafaf0;\">\n");
+        s.append("            <div class=\"hg-grey-box\">\n");
         s.append("              Maximum mortgage: " + data.k(data.getPlayerRound().getMaximumMortgage()) + " <br/>\n");
-        s.append("              Current mortgage: " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + " <br/>\n");
+        if (data.getPlayerRound().getFinalHousegroupId() != null)
+        {
+            s.append("              House mortgage: " + data.k(data.getPlayerRound().getMortgageHouseEnd()) + " <br/>\n");
+            s.append("              Left mortgage: " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + " <br/>\n");
+        }
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">House expectations</div>\n");
-        s.append("            <div style=\"background-color:#fafaf0;\">\n");
+        s.append("            <div class=\"hg-grey-box\">\n");
         s.append("              Preferred house rating: " + data.getPlayerRound().getPreferredHouseRating() + " <br/>\n");
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">Satisfaction costs</div>\n");
-        s.append("            <div style=\"background-color:#fafaf0;\">\n");
+        s.append("            <div class=\"hg-grey-box\">\n");
         s.append("              Satisfaction increase per point: " + data.k(welfareType.getSatisfactionCostPerPoint()) + " <br/>\n");
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">Spendable income</div>\n");
-        s.append("            <div style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 10px; " +
-                "background-color:#fafaf0;\">\n");
+        s.append("            <div class=\"hg-grey-box\" " +
+                                  "style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 20px;\">\n");
         s.append("              <div>\n");
         s.append("                  Start savings / debt <br/>\n");
         s.append("                  Round income <br/>\n");
         s.append("                  Round living costs <br />\n");
-        s.append("                  Profit sold house <br />\n");
-        s.append("                  Spent savings to buy house <br />\n");
-        if (PlayerState.valueOf(data.getPlayerRound().getPlayerState()).nr >= PlayerState.BOUGHT_HOUSE.nr)
+        if (data.getPlayerRound().getFinalHousegroupId() != null && !data.getPlayerRound().getFinalHousegroupId().equals(
+                data.getPlayerRound().getStartHousegroupId()))
         {
-            s.append("                  Actual mortgage payment <br />\n");
-            s.append("                  Actual taxes <br />\n");
+            s.append("                  Profit sold house <br />\n");
+            s.append("                  Spent savings to buy house <br />\n");
+            if (data.gtState(PlayerState.VIEW_SELL_HOUSE))
+            {
+                s.append("                  Actual mortgage payment <br />\n");
+                s.append("                  Actual taxes <br />\n");
+            }
+            else
+            {
+                s.append("                  Expected mortgage payment<br />\n");
+                s.append("                  Expected taxes <br />\n");
+            }
+            if (data.geState(PlayerState.VIEW_IMPROVEMENTS))
+            {
+                s.append("                  Personal improvements <br />\n");
+                s.append("                  House improvements <br />\n");
+            }
+            if (data.geState(PlayerState.VIEW_DAMAGE))
+            {
+                s.append("                  House damage <br />\n");
+            }
         }
-        else
-        {
-            s.append("                  Expected mortgage payment<br />\n");
-            s.append("                  Expected taxes <br />\n");
-        }
-        s.append("                  Personal improvements <br />\n");
-        s.append("                  House improvements <br />\n");
-        s.append("                  House damage <br />\n");
         s.append("                  <br />\n");
         s.append("              </div>\n");
 
@@ -128,29 +142,39 @@ public class ContentUtils
             s.append("                +0 <br/>\n");
         s.append("                + " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
         s.append("                - " + data.k(data.getPlayerRound().getLivingCosts()) + " <br />\n");
-        s.append("                + " + data.k(data.getPlayerRound().getProfitSoldHouse()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + " <br />\n");
-        if (PlayerState.valueOf(data.getPlayerRound().getPlayerState()).nr >= PlayerState.BOUGHT_HOUSE.nr)
+        if (data.getPlayerRound().getFinalHousegroupId() != null && !data.getPlayerRound().getFinalHousegroupId().equals(
+                data.getPlayerRound().getStartHousegroupId()))
         {
-            s.append("                - " + data.k(data.getPlayerRound().getMortgagePayment()) + " <br />\n");
-            s.append("                - " + data.k(data.getPlayerRound().getCostTaxes()) + " <br />\n");
+            s.append("                + " + data.k(data.getPlayerRound().getProfitSoldHouse()) + " <br />\n");
+            s.append("                - " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + " <br />\n");
+            if (data.gtState(PlayerState.VIEW_SELL_HOUSE))
+            {
+                s.append("                - " + data.k(data.getPlayerRound().getMortgagePayment()) + " <br />\n");
+                s.append("                - " + data.k(data.getPlayerRound().getCostTaxes()) + " <br />\n");
+            }
+            else
+            {
+                s.append("                - " + data.k(data.getExpectedMortgage()) + " <br />\n");
+                s.append("                - " + data.k(data.getExpectedTaxes()) + " <br />\n");
+            }
+            if (data.geState(PlayerState.VIEW_IMPROVEMENTS))
+            {
+                s.append("                - " + data.k(data.getPlayerRound().getCostSatisfactionBought()) + " <br />\n");
+                s.append("                - " + data.k(data.getPlayerRound().getCostMeasuresBought()) + " <br />\n");
+            }
+            if (data.geState(PlayerState.VIEW_DAMAGE))
+            {
+                s.append("                - " + data.k(data.getPlayerRound().getCostPluvialDamage()
+                                              + data.getPlayerRound().getCostFluvialDamage()) + " <br />\n");
+            }
         }
-        else
-        {
-            s.append("                - " + data.k(data.getExpectedMortgage()) + " <br />\n");
-            s.append("                - " + data.k(data.getExpectedTaxes()) + " <br />\n");
-        }
-        s.append("                - " + data.k(data.getPlayerRound().getCostSatisfactionBought()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getCostMeasuresBought()) + " <br />\n");
-        s.append("                - " + data.k(data.getPlayerRound().getCostPluvialDamage()
-                                             + data.getPlayerRound().getCostFluvialDamage()) + " <br />\n");
         s.append("                = " + data.k(data.getPlayerRound().getSpendableIncome()) + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">Satisfaction points</div>\n");
-        s.append("            <div style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 10px; "
-                + "background-color:#fafaf0;\">\n");
+        s.append("            <div class=\"hg-grey-box\" " +
+                                "style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 20px;\">\n");
         s.append("              <div>\n");
         s.append("                  Personal satisfaction<br/>\n");
         s.append("                  House satisfaction<br />\n");

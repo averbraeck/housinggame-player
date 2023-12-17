@@ -19,6 +19,7 @@ import org.jooq.impl.DSL;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
@@ -511,4 +512,35 @@ public class PlayerData
                 SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
         return spr.getMortgagePercentage().intValue();
     }
+
+    public boolean ltState(final PlayerState state)
+    {
+        return PlayerState.valueOf(this.getPlayerRound().getPlayerState()).lt(state);
+    }
+
+    public boolean leState(final PlayerState state)
+    {
+        return PlayerState.valueOf(this.getPlayerRound().getPlayerState()).le(state);
+    }
+
+    public boolean eqState(final PlayerState state)
+    {
+        return PlayerState.valueOf(this.getPlayerRound().getPlayerState()).eq(state);
+    }
+
+    public boolean neState(final PlayerState state)
+    {
+        return PlayerState.valueOf(this.getPlayerRound().getPlayerState()).ne(state);
+    }
+
+    public boolean geState(final PlayerState state)
+    {
+        return PlayerState.valueOf(this.getPlayerRound().getPlayerState()).ge(state);
+    }
+
+    public boolean gtState(final PlayerState state)
+    {
+        return PlayerState.valueOf(this.getPlayerRound().getPlayerState()).gt(state);
+    }
+
 }
