@@ -1,6 +1,6 @@
 <%@page import="nl.tudelft.simulation.housinggame.player.PlayerData"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+  pageEncoding="ISO-8859-1"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,46 +11,29 @@
 
 <body style="background-color: white;" onLoad = initPage()>
 
-	<div class="form-container">
-		
+  <div class="form-container">
+    
     <jsp:include page="header.jsp"></jsp:include>
 
     <div class="hg-title">
       Let's start round ${playerData.getPlayerRoundNumber() }
     </div>
     
-	  <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
-      
-      <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading1">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse1" aria-expanded="true" 
-              aria-controls="collapse1" data-expandable="false">
-              1. Your budget and expectations
-              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
-                keyboard_arrow_down
-              </i>
-            </a>
-          </h4>
-        </div>
-        <div id="collapse1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading1">
-          <div class="panel-body">
-            ${playerData.getContentHtml("panel/budget") }
-          </div>
-        </div>
-      </div>
-	  
-	  </div>
-	  
+    <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" >
+       <jsp:include page="accordion1.jsp">
+         <jsp:param name="open" value="in" />
+       </jsp:include>
+    </div>
+    
     <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="read-news" />
         <input type="submit" value="READ NEWS" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
-		
-	</div>
-	
+    
+  </div>
+  
   <script>
     $(document).ready(function() {
       check();
