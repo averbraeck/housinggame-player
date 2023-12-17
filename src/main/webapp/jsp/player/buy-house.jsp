@@ -22,6 +22,18 @@
   display-vertical: center;
   opacity: 50%;
 }
+
+#collapse3 select {
+  background: #CCE6FF !important;
+}
+
+#collapse3 input {
+  background: #CCE6FF !important;
+}
+
+option:not(:checked) {
+  background-color: #fff;
+}
 </style>
 
 </head>
@@ -34,50 +46,14 @@
     
     <div class="hg-title">Look for a house to buy</div>
     
-    <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
-      
-      <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading1">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse1" aria-expanded="true" 
-              aria-controls="collapse1" data-expandable="false">
-              1. Your budget and expectations
-              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
-                keyboard_arrow_down
-              </i>
-            </a>
-          </h4>
-        </div>
-        <div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
-          <div class="panel-body">
-            ${playerData.getContentHtml("panel/budget") }
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading2">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse2" aria-expanded="false" 
-              aria-controls="collapse2" data-expandable="false">
-              2. News for this round
-              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
-                keyboard_arrow_down
-              </i>
-            </a>
-          </h4>
-        </div>
-        <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
-          <div class="panel-body">
-            ${playerData.getContentHtml("news/summary/1") }
-          </div>
-        </div>
-      </div>
+    <div class="panel-group pmd-accordion" id="hg-accordion" role="tablist" aria-multiselectable="true" > 
+      <jsp:include page="accordion1.jsp"></jsp:include>
+      <jsp:include page="accordion2.jsp"></jsp:include>
       
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading3">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse3" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse3" aria-expanded="false" 
               aria-controls="collapse3" data-expandable="false">
               3. Your house choice
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
@@ -90,10 +66,10 @@
           <div class="panel-body">
             <p>
               Select a house from the list to check the key features. 
-              You will pay ${playerData.getMortgagePercentage() }% 
-              of the house price as the round mortgage. 
+              You will have to pay ${playerData.getMortgagePercentage()}% 
+              of the mortgage on the house to the bank in every round. 
             </p>
-            <p style="background-color:lightgrey;">
+            <p class="hg-box-grey">
               You cannot select a house whose price is higher than the maximum mortgage
                (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) }) 
               + your savings (${playerData.k(playerData.getSavings()) })
@@ -104,9 +80,10 @@
             <form action="/housinggame-player/advance-state" method="post">
               <div class="form-group pmd-textfield form-group-sm">
                 <label for="houses" class="control-label pmd-textfield-floating-label">Select house*</label> 
-                <select name="houses" id="houses" class="form-control">
+                <select name="houses" id="houses" class="form-control"">
                    ${playerData.getContentHtml("house/options") }
                 </select>
+                <br/>
                 ${playerData.getContentHtml("house/prices") }
               </div>
             </form>
@@ -120,7 +97,7 @@
 
     </div>
     
-   <form action="/housinggame-player/advance-state" method="post">
+    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value="buy-house" />
         <input type="hidden" id="form-house-code" name="house" value="" />
@@ -132,7 +109,7 @@
     <br/>&nbsp;<br/>
     
   </div>
-  
+
   <script>
     $(document).ready(function() {
       $(".house-details").hide();

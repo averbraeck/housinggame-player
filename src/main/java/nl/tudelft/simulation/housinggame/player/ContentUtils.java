@@ -79,7 +79,7 @@ public class ContentUtils
         StringBuilder s = new StringBuilder();
         // @formatter:off
         s.append("            <div class=\"hg-header1\">Your mortgage</div>\n");
-        s.append("            <div class=\"hg-grey-box\">\n");
+        s.append("            <div class=\"hg-box-grey\">\n");
         s.append("              Maximum mortgage: " + data.k(data.getPlayerRound().getMaximumMortgage()) + " <br/>\n");
         if (data.getPlayerRound().getFinalHousegroupId() != null)
         {
@@ -89,17 +89,17 @@ public class ContentUtils
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">House expectations</div>\n");
-        s.append("            <div class=\"hg-grey-box\">\n");
+        s.append("            <div class=\"hg-box-grey\">\n");
         s.append("              Preferred house rating: " + data.getPlayerRound().getPreferredHouseRating() + " <br/>\n");
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">Satisfaction costs</div>\n");
-        s.append("            <div class=\"hg-grey-box\">\n");
+        s.append("            <div class=\"hg-box-grey\">\n");
         s.append("              Satisfaction increase per point: " + data.k(welfareType.getSatisfactionCostPerPoint()) + " <br/>\n");
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">Spendable income</div>\n");
-        s.append("            <div class=\"hg-grey-box\" " +
+        s.append("            <div class=\"hg-box-grey\" " +
                                   "style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 20px;\">\n");
         s.append("              <div>\n");
         s.append("                  Start savings / debt <br/>\n");
@@ -173,7 +173,7 @@ public class ContentUtils
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">Satisfaction points</div>\n");
-        s.append("            <div class=\"hg-grey-box\" " +
+        s.append("            <div class=\"hg-box-grey\" " +
                                 "style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 20px;\">\n");
         s.append("              <div>\n");
         s.append("                  Personal satisfaction<br/>\n");
@@ -237,7 +237,8 @@ public class ContentUtils
                 if (HouseGroupStatus.isAvailableOrOccupied(houseGroup.getStatus()))
                 {
                     houseGroupMap.put(houseGroup.getCode(), houseGroup);
-                    s.append("<option value=\"" + houseGroup.getCode() + "\">" + houseGroup.getCode() + "</option>\n");
+                    s.append("<option value=\"" + houseGroup.getCode() + "\">" + houseGroup.getCode() + ", rating: "
+                            + houseGroup.getRating() + ", value: " + data.k(houseGroup.getMarketValue()) + "</option>\n");
                 }
             }
             data.getContentHtml().put("house/options", s.toString());
@@ -263,21 +264,22 @@ public class ContentUtils
             s = new StringBuilder();
             for (HousegroupRecord houseGroup : houseGroupMap.values())
             {
+                int mortgage = Math.min(data.getPlayerRound().getMaximumMortgage(), houseGroup.getMarketValue());
                 s.append("        <div class=\"house-details\" id=\"house-details-" + houseGroup.getCode()
                         + "\" style=\"display: none;\">\n");
                 s.append("          <div class=\"hg-house-row\">\n");
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">euro</i></div>\n");
                 s.append("            <div class=\"hg-house-text\">\n");
                 s.append("              Price: " + data.k(houseGroup.getMarketValue())
-                        + "<br>Yearly Mortgage (payment per round): "
-                        + data.k(houseGroup.getMarketValue() * data.getMortgagePercentage() / 100) + "\n");
+                        + "<br>Mortgage payment per round will be: " + data.k(mortgage * data.getMortgagePercentage() / 100)
+                        + "\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
                 s.append("          <div class=\"hg-house-row\">\n");
                 s.append("            <div class=\"hg-house-icon\"><i class=\"material-icons md-36\">star</i></div>\n");
                 s.append("            <div class=\"hg-house-text\">\n");
-                s.append("              House Rating: " + houseGroup.getRating()
-                        + "<br>Your satisfaction will be affected by this\n");
+                s.append("              House Rating: " + houseGroup.getRating() + "<br>Your preferred house rating: "
+                        + data.getPlayerRound().getPreferredHouseRating() + "\n");
                 s.append("            </div>\n");
                 s.append("          </div>\n");
                 s.append("          <div class=\"hg-house-row\">\n");
@@ -303,30 +305,38 @@ public class ContentUtils
                 s.append("            </div>\n");
                 s.append("          </div>\n");
 
-                s.append("<br />\n");
+                s.append("<br /><p>\n");
                 s.append("Measures implemented:<br/> \n");
                 s.append("- None\n"); // TODO: iterate over measures
-                s.append("<br /><br />\n");
+                s.append("<br /></p>\n");
 
                 if (data.getMaxMortgagePlusSavings() >= houseGroup.getMarketValue())
-                    s.append("Great! Your available income is enough for this house.\n");
+                {
+                    s.append("<p class=\"hg-box-green\">\n");
+                    s.append("Great! Your maximum mortgage plus savings are enough to buy this house.\n");
+                    s.append("</p>\n");
+                }
                 else
-                    s.append("Oops, you do not have enough available income for this house.\n");
+                {
+                    s.append("<p class=\"hg-box-red\">\n");
+                    s.append("Oops, your maximum mortgage plsu savings are NOT enough to afford this house.\n");
+                    s.append("</p>\n");
+                }
 
                 int phr = data.getPlayerRound().getPreferredHouseRating();
                 int hr = houseGroup.getRating();
                 if (hr == phr)
-                    s.append("<br /><br />The rating of the house equals your preferred rating. "
-                            + "You will not get extra satisfaction points.\n");
+                    s.append("<p class=\"hg-box-yellow\">The rating of the house equals your preferred rating. "
+                            + "You will not get extra satisfaction points.</p>\n");
                 else if (hr < phr)
-                    s.append("<br /><br />The rating of the house is below your preferred rating. " + "You will lose: "
-                            + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
-                            + " house satisfaction points.\n");
+                    s.append("<p class=\"hg-box-red\">The rating of the house is below your preferred rating. "
+                            + "You will lose: " + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
+                            + " house satisfaction points.</p>\n");
                 else
-                    s.append("<br /><br />The rating of the house is above your preferred rating. " + "You will gain: "
-                            + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
-                            + " house satisfaction points.\n");
-                s.append("<br /><br />If you found your preferred house, put your pawn on the map.\n");
+                    s.append("<p class=\"hg-box-green\">The rating of the house is above your preferred rating. "
+                            + "You will gain: " + "house rating (" + hr + ") - preferred rating (" + phr + ") = " + (hr - phr)
+                            + " house satisfaction points.</p>\n");
+                s.append("<p>If you found your preferred house, put your pawn on the map.</p>\n");
 
                 s.append("        </div>\n\n");
             }

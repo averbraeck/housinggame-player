@@ -73,9 +73,26 @@ h1 {
   margin-top: 0.4em;
 }
 
-.hg-grey-box {
+.hg-box-grey {
   background-color: #e5e7e9; 
 }
+
+.hg-box-blue {
+  background-color: #afd2ff; 
+}
+
+.hg-box-green {
+  background-color: #afffc3; 
+}
+
+.hg-box-red {
+  background-color: #ffafaf; 
+}
+
+.hg-box-yellow {
+  background-color: #fffaaf; 
+}
+
 
 /* ===================================== */
 /* MODAL WINDOWS WITH POP UP INFORMATION */
