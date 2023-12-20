@@ -32,14 +32,8 @@ public class SellHousesServlet extends HttpServlet
         data.getContentHtml().clear();
         ContentUtils.makeBudgetAccordion(data);
         ContentUtils.makeNewsAccordion(data);
-
-        if (ContentUtils.makeBuyHouseAccordion(data))
-            response.sendRedirect("jsp/player/sell-house.jsp");
-        else
-        {
-            // TODO: make error screen instead
-            response.sendRedirect("jsp/player/login.jsp");
-        }
+        ContentUtils.makeSellHouseAccordion(data);
+        response.sendRedirect("jsp/player/sell-house.jsp");
     }
 
     @Override

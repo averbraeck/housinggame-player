@@ -15,6 +15,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.QuestionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
@@ -211,16 +212,8 @@ public class ContentUtils
         }
     }
 
-    public static boolean makeBuyHouseAccordion(final PlayerData data)
+    public static void makeHousePicklist(final PlayerData data, final boolean sell)
     {
-        // fill the options list
-
-        /*-
-           <option value="NONE"></option>
-           <option value="D01">D01</option>
-           <option value="N04">N04</option>
-         */
-
         // loop through the houses that are valid for this round
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         try
@@ -236,9 +229,21 @@ public class ContentUtils
             {
                 if (HouseGroupStatus.isAvailableOrOccupied(houseGroup.getStatus()))
                 {
-                    houseGroupMap.put(houseGroup.getCode(), houseGroup);
-                    s.append("<option value=\"" + houseGroup.getCode() + "\">" + houseGroup.getCode() + ", rating: "
-                            + houseGroup.getRating() + ", value: " + data.k(houseGroup.getMarketValue()) + "</option>\n");
+                    if (HouseGroupStatus.isAvailable(houseGroup.getStatus()))
+                    {
+                        houseGroupMap.put(houseGroup.getCode(), houseGroup);
+                        s.append("<option value=\"" + houseGroup.getCode() + "\">" + houseGroup.getCode() + ", rating: "
+                                + houseGroup.getRating() + ", value: " + data.k(houseGroup.getMarketValue()) + "</option>\n");
+                    }
+                    else if (sell)
+                    {
+                        houseGroupMap.put(houseGroup.getCode(), houseGroup);
+                        PlayerRecord player = SqlUtils.readRecordFromId(data, Tables.PLAYER, houseGroup.getOwnerId());
+                        s.append("<option value=\"" + houseGroup.getCode() + "\">" + houseGroup.getCode() + ", rating: "
+                                + houseGroup.getRating() + ", value: " + data.k(houseGroup.getMarketValue()) + " [owned by "
+                                + player.getCode() + "]</option>\n");
+                    }
+
                 }
             }
             data.getContentHtml().put("house/options", s.toString());
@@ -341,13 +346,15 @@ public class ContentUtils
                 s.append("        </div>\n\n");
             }
             data.getContentHtml().put("house/details", s.toString());
-            return true;
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            return false;
         }
+    }
+    public static void makeBuyHouseAccordion(final PlayerData data)
+    {
+        makeHousePicklist(data, false);
     }
 
     public static void makeHouseWaitConfirmationAccordion(final PlayerData data)
@@ -442,6 +449,13 @@ public class ContentUtils
         }
         s.append("            </div>\n");
         data.getContentHtml().put("house/confirmation", s.toString());
+    }
+
+    public static void makeSellHouseAccordion(final PlayerData data)
+    {
+        makeHousePicklist(data, true);
+
+        // extra information to sell the house (price, reason for selling)
     }
 
     public static void makeImprovementsAccordion(final PlayerData data)
