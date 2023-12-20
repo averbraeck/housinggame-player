@@ -29,6 +29,10 @@ public class ViewSummaryServlet extends HttpServlet
             return;
         }
 
+        data.getContentHtml().clear();
+        ContentUtils.makeBudgetAccordion(data);
+        ContentUtils.makeNewsAccordion(data);
+
         response.sendRedirect("jsp/player/view-summary.jsp");
     }
 
