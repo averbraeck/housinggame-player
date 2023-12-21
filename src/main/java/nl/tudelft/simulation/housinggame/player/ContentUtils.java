@@ -13,6 +13,7 @@ import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
@@ -352,6 +353,7 @@ public class ContentUtils
             e.printStackTrace();
         }
     }
+
     public static void makeBuyHouseAccordion(final PlayerData data)
     {
         makeHousePicklist(data, false);
@@ -463,16 +465,46 @@ public class ContentUtils
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<MeasuretypeRecord> measureTypeList = dslContext.selectFrom(Tables.MEASURETYPE)
                 .where(Tables.MEASURETYPE.GAMEVERSION_ID.eq(data.getGameVersion().getId())).fetch();
+        List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
+                .where(Tables.MEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
-        s.append("<p>Please select your improvements:</p>\n");
+        s.append("<p><b>Please select your improvements:</b></p>\n");
+        s.append("<p>Your spendable income is: " + data.k(data.getPlayerRound().getSpendableIncome()) + "</p>\n");
+        s.append("<form id=\"improvements-form\">\n");
         for (MeasuretypeRecord measureType : measureTypeList)
         {
-            s.append("[ ] " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) + "<br/>\n");
+            boolean bought = false;
+            for (MeasureRecord measure : measureList)
+            {
+                if (measure.getMeasuretypeId().equals(measureType.getId()))
+                    bought = true;
+            }
+            String readonly = bought ? "readonly" : "";
+            String checked = bought ? "checked" : "";
+            s.append("  <div class=\"checkbox pmd-default-theme\">\n");
+            s.append("    <label class=\"pmd-checkbox pmd-checkbox-ripple-effect\">\n");
+            s.append("      <input type=\"checkbox\" name=\"measure-" + measureType.getId() + "\" id=\"measure-"
+                    + measureType.getId() + "\" value=\"" + measureType.getId() + "\" " + checked + " " + readonly + " />\n");
+            s.append("      <span>" + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice())
+                    + ", satisfaction: " + measureType.getSatisfactionDelta() + "</span>\n");
+            s.append("    </label>\n");
+            s.append("  </div>\n");
         }
         s.append("<br/><p>Please select if you want to buy extra satisfaction:</p>\n");
         WelfaretypeRecord wft = SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
-        s.append("[ ] " + " costs per point: " + data.k(wft.getSatisfactionCostPerPoint()) + "<br/>\n");
+        s.append("  <div class=\"form-group\">\n");
+        s.append("    <label for=\"regular1\" class=\"control-label\">");
+        s.append("Costs per satisfaction point : " + data.k(wft.getSatisfactionCostPerPoint()));
+        s.append("</label>\n");
+        s.append("     <select class=\"form-control\" id=\"selected-points\">\n");
+        s.append("       <option value=\"0\">no extra satisfaction points</option>\n");
+        for (int i = 1; i <= 10; i++)
+            s.append("       <option value=\"" + i + "\">" + i + "x - cost = " + data.k(i * wft.getSatisfactionCostPerPoint())
+                    + "</option>\n");
+        s.append("     </select>\n");
+        s.append("  </div>\n");
+        s.append("</form>\n");
         s.append("            </div>\n");
         data.getContentHtml().put("house/improvements", s.toString());
     }

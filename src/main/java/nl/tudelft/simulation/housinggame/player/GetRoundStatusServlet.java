@@ -36,9 +36,6 @@ public class GetRoundStatusServlet extends HttpServlet
         String jsp = request.getParameter("jsp");
         boolean ok = jsp == null ? false : PlayerStateUtils.checkOkButton(data, jsp);
 
-        System.out.println("get-round-status for player " + data.getPlayerCode() + ", jsp=" + jsp + ", ok=" + ok + ", error="
-                + data.getError());
-
         if (!ok && data.getError().length() > 0)
             System.err.println("checkOkButton for player " + data.getPlayerCode() + ": " + data.getError());
 

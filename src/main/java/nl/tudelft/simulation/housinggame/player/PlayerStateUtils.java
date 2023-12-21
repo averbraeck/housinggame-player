@@ -31,8 +31,6 @@ public final class PlayerStateUtils
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
         RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
 
-        System.out.println("checkOkButton for player " + data.getPlayerCode() + ", jsp = " + jsp);
-
         if (data.getGroupRoundNumber() < data.getPlayerRoundNumber())
         {
             data.setError("jsp = " + jsp + ", but group round " + data.getGroupRoundNumber() + " is less than player round "
