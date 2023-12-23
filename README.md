@@ -6,13 +6,13 @@ Player app for the housing game. This app is optimized for use on a mobile phone
 
 The following technical choices have been made for the player app:
 - built in Java (no php or nodejs needed)
-- deployed in Tomcat (version 9)
-- HikariCP connection pool for scalability
-- jsp pages and servlets to display pages to the user
-- content is data-driven with a mariadb database for persistence
+- deployed in [Tomcat](https://tomcat.apache.org/) (version 9)
+- [HikariCP](https://github.com/brettwooldridge/HikariCP) connection pool for scalability
+- [jsp pages and servlets](https://www.oracle.com/technical-resources/articles/javase/servlets-jsp.html) to display pages to the user
+- content is data-driven with a [mariadb](https://mariadb.org/) database for persistence
 - cached dynamic data object per player for quick response
-- material UI 'look and feel' with Roboto font and MUI icons
-- propeller static library for material-like user design elements
+- [material UI](https://mui.com/material-ui/) 'look and feel' with [Roboto font](https://fonts.google.com/specimen/Roboto) and [MUI icons](https://mui.com/material-ui/material-icons/)
+- [propeller](https://propeller.in/frameworks/open-source/) static library for material-like user design elements
 - polling by player app for updates (pull-based instead of push-based)
 - communication using XHR (using post and not get to decrease tampering risks)
 - json for communication between the servlets and the web page
