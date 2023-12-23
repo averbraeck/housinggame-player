@@ -5,7 +5,7 @@ The application implements a state machine and works with servlets and jsp pages
 
 ## 1. Login
 
-When a player starts the application, `jsp/player/login.jsp` is displayed. The data of the logi screen is sent to `/login`, which corresponds to the `PlayerLoginServlet`, whose `doPost()` method is called. The `doPost()` method checks the login credentials. On successful login, the player's data is retrieved from the database (or created in the database on first login), and the player is redirected to the screen corresponding to its `PlayerState`. The method responsible for redirecting the player is `PlayerStateUtils.redirect()`. 
+When a player starts the application, `jsp/player/login.jsp` is displayed. The data of the login screen is sent to `/login`, which corresponds to the `PlayerLoginServlet`, whose `doPost()` method is called. The `doPost()` method checks the login credentials. On successful login, the player's data is retrieved from the database (or created in the database on first login), and the player is redirected to the screen corresponding to its `PlayerState`. The method responsible for redirecting the player is `PlayerStateUtils.redirect()`. 
 
 
 ## 2. Player screen
@@ -31,6 +31,38 @@ Each player screen has a function (reading stuff or entering data for the game),
 
 Since the state of the progress button is dependent on the group round and influenced by the facilitator, the player app has to be informed of a change that can change the state of the progress button. In this case, we chose to poll for the state change through a servlet called `GetRoundStatusServlet` that is reachable by `/get-round-status`. It probes the database to see if the button should be active or disabled based on the information in the database, and returns the outcome to the player app. A small piece of javascript with a timer polls for this information every few seconds. Using a pull rather than a push method, the player app is in control, and no error handling code is needed server side when the player app fails to respond.
 
+A button looks, e.g., as follows:
+
+```html
+<form action="/housinggame-player/advance-state" method="post">
+  <div class="hg-button">
+    <input type="hidden" name="okButton" value="read-news" />
+    <input type="submit" value="READ NEWS" class="btn btn-primary" id="hg-submit" disabled />
+  </div>
+</form>
+```
+
+The code responsible for checking whether the button is greyed out or active in javascript is as follows:
+
+```js
+$(document).ready(function() {
+  check();
+});
+
+function check() {
+  $.post("/housinggame-player/get-round-status", {jsp: 'read-budget'},
+    function(data, status) {
+      if (data == "OK") {
+        $("#hg-submit").removeAttr("disabled");
+      } else {
+        setTimeout(check, 5000);
+      }
+    });
+}
+```
+
+Using jQuery, the `check()` function asks the `get-round-status` servlet whether moving to the next screen is ok or not. If yes, the button is activated (the disabled attribute is removed), and the polling timer stops. If no, the `check()` function is rescheduled in 5 seconds.
+
 
 ## 4. Processing the information from the player screen
 
@@ -43,7 +75,7 @@ On the server side, methods from the gson library extract the relevant informati
 
 There are different ways of displaying dynamic data on the player's screen. Example are buying measures or buying a house, where feedback has to be shown on the screen indicating whether the player can afford the measure or the house or not. Additional information about costs and satisfaction can be displayed alongside the choices made by the player. 
 
-There are two ways to display this information. One is to buld in everything into the screen, where relevant parts are shown or hidded, depending on the player's choice. 
+There are two ways to display this information. One is to buld in everything into the screen, where relevant parts are shown or hidden, depending on the player's choice. 
 
 
 ## 6. Advancing to the next screen
