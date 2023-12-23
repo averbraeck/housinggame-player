@@ -61,7 +61,7 @@ function check() {
 }
 ```
 
-Using jQuery, the `check()` function asks the `get-round-status` servlet whether moving to the next screen is ok or not. If yes, the button is activated (the disabled attribute is removed), and the polling timer stops. If no, the `check()` function is rescheduled in 5 seconds.
+Using jQuery, the `check()` function asks the `get-round-status` servlet whether moving to the next screen is ok or not. If yes, the button is activated (the disabled attribute is removed), and the polling timer stops. If no, the `check()` function is rescheduled in 5 seconds. The information provided to the `get-round-status` servlet is a JSON object telling it which jsp called the servlet (the `{jsp: 'read-budget'}` object). On the basis of this object, the `get-round-status` servlet checks: is it okay for this player to move to the next screen after read-budget, given the player's state and the group's round state?
 
 
 ## 4. Processing the information from the player screen
