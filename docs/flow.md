@@ -113,7 +113,7 @@ When a player screen needs to send data to the server to be processed and entere
 ```html
 <form action="/housinggame-player/advance-state" method="post">
   <div class="hg-button">
-    <input type="hidden" name="next-screen" value="buy-house-wait" />
+    <input type="hidden" name="nextScreen" value="buy-house-wait" />
     <input type="hidden" id="form-house-code" name="house" value="" />
     <input type="hidden" id="form-house-price" name="price" value="" />
     <input type="submit" value="BUY HOUSE" class="btn btn-primary" id="hg-submit" disabled />
@@ -121,9 +121,20 @@ When a player screen needs to send data to the server to be processed and entere
 </form>
 ```
 
-The form contains a number of hidden fields that convey the choice of the player (this could also have been done in many other ways). These fields are filled by javascript code.
+The form contains a number of hidden fields that convey the choice of the player (this could also have been done in many other ways). These fields are filled by javascript code:
 
-On the server side, the relevant information is extracted from the parameter strings, checked, and inserted into the database when they are correct. In this case the `makeHouseTransaction` method checks the data and inserts it into the database when correct. When the data is not correct, either the original screen can be shown to the player again (possibly with an error message), so the user can re-send the information, or a separate error screen can be shown that redirects to the login screen when the error has been read. In the case below, the player is redirected back to the `buy-house` screen in case of an error creating the buying transaction.
+```js
+$('#houses').on('change', function() {
+  $("#form-house-code").val(this.value);
+  $("#form-house-price").val($("#house-price-input-" + this.value).val());
+});
+
+$('.house-price-input').on('input', function() {
+  $("#form-house-price").val($("#house-price-input-" + $("#form-house-code").val()).val());
+});
+```
+
+On the server side, the relevant information is received by the `advance-state` servlet as shown before, data is extracted from the parameter strings, checked, and inserted into the database when they are correct. In this case the `makeHouseTransaction` method checks the data and inserts it into the database when correct. When the data is not correct, either the original screen can be shown to the player again (possibly with an error message), so the user can re-send the information, or a separate error screen can be shown that redirects to the login screen when the error has been read. In the case below, the player is redirected back to the `buy-house` screen in case of an error creating the buying transaction.
 
 ```java
 // player decided which house to buy with BUY HOUSE 
@@ -149,6 +160,102 @@ if (nextScreen.equals("buy-house-wait"))
 
 ## 6. Dynamic data on the user screen
 
-There are different ways of displaying dynamic data on the player's screen. Example are buying measures or buying a house, where feedback has to be shown on the screen indicating whether the player can afford the measure or the house or not. Additional information about costs and satisfaction can be displayed alongside the choices made by the player. 
+There are different ways of displaying dynamic data on the player's screen. Example where dynamic data is needed are buying measures or buying a house, where feedback has to be shown on the screen indicating whether the player can afford the measure or the house or not. Additional information about costs and satisfaction can be displayed alongside the choices made by the player. 
 
-There are two ways to display this information. One is to buld in everything into the screen, where relevant parts are shown or hidden, depending on the player's choice. 
+There are two typical ways to display this information. One is to build in everything into the screen, where relevant parts are shown or hidden, depending on the player's choice. Another is to make a post request to the server and ask the server for the appropriate response. The disadvantage of pre-processing is that it is static; the information on the player's screen cannot be updated with new information from the database. Therefore, dynamic data will typically be processed through post requests by special servlets on the server. An example is buying improvements in the game. Depending on whether the player can afford the improvements or not, different information is shown (and the 'BUY IMPROVEMENTS' button is greyed out when the player cannot afford the improvements). 
+
+To allow for the button to be dependent on both the group round state (retrieved using the `get-round-status` servlet) and on the affordability of the bought measures, two global variables ``choicesOk` and `buttonOk` are used in javascript:
+
+```js
+var choicesOk = true;
+var buttonOk = false;
+
+$(document).ready(function() {
+  check();
+});
+
+function check() {
+  $.post("/housinggame-player/get-round-status", {jsp: 'view-improvements'},
+    function(data, status) {
+      if (data == "OK" && choicesOk) {
+        buttonOk = true;
+        $("#hg-submit").removeAttr("disabled");
+      } else {
+        buttonOk = false;
+        setTimeout(check, 5000);
+      }
+    });
+}
+```
+
+The html code contains checkboxes and a selection:
+
+```html
+<form id="improvements-form">
+  <div class="checkbox pmd-default-theme">
+    <label class="pmd-checkbox pmd-checkbox-ripple-effect">
+      <input type="checkbox" name="measure-12" id="measure-12" value="12">
+      <span>Green garden, costs: 20 k, satisfaction: 2</span>
+    </label>
+  </div>
+  <!-- ... many more checkboxes -->
+  <div class="form-group">
+    <label for="regular1" class="control-label">Choose satisfaction to buy</label>
+     <select class="form-control" id="selected-points">
+       <option value="0">no extra satisfaction points</option>
+       <option value="1">1x - cost = 6 k</option>
+       <!-- ... more options -->
+     </select>
+  </div>
+</form>
+```
+
+Several functions in the javascript code check via the server whether the entered options are affordable:
+
+```js
+$('input[type="checkbox"]').on('change', function() {
+    checkCosts();
+});
+
+$('select').on('change', function() {
+    checkCosts();
+});
+
+function checkCosts() {
+  $.post("/housinggame-player/check-improvements-costs", {
+    'jsp': 'view-improvements',
+    'form': $('#improvements-form').serialize(),
+    'selected-points': $('#selected-points').val()
+  }, function(result, status) {
+    json = JSON.parse(result);
+    if (json.ok == "OK") {
+      choicesOk = true;
+      if (buttonOk)
+        $("#hg-submit").removeAttr("disabled");
+    } else {
+      choicesOk = false;
+      $("#hg-submit").prop("disabled", true);
+    }
+    $('#calculation-result').replaceWith(json.html);
+  });
+}
+```
+
+Both the input checkboxes and the select field are watched for changes. If the player makes a change, the `checkSosts()` method is called that submits three fields to the `check-improvements-costs` servlet on the server: the jsp calling, the ticked boxes on the form, and the selected choice from the pull-down menu. The servlet sends back two JSON fields: `'ok'` and `'html'`, where the ok-field can contain "OK" or "NO", and the html-field replaces the `<div>` on the page with the id `#calculation-result`:
+
+```html
+<div id="calculation-result">
+  <p>
+      Total measure cost: 0<br>
+      Bought satisfaction cost: 0<br>
+      Total cost: 0<br>
+      Spendable income: -6 k<br>
+  </p>
+  <p>
+      You did not select any measures (yet).
+  </p>
+</div>
+```
+
+This provides for a smooth feedback to the player's choices immediately when the player makes a change on the screen. The use of a servlet ensures that the feedback to the player is based on the most recent information in the database.
+
