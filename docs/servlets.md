@@ -1,4 +1,4 @@
-# Flow with servlets and jsp pages
+# Use of servlets and jsp pages
 
 The application implements a state machine and works with servlets and jsp pages to provide the content. The following principles are applied.
 
@@ -241,7 +241,7 @@ function checkCosts() {
 }
 ```
 
-Both the input checkboxes and the select field are watched for changes. If the player makes a change, the `checkSosts()` method is called that submits three fields to the `check-improvements-costs` servlet on the server: the jsp calling, the ticked boxes on the form, and the selected choice from the pull-down menu. The servlet sends back two JSON fields: `'ok'` and `'html'`, where the ok-field can contain "OK" or "NO", and the html-field replaces the `<div>` on the page with the id `#calculation-result`:
+Both the input checkboxes and the select field are watched for changes. If the player makes a change, the `checkCosts()` method is called that submits three fields to the `check-improvements-costs` servlet on the server: the jsp calling, the ticked boxes on the form, and the selected choice from the pull-down menu. The servlet sends back two JSON fields: `'ok'` and `'html'`, where the ok-field can contain "OK" or "NO", and the html-field replaces the `<div>` on the page with the id `#calculation-result`:
 
 ```html
 <div id="calculation-result">
