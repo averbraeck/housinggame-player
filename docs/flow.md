@@ -27,22 +27,22 @@ In this case, the entire string with html content (several dozen lines of html c
 
 ## 3. Progress button on each player screen
 
-Each player screen has a function (reading stuff or entering data for the game), and it has a button at the bottom of the screen that allows the player to potentially submit data and request to go to the next screen. Depending on the game state, this button is greyed out (disabled) or active, where it can turn active based on the entered data on the screen, and on the state of the game round for the group as initiated by the group's facilitator. 
+Each player screen has a function (reading stuff or entering data for the game), and it has a button at the bottom of the screen that allows the player to potentially submit data and request to go to the next screen. Depending on the game state, this button is greyed out (disabled) or enabled, where it can become enabled based on the entered data on the screen, and on the state of the game round for the group as initiated by the group's facilitator. 
 
-Since the state of the progress button is dependent on the group round and influenced by the facilitator, the player app has to be informed of a change that can change the state of the progress button. In this case, we chose to poll for the state change through a servlet called `GetRoundStatusServlet` that is reachable by `/get-round-status`. It probes the database to see if the button should be active or disabled based on the information in the database, and returns the outcome to the player app. A small piece of javascript with a timer polls for this information every few seconds. Using a pull rather than a push method, the player app is in control, and no error handling code is needed server side when the player app fails to respond.
+Since the state of the progress button is dependent on the group round and influenced by the facilitator, the player app has to be informed of a server-side change that can influence the state of the progress button. In this case, we chose to poll for the state change through a servlet called `GetRoundStatusServlet` that is reachable by `/get-round-status`. It probes the database to see if the button should be enabled or disabled based on the information in the database, and returns the outcome to the player app. A small piece of javascript with a timer polls for this information every few seconds. Using a pull rather than a push method, the player app is in control, and no error handling code is needed server side when the player app fails to respond. It would also cater for situations where more than one player app would be active.
 
-A button looks, e.g., as follows:
+The html-code for a button looks, e.g., as follows:
 
 ```html
 <form action="/housinggame-player/advance-state" method="post">
   <div class="hg-button">
-    <input type="hidden" name="okButton" value="read-news" />
+    <input type="hidden" name="nextScreen" value="read-news" />
     <input type="submit" value="READ NEWS" class="btn btn-primary" id="hg-submit" disabled />
   </div>
 </form>
 ```
 
-The code responsible for checking whether the button is greyed out or active in javascript is as follows:
+Note that a form is used with a submit button. This is because an XHR POST request is **not** meant to handle redirects, where pressing the button at the bottom of the screen typically results in a redirect. Therefore, using a form with a submit is a more logical way to process the button at the bottom of the screen. The code responsible for checking whether the READ NEWS button is greyed out or enabled in javascript is as follows:
 
 ```js
 $(document).ready(function() {
@@ -61,23 +61,60 @@ function check() {
 }
 ```
 
-Using jQuery, the `check()` function asks the `get-round-status` servlet whether moving to the next screen is ok or not. If yes, the button is activated (the disabled attribute is removed), and the polling timer stops. If no, the `check()` function is rescheduled in 5 seconds. The information provided to the `get-round-status` servlet is a JSON object telling it which jsp called the servlet (the `{jsp: 'read-budget'}` object). On the basis of this object, the `get-round-status` servlet checks: is it okay for this player to move to the next screen after read-budget, given the player's state and the group's round state?
+Using jQuery, the `check()` function asks the `get-round-status` servlet whether moving to the next screen is ok or not. If yes, the button is enabled (the disabled attribute is removed), and the polling timer stops. If no, the `check()` function is rescheduled in 5 seconds. The information provided to the `get-round-status` servlet is a JSON object telling it which jsp called the servlet (the `{jsp: 'read-budget'}` object). On the basis of this object, the `get-round-status` servlet checks: is it okay for this player to move to the next screen after read-budget, given the player's state and the group's round state?
 
 
-## 4. Processing the information from the player screen
+## 4. Advancing to the next screen
+
+When a screen does not contain a payload with user-entered data, the `AdvancestateServlet` called by `/advance-state` determines which screen to show to the player, depending on the player's state and the group's round state. This can be seen in the html-code for the button at the bottom of the screen:
+
+```html
+<form action="/housinggame-player/advance-state" method="post">
+  <div class="hg-button">
+    <input type="hidden" name="nextScreen" value="read-news" />
+    <input type="submit" value="READ NEWS" class="btn btn-primary" id="hg-submit" disabled />
+  </div>
+</form>
+```
+
+Here, the button indicates it wants to advance to the `read-news` screen for the player (the promise that the button makes, since its text reads 'READ NEWS'). When the button is enabled (see section 3 above), the player can click the button, and the server-side servlet `advance-state` encoded in the class `AdvanceStateServlet` takes over. This class is the state machine for the player that determines what actions to take, and what screen to show next. The piece of code in `advance-state` for handling the `read-news` request looks as follows:
+
+```java
+// player clicked READ NEWS on the read-budget screen
+if (nextScreen.equals("read-news"))
+{
+    data.getPlayerRound().setPlayerState(PlayerState.READ_NEWS.toString());
+    data.getPlayerRound().store();
+    response.sendRedirect("/housinggame-player/read-news");
+    return;
+}
+```
+
+Since the `read-budget` screen, where the request was made, is a read-only screen without user interactions, two actions need to take place. First, the player status has to be updated in the database, using its current `PlayerRound` record. Secondly, the page can be redirected to the `read-news` screen. Note that `/housinggame-player/read-news` redirects **first** to the `ReadNewsServlet` that retrieves the correct news item for the player from the database, which in turn redirects to the `jsp/player/read-news` jsp-page that is responsible for the server side rendering of the news page for the client side. This page will start again with a disabled button at the bottom, which will be enabled based on the development of the group round state of the game.
+
+The central piece of code in the `ReadNewsServlet` to prepare the data for the next screen is:
+
+```java
+data.getContentHtml().clear();
+ContentUtils.makeBudgetAccordion(data);
+ContentUtils.makeNewsAccordion(data);
+data.putContentHtml("buy-or-sell", data.getPlayerRoundNumber() == 1 
+    ? "view-buy-house" : "view-sell-house");
+response.sendRedirect("jsp/player/read-news.jsp");
+```
+
+As can be seen, the html content map is cleaned, after which data for two accordions is filled: the budget information and the news information. Finally, some content with the key `buy-or-sell` is prepared for the jsp-page to decide which button will be displayed at the bottom of the screen (in round 1, it redirects to `view-buy-house` since players don't own a house yet; in rounds 2 and up, players get the opportunity to sell their house first, indicated by `view-sell-house` for the redirection of the button at the bottom of the screen).
+
+
+## 5. Processing information from the player screen
 
 When a player screen needs to send data to the server to be processed and entered into the database, several ways to do so exist: forms or json records. In essence, they are the same, since the player app sends a request to the server in both cases. To keep the code maintainable and consistent, this always has to be done in the same manner. In this case, JSON objects are used to submit information to the server, and potential form elements, such as `<input>` or `<select>` are transformed into JSON objects by javascript code and sent to the server.
 
 On the server side, methods from the gson library extract the relevant information from the json string, check the data, and insert the data into the database when correct. When the data is not correct, either the original screen can be shown to the player again (possibly with an error message), so the user can re-send the information, or a separate error screen can be shown that redirects to the login screen when the error has been read.
 
 
-## 5. Dynamic data on the user screen
+## 6. Dynamic data on the user screen
 
 There are different ways of displaying dynamic data on the player's screen. Example are buying measures or buying a house, where feedback has to be shown on the screen indicating whether the player can afford the measure or the house or not. Additional information about costs and satisfaction can be displayed alongside the choices made by the player. 
 
 There are two ways to display this information. One is to buld in everything into the screen, where relevant parts are shown or hidden, depending on the player's choice. 
-
-
-## 6. Advancing to the next screen
-
-The `AdvancestateServlet` called by `/advance-state` determines which screen to show to the player, depending on the player's state and the group's round state. 
