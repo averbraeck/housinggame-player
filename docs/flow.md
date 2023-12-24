@@ -108,9 +108,43 @@ As can be seen, the html content map is cleaned, after which data for two accord
 
 ## 5. Processing information from the player screen
 
-When a player screen needs to send data to the server to be processed and entered into the database, several ways to do so exist: forms or json records. In essence, they are the same, since the player app sends a request to the server in both cases. To keep the code maintainable and consistent, this always has to be done in the same manner. In this case, JSON objects are used to submit information to the server, and potential form elements, such as `<input>` or `<select>` are transformed into JSON objects by javascript code and sent to the server.
+When a player screen needs to send data to the server to be processed and entered into the database, several ways to do so exist: forms or json records. In essence, they are the same, since the player app sends a request to the server in both cases. To keep the code maintainable and consistent, this always has to be done in the same manner. In this case, forms are used to submit information to the server, for the reason already mentioned above: a submission of data typically leads to a redirect for the player screen, which is handled in a natural way using the submit of a form. 
 
-On the server side, methods from the gson library extract the relevant information from the json string, check the data, and insert the data into the database when correct. When the data is not correct, either the original screen can be shown to the player again (possibly with an error message), so the user can re-send the information, or a separate error screen can be shown that redirects to the login screen when the error has been read.
+```html
+<form action="/housinggame-player/advance-state" method="post">
+  <div class="hg-button">
+    <input type="hidden" name="next-screen" value="buy-house-wait" />
+    <input type="hidden" id="form-house-code" name="house" value="" />
+    <input type="hidden" id="form-house-price" name="price" value="" />
+    <input type="submit" value="BUY HOUSE" class="btn btn-primary" id="hg-submit" disabled />
+  </div>
+</form>
+```
+
+The form contains a number of hidden fields that convey the choice of the player (this could also have been done in many other ways). These fields are filled by javascript code.
+
+On the server side, the relevant information is extracted from the parameter strings, checked, and inserted into the database when they are correct. In this case the `makeHouseTransaction` method checks the data and inserts it into the database when correct. When the data is not correct, either the original screen can be shown to the player again (possibly with an error message), so the user can re-send the information, or a separate error screen can be shown that redirects to the login screen when the error has been read. In the case below, the player is redirected back to the `buy-house` screen in case of an error creating the buying transaction.
+
+```java
+// player decided which house to buy with BUY HOUSE 
+// and has entered the price on the buy-house screen
+if (nextScreen.equals("buy-house-wait"))
+{
+    // handle the entered buy-house data: 
+    // Parameter house[e.g., N07], Parameter price[e.g., 105]
+    String house = request.getParameter("house");
+    String price = request.getParameter("price");
+    if (!SqlUtils.makeHouseTransaction(data, house, price))
+    {
+        response.sendRedirect("/housinggame-player/buy-house");
+        return;
+    }
+    data.getPlayerRound().setPlayerState(PlayerState.BUY_HOUSE_WAIT.toString());
+    data.getPlayerRound().store();
+    response.sendRedirect("/housinggame-player/buy-house-wait");
+    return;
+}
+```
 
 
 ## 6. Dynamic data on the user screen
