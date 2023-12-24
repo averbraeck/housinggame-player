@@ -20,6 +20,13 @@ The following technical choices have been made for the player app:
 - accordion design for the player page where new information is added to the bottom of the accordion per round
 - strict state machine to align player's progress with the group's progress
 
+
+## Contents
+
+1. [Game flow](docs/flow.md)
+2. [Use of servlets and jsp-pages](docs/servlets.md)
+
+
 ## Why use JSP/Servlets and not REST?
 
 One of the core pillars of REST is statelessness. A typical game page is stateful and benefits from a stateful back-end. In theory, the game could be implemented in a stateless manner since all data is stored in the database, and the server does not contain any data that is not stored in the database. Having a stateful object (the `PlayerData` object) available on the server for each session is, however, beneficial for coding ease, code size, and speed. Apart from the `PlayerData` object, the application is built more-or-less in a stateless manner.
