@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.common.PlayerState;
+import nl.tudelft.simulation.housinggame.common.RoundState;
+
 @WebServlet("/get-round-status")
 public class GetRoundStatusServlet extends HttpServlet
 {
@@ -34,13 +37,60 @@ public class GetRoundStatusServlet extends HttpServlet
 
         // return OK if the button for the current screen can be enabled, an empty string otherwise
         String jsp = request.getParameter("jsp");
-        boolean ok = jsp == null ? false : PlayerStateUtils.checkOkButton(data, jsp);
+        boolean ok = jsp == null ? false : checkNextScreenButton(data, jsp);
 
         if (!ok && data.getError().length() > 0)
-            System.err.println("checkOkButton for player " + data.getPlayerCode() + ": " + data.getError());
+            System.err.println("checkNextScreenButton for player " + data.getPlayerCode() + ": " + data.getError());
 
         response.setContentType("text/plain");
         response.getWriter().write(ok ? "OK" : "");
+    }
+
+    public static boolean checkNextScreenButton(final PlayerData data, final String jsp)
+    {
+        data.setError("");
+        PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
+        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
+
+        if (data.getGroupRoundNumber() < data.getPlayerRoundNumber())
+        {
+            data.setError("jsp = " + jsp + ", but group round " + data.getGroupRoundNumber() + " is less than player round "
+                    + data.getPlayerRoundNumber() + ", and player state is '" + playerState + "'");
+            return false;
+        }
+        if (data.getGroupRoundNumber() == data.getPlayerRoundNumber() && playerState.nr > roundState.nr)
+        {
+            data.setError("jsp = " + jsp + ", but player state " + playerState + " is larger than round state " + roundState
+                    + ", and player round nr is " + data.getPlayerRoundNumber());
+            return false;
+        }
+
+        if (jsp.equals("welcome-wait"))
+        {
+            if (data.getGroupRound() == null)
+            {
+                data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
+                return false;
+            }
+            if (data.getGroupRoundNumber() <= 1 && roundState.lt(RoundState.NEW_ROUND))
+            {
+                data.setError("jsp = 'welcome-wait', but GroupRound state is " + roundState + ", groupround = "
+                        + data.getGroupRoundNumber());
+                return false;
+            }
+            return true;
+        }
+
+        // for all other states, the same 'ok' rule holds
+        if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
+            return true;
+        if (roundState.nr > playerState.nr)
+            return true;
+        // summary screen in last round: OK should not be true there
+        if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber() && jsp.equals("summary"))
+            return false;
+
+        return false;
     }
 
 }
