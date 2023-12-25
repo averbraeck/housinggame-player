@@ -87,24 +87,6 @@ public class AdvanceStateServlet extends HttpServlet
             return;
         }
 
-        // player clicked VIEW HOUSES on the read-news screen, and we are in round 1 (buy house)
-        if (nextScreen.equals("view-buy-house") && data.getPlayerRoundNumber() == 1)
-        {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/buy-house");
-            return;
-        }
-
-        // player clicked VIEW HOUSES on the read-news screen, and we are in round 2 or up (sell/stay house)
-        if (nextScreen.equals("view-sell-house") && data.getPlayerRoundNumber() > 1)
-        {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_SELL_HOUSE.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/sell-house");
-            return;
-        }
-
         // player clicked STAY on the sell-house screen
         if (nextScreen.equals("stay"))
         {
