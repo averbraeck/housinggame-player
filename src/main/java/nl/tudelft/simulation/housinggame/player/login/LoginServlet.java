@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.login;
 
 import java.io.IOException;
 
@@ -19,9 +19,12 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
+import nl.tudelft.simulation.housinggame.player.PlayerData;
+import nl.tudelft.simulation.housinggame.player.SessionUtils;
+import nl.tudelft.simulation.housinggame.player.SqlUtils;
 
 @WebServlet("/login")
-public class PlayerLoginServlet extends HttpServlet
+public class LoginServlet extends HttpServlet
 {
 
     /** */
