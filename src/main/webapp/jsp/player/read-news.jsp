@@ -24,7 +24,7 @@
        </jsp:include>
     </div>
 
-   <form action="/housinggame-player/advance-state" method="post">
+   <form action="/housinggame-player/read-news-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="okButton" value='${playerData.getContentHtml("buy-or-sell") }' />
         <input type="submit" value="VIEW HOUSES" class="btn btn-primary" id="hg-submit" disabled />
