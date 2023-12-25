@@ -26,7 +26,7 @@
 
    <form action="/housinggame-player/read-news-done" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value='${playerData.getContentHtml("buy-or-sell") }' />
+        <input type="hidden" name="nextScreen" value='${playerData.getContentHtml("buy-or-sell") }' />
         <input type="submit" value="VIEW HOUSES" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>

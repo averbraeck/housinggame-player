@@ -23,7 +23,7 @@
     
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="view-summary" />
+        <input type="hidden" name="nextScreen" value="view-summary" />
         <input type="submit" value='VIEW ROUND SUMMARY' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>

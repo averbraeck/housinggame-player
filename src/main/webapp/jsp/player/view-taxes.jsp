@@ -23,7 +23,7 @@
     
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="view-taxes" />
+        <input type="hidden" name="nextScreen" value="view-taxes" />
         <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>

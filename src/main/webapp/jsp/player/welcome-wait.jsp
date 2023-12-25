@@ -31,7 +31,7 @@
         </table>
       </div>
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="start-game" />
+        <input type="hidden" name="nextScreen" value="start-game" />
         <input type="submit" value="START GAME" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>

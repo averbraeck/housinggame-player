@@ -118,14 +118,14 @@
     
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="stay" />
+        <input type="hidden" name="nextScreen" value="stay" />
         <input type="submit" value="STAY" class="btn btn-primary" id="hg-submit-stay" disabled />
       </div>
     </form>
 
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="sell-house" />
+        <input type="hidden" name="nextScreen" value="sell-house" />
         <input type="submit" value="SELL HOUSE" class="btn btn-primary" id="hg-submit-sell" disabled />
       </div>
     </form>

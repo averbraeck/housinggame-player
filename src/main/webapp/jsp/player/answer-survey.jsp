@@ -124,7 +124,7 @@
     
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="view-damage" />
+        <input type="hidden" name="nextScreen" value="view-damage" />
         <input type="submit" value='STORE SURVEY, WAIT FOR THE DICE' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>

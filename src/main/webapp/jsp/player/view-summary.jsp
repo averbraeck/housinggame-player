@@ -29,7 +29,7 @@
     
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="read-news" />
+        <input type="hidden" name="nextScreen" value="read-news" />
         <input type="submit" value='NEW ROUND' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
