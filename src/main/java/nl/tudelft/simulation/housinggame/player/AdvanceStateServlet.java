@@ -48,12 +48,16 @@ public class AdvanceStateServlet extends HttpServlet
         RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
 
         // the ok button indicates the INTENTION of the player, not the screen it originates from.
-        String okButton = "";
+        String nextScreen = "";
         if (request.getParameter("okButton") != null)
-            okButton = request.getParameter("okButton");
+            nextScreen = request.getParameter("okButton");
+        if (request.getParameter("nextScreen") != null)
+            nextScreen = request.getParameter("nextScreen");
+
+        System.out.println("advance-state called with value " + nextScreen);
 
         // player clicked START GAME on welcome-wait screen to advance to read-budget
-        if (okButton.equals("start-game"))
+        if (nextScreen.equals("start-game"))
         {
             if (!playerState.equals(PlayerState.LOGIN))
                 System.err.println("playerFinish = 'welcome-wait', but player state is '" + playerState + "'");
@@ -83,17 +87,8 @@ public class AdvanceStateServlet extends HttpServlet
             return;
         }
 
-        // player clicked READ NEWS on the read-budget screen
-        if (okButton.equals("read-news"))
-        {
-            data.getPlayerRound().setPlayerState(PlayerState.READ_NEWS.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/read-news");
-            return;
-        }
-
         // player clicked VIEW HOUSES on the read-news screen, and we are in round 1 (buy house)
-        if (okButton.equals("view-buy-house") && data.getPlayerRoundNumber() == 1)
+        if (nextScreen.equals("view-buy-house") && data.getPlayerRoundNumber() == 1)
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
             data.getPlayerRound().store();
@@ -102,7 +97,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked VIEW HOUSES on the read-news screen, and we are in round 2 or up (sell/stay house)
-        if (okButton.equals("view-sell-house") && data.getPlayerRoundNumber() > 1)
+        if (nextScreen.equals("view-sell-house") && data.getPlayerRoundNumber() > 1)
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_SELL_HOUSE.toString());
             data.getPlayerRound().store();
@@ -111,7 +106,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked STAY on the sell-house screen
-        if (okButton.equals("stay"))
+        if (nextScreen.equals("stay"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.STAY_HOUSE_WAIT.toString());
             data.getPlayerRound().store();
@@ -120,7 +115,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player decided to sell the house with SELL HOUSE and has entered price and reason for moving
-        if (okButton.equals("sell-house"))
+        if (nextScreen.equals("sell-house"))
         {
             // TODO handle the entered sell-house data
             data.getPlayerRound().setPlayerState(PlayerState.SELL_HOUSE_WAIT.toString());
@@ -130,7 +125,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked ENJOY STAY on the stay-house-wait screen
-        if (okButton.equals("enjoy-stay"))
+        if (nextScreen.equals("enjoy-stay"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.STAYED_HOUSE.toString());
             data.getPlayerRound().store();
@@ -139,7 +134,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked REJECT STAY on the stay-house-wait screen
-        if (okButton.equals("reject-stay"))
+        if (nextScreen.equals("reject-stay"))
         {
             // TODO undo the entered stay-house data
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_SELL_HOUSE.toString());
@@ -149,7 +144,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked MOVE OUT on the sell-house-wait screen
-        if (okButton.equals("move-out"))
+        if (nextScreen.equals("move-out"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
             data.getPlayerRound().store();
@@ -158,7 +153,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked REJECT SELL on the sell-house-wait screen
-        if (okButton.equals("reject-sell"))
+        if (nextScreen.equals("reject-sell"))
         {
             // TODO undo the entered sell-house data
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_SELL_HOUSE.toString());
@@ -168,9 +163,9 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player decided which house to buy with BUY HOUSE and has entered the price on the buy-house screen
-        if (okButton.equals("buy-house"))
+        if (nextScreen.equals("buy-house-wait"))
         {
-            // handle the entered buy-house data: Parameter house[N07], Parameter price[105]
+            // handle the entered buy-house data: Parameter house[e.g., N07], Parameter price[e.g., 105]
             String house = request.getParameter("house");
             String price = request.getParameter("price");
             if (!SqlUtils.makeHouseTransaction(data, house, price))
@@ -185,7 +180,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked MOVE IN on the buy-house-wait screen
-        if (okButton.equals("move-in"))
+        if (nextScreen.equals("move-in"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.BOUGHT_HOUSE.toString());
             data.getPlayerRound().store();
@@ -194,7 +189,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // player clicked REJECT BUY on the buy-house-wait screen
-        if (okButton.equals("reject-buy"))
+        if (nextScreen.equals("reject-buy"))
         {
             // TODO undo the entered buy-house data
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
@@ -204,7 +199,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // the player clicked the VIEW IMPROVEMENTS button in the view-taxes screen
-        if (okButton.equals("view-improvements"))
+        if (nextScreen.equals("view-improvements"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_IMPROVEMENTS.toString());
             data.getPlayerRound().store();
@@ -213,7 +208,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // the player clicked the ANSWER SURVEY button in the buy-improvements screen
-        if (okButton.equals("answer-survey"))
+        if (nextScreen.equals("answer-survey"))
         {
             // TODO handle the entered improvements, create measure records
             data.getPlayerRound().setPlayerState(PlayerState.ANSWER_SURVEY.toString());
@@ -223,7 +218,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // the player clicked the WAIT FOR THE DICE button in the answer-survey screen
-        if (okButton.equals("wait-for-dice"))
+        if (nextScreen.equals("wait-for-dice"))
         {
             // TODO handle the entered survey answers, create answer records
             data.getPlayerRound().setPlayerState(PlayerState.SURVEY_COMPLETED.toString());
@@ -233,7 +228,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // the player clicked the VIEW DAMAGE button in the survey-completed screen
-        if (okButton.equals("view-damage"))
+        if (nextScreen.equals("view-damage"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_DAMAGE.toString());
             data.getPlayerRound().store();
@@ -242,7 +237,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // the player clicked the VIEW SUMMARY button in the view-damage screen
-        if (okButton.equals("view-summary"))
+        if (nextScreen.equals("view-summary"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_SUMMARY.toString());
             data.getPlayerRound().store();
@@ -251,7 +246,7 @@ public class AdvanceStateServlet extends HttpServlet
         }
 
         // the player clicked the NEW ROUND button in the view-summary screen
-        if (okButton.equals("new-round"))
+        if (nextScreen.equals("new-round"))
         {
             // advance to next round (if allowed)
             int roundNr = data.getPlayerRoundNumber();
@@ -270,6 +265,8 @@ public class AdvanceStateServlet extends HttpServlet
             response.sendRedirect("/housinggame-player/read-budget");
             return;
         }
+
+        System.err.println("Did not recognize nextScreen value " + nextScreen);
 
         response.sendRedirect("/housinggame-player/login");
     }

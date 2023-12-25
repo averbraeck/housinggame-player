@@ -115,7 +115,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                 s.append("  <p>\n");
                 s.append("      You did not select any measures (yet).\n");
                 s.append("  </p>\n");
-                retValue = "NO";
+                retValue = "OK";
             }
         }
         catch (Exception e)

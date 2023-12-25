@@ -1,6 +1,5 @@
 package nl.tudelft.simulation.housinggame.player;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -350,33 +349,6 @@ public class PlayerData
         if (hgr.getStatus().equals(TransactionStatus.UNAPPROVED_BUY))
             return "(in option)";
         return house.getCode();
-    }
-
-    /*-
-    <option value="3">Session 1</option>
-    <option value="6">Session 2</option>
-    */
-    public String getValidSessionOptions()
-    {
-        LocalDateTime now = LocalDateTime.now();
-        DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
-        List<GamesessionRecord> gsList = dslContext.selectFrom(Tables.GAMESESSION).fetch();
-        StringBuilder s = new StringBuilder();
-        for (GamesessionRecord gs : gsList)
-        {
-            if (gs.getStartTime() == null || now.isAfter(gs.getStartTime()))
-            {
-                if (gs.getEndTime() == null || now.isBefore(gs.getEndTime()))
-                {
-                    s.append("<option value=\"");
-                    s.append(gs.getId());
-                    s.append("\">");
-                    s.append(gs.getName());
-                    s.append("</option>\n");
-                }
-            }
-        }
-        return s.toString();
     }
 
     /**

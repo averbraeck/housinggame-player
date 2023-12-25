@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
+
 @WebServlet("/read-news")
 public class ReadNewsServlet extends HttpServlet
 {
@@ -30,7 +32,7 @@ public class ReadNewsServlet extends HttpServlet
         }
 
         data.getContentHtml().clear();
-        ContentUtils.makeBudgetAccordion(data);
+        BudgetAccordion.makeBudgetAccordion(data);
         ContentUtils.makeNewsAccordion(data);
         data.putContentHtml("buy-or-sell", data.getPlayerRoundNumber() == 1 ? "view-buy-house" : "view-sell-house");
 

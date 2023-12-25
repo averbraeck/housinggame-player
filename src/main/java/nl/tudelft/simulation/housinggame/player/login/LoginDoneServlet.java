@@ -125,7 +125,7 @@ public class LoginDoneServlet extends HttpServlet
             session.removeAttribute("playerData");
             try
             {
-                response.sendRedirect("jsp/player/login.jsp");
+                response.sendRedirect("/housinggame-player/login");
             }
             catch (Exception e)
             {
@@ -138,7 +138,7 @@ public class LoginDoneServlet extends HttpServlet
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException
     {
-        response.sendRedirect("jsp/player/login.jsp");
+        doPost(request, response);
     }
 
     public static void redirect(final PlayerData data, final HttpServletResponse response) throws IOException, ServletException

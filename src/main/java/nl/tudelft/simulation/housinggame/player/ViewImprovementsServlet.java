@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
+
 @WebServlet("/view-improvements")
 public class ViewImprovementsServlet extends HttpServlet
 {
@@ -30,7 +32,7 @@ public class ViewImprovementsServlet extends HttpServlet
         }
 
         data.getContentHtml().clear();
-        ContentUtils.makeBudgetAccordion(data);
+        BudgetAccordion.makeBudgetAccordion(data);
         ContentUtils.makeNewsAccordion(data);
         ContentUtils.makeHouseConfirmationAccordion(data);
         ContentUtils.makeImprovementsAccordion(data);

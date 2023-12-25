@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import nl.tudelft.simulation.housinggame.player.ContentUtils;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SessionUtils;
 
@@ -33,7 +32,7 @@ public class ReadBudgetServlet extends HttpServlet
             return;
         }
 
-        ContentUtils.makeBudgetAccordion(data);
+        BudgetAccordion.makeBudgetAccordion(data);
 
         response.sendRedirect("jsp/player/read-budget.jsp");
     }
