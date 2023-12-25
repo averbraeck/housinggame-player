@@ -25,9 +25,9 @@
        </jsp:include>
     </div>
     
-    <form action="/housinggame-player/advance-state" method="post">
+    <form action="/housinggame-player/read-budget-done" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="read-news" />
+        <input type="hidden" name="nextScreen" value="read-news" />
         <input type="submit" value="READ NEWS" class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
@@ -38,6 +38,7 @@
     $(document).ready(function() {
       check();
     });
+    
     function check() {
       $.post("/housinggame-player/get-round-status", {jsp: 'read-budget'},
         function(data, status) {
