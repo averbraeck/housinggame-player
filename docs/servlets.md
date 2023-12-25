@@ -2,6 +2,8 @@
 
 The application implements a state machine and works with servlets and jsp pages to provide the content. The following principles are applied.
 
+<p style="text-align: center;"><img src="images/servlet-flowchart.png" width="80%"></p>
+
 
 ## 1. Login
 
