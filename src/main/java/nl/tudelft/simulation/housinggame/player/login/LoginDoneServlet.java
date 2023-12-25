@@ -20,7 +20,6 @@ import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SessionUtils;
 import nl.tudelft.simulation.housinggame.player.SqlUtils;
 
 @WebServlet("/login-done")
@@ -65,7 +64,7 @@ public class LoginDoneServlet extends HttpServlet
         */
 
         HttpSession session = request.getSession();
-        PlayerData data = SessionUtils.getData(session);
+        PlayerData data = (PlayerData) session.getAttribute("playerData");
 
         boolean ok = true;
         if (data == null)

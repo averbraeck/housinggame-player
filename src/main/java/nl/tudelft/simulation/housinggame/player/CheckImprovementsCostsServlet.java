@@ -34,7 +34,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
     {
         HttpSession session = request.getSession();
 
-        PlayerData data = SessionUtils.getData(session);
+        PlayerData data = (PlayerData) session.getAttribute("playerData");
         if (data == null)
         {
             response.sendRedirect("/housinggame-player/login");

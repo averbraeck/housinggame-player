@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SessionUtils;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
 
 @WebServlet("/read-news")
@@ -26,7 +25,7 @@ public class ReadNewsServlet extends HttpServlet
     {
         HttpSession session = request.getSession();
 
-        PlayerData data = SessionUtils.getData(session);
+        PlayerData data = (PlayerData) session.getAttribute("playerData");
         if (data == null)
         {
             response.sendRedirect("/housinggame-player/login");
