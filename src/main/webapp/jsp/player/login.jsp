@@ -1,4 +1,3 @@
-<%@page import="nl.tudelft.simulation.housinggame.player.SessionUtils"%>
 <%@page import="nl.tudelft.simulation.housinggame.player.PlayerData"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
   pageEncoding="ISO-8859-1"%>
@@ -9,8 +8,15 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   
+<%
+  if(session.getAttribute("playerData") == null) {
+%>
+    <meta http-equiv="refresh" content="0; url='/housinggame-player/login" />
+<%
+  }
+%>
   <!-- Bootstrap css -->
   <link href="../../css/bootstrap.min.css" rel="stylesheet">
   
@@ -63,13 +69,6 @@ h1 {
 
 <body>
 
-<%
-  if(session.getAttribute("playerData") == null) {
-    PlayerData playerData = new PlayerData();
-    session.setAttribute("playerData", playerData);
-  }
-%>
-
   <div class="form-container">
     
     <img src="images/hg-logo.png" width="50%" />
@@ -82,12 +81,12 @@ h1 {
       for the available income.
     </p>
   
-    <form action="/housinggame-player/login" method="post">
+    <form action="/housinggame-player/login-done" method="post">
   
       <div class="form-group pmd-textfield form-group-sm">
         <label for="gamesession" class="control-label pmd-textfield-floating-label">Game session *</label> 
         <select name="gamesession" id="gamesession" class="form-control">
-           ${playerData.getValidSessionOptions()}
+           ${playerData.getContentHtml("sessionOptions")};
         </select>
       </div>
         
