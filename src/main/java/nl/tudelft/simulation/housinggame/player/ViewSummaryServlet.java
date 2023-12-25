@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
+import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
 @WebServlet("/view-summary")
 public class ViewSummaryServlet extends HttpServlet
@@ -33,7 +34,7 @@ public class ViewSummaryServlet extends HttpServlet
 
         data.getContentHtml().clear();
         BudgetAccordion.makeBudgetAccordion(data);
-        ContentUtils.makeNewsAccordion(data);
+        NewsAccordion.makeNewsAccordion(data);
 
         response.sendRedirect("jsp/player/view-summary.jsp");
     }

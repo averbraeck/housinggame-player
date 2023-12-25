@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
+import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
 @WebServlet("/answer-survey")
 public class AnswerSurveyServlet extends HttpServlet
@@ -33,7 +34,7 @@ public class AnswerSurveyServlet extends HttpServlet
 
         data.getContentHtml().clear();
         BudgetAccordion.makeBudgetAccordion(data);
-        ContentUtils.makeNewsAccordion(data);
+        NewsAccordion.makeNewsAccordion(data);
         ContentUtils.makeHouseConfirmationAccordion(data);
         ContentUtils.makeBoughtImprovementsAccordion(data);
         ContentUtils.makeSurveyAccordion(data);

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
+import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
 @WebServlet("/buy-house")
 public class BuyHouseServlet extends HttpServlet
@@ -33,7 +34,7 @@ public class BuyHouseServlet extends HttpServlet
 
         data.getContentHtml().clear();
         BudgetAccordion.makeBudgetAccordion(data);
-        ContentUtils.makeNewsAccordion(data);
+        NewsAccordion.makeNewsAccordion(data);
         ContentUtils.makeBuyHouseAccordion(data);
         response.sendRedirect("jsp/player/buy-house.jsp");
     }

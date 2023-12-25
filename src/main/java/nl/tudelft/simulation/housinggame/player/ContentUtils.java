@@ -14,7 +14,6 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.QuestionRecord;
@@ -35,22 +34,6 @@ public class ContentUtils
     private ContentUtils()
     {
         // utility class
-    }
-
-    public static void makeNewsAccordion(final PlayerData data)
-    {
-        // get the news record(s) for the current round
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<NewsitemRecord> newsList = dslContext.selectFrom(Tables.NEWSITEM)
-                .where(Tables.NEWSITEM.ROUND_NUMBER.eq(data.getPlayerRoundNumber())).fetch();
-        int nr = 1;
-        for (NewsitemRecord news : newsList)
-        {
-            data.getContentHtml().put("news/name/" + nr, news.getName());
-            data.getContentHtml().put("news/summary/" + nr, news.getSummary());
-            data.getContentHtml().put("news/content/" + nr, news.getContent());
-            nr++;
-        }
     }
 
     public static void makeHousePicklist(final PlayerData data, final boolean sell)
