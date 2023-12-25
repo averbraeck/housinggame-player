@@ -42,11 +42,6 @@ public class AdvanceStateServlet extends HttpServlet
             return;
         }
 
-        // reload with the latest state
-        data.readDynamicData();
-        PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
-
         // the ok button indicates the INTENTION of the player, not the screen it originates from.
         String nextScreen = "";
         if (request.getParameter("okButton") != null)
@@ -55,37 +50,6 @@ public class AdvanceStateServlet extends HttpServlet
             nextScreen = request.getParameter("nextScreen");
 
         System.out.println("advance-state called with value " + nextScreen);
-
-        // player clicked START GAME on welcome-wait screen to advance to read-budget
-        if (nextScreen.equals("start-game"))
-        {
-            if (!playerState.equals(PlayerState.LOGIN))
-                System.err.println("playerFinish = 'welcome-wait', but player state is '" + playerState + "'");
-            if (roundState.nr < RoundState.NEW_ROUND.nr)
-                System.err.println("playerFinish = 'welcome-wait', but group state is '" + roundState + "'");
-            if (data.getPlayerRoundNumber() != 0)
-            {
-                data.setError("jsp = 'welcome-wait', but player round is " + data.getPlayerRoundNumber()
-                        + ", and player state is '" + playerState + "'");
-                response.sendRedirect("/housinggame-player/error");
-                return;
-            }
-            if (data.getGroupRoundNumber() == 0)
-            {
-                data.setError("jsp = 'welcome-wait', but group round is " + data.getGroupRoundNumber());
-                response.sendRedirect("/housinggame-player/error");
-                return;
-            }
-
-            // advance to round 1
-            GrouproundRecord groupRound1 = data.getGroupRoundList().get(1);
-            PlayerroundRecord prr = SqlUtils.makePlayerRound(data, groupRound1);
-            prr.setPlayerState(PlayerState.READ_BUDGET.toString());
-            prr.store();
-            data.readDynamicData();
-            response.sendRedirect("/housinggame-player/read-budget");
-            return;
-        }
 
         // player clicked STAY on the sell-house screen
         if (nextScreen.equals("stay"))

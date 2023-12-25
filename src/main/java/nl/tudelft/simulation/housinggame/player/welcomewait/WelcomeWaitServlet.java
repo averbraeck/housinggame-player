@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.welcomewait;
 
 import java.io.IOException;
 
@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.common.RoundState;
+import nl.tudelft.simulation.housinggame.player.PlayerData;
 
 @WebServlet("/welcome-wait")
 public class WelcomeWaitServlet extends HttpServlet
