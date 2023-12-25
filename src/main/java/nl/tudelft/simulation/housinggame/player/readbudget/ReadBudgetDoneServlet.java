@@ -9,12 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import nl.tudelft.simulation.housinggame.player.ContentUtils;
+import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SessionUtils;
 
-@WebServlet("/read-budget")
-public class ReadBudgetServlet extends HttpServlet
+@WebServlet("/read-budget-done")
+public class ReadBudgetDoneServlet extends HttpServlet
 {
 
     /** */
@@ -27,15 +27,27 @@ public class ReadBudgetServlet extends HttpServlet
         HttpSession session = request.getSession();
 
         PlayerData data = SessionUtils.getData(session);
-        if (data == null)
+        if (data == null || request.getParameter("nextScreen") == null)
         {
             response.sendRedirect("/housinggame-player/login");
             return;
         }
 
-        ContentUtils.makeBudgetAccordion(data);
+        // the next screen button indicates the INTENTION of the player, not the screen it originates from.
+        String nextScreen = request.getParameter("nextScreen");
 
-        response.sendRedirect("jsp/player/read-budget.jsp");
+        // player clicked READ NEWS on the read-budget screen
+        if (nextScreen.equals("read-news"))
+        {
+            data.getPlayerRound().setPlayerState(PlayerState.READ_NEWS.toString());
+            data.getPlayerRound().store();
+            response.sendRedirect("/housinggame-player/read-news");
+            return;
+        }
+
+        // if the player did not click 'read-news' and enters the read-budget-done servlet, something is wrong
+        System.err.println("Player app called read-budget-done servlet, but NextScreen button is " + nextScreen);
+        response.sendRedirect("/housinggame-player/login");
     }
 
     @Override
