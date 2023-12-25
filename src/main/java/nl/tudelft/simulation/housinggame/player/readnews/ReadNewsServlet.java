@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.readnews;
 
 import java.io.IOException;
 
@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.player.PlayerData;
+import nl.tudelft.simulation.housinggame.player.SessionUtils;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
 
 @WebServlet("/read-news")
@@ -33,7 +35,7 @@ public class ReadNewsServlet extends HttpServlet
 
         data.getContentHtml().clear();
         BudgetAccordion.makeBudgetAccordion(data);
-        ContentUtils.makeNewsAccordion(data);
+        NewsAccordion.makeNewsAccordion(data);
         data.putContentHtml("buy-or-sell", data.getPlayerRoundNumber() == 1 ? "view-buy-house" : "view-sell-house");
 
         response.sendRedirect("jsp/player/read-news.jsp");
