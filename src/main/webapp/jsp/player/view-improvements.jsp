@@ -36,7 +36,7 @@ form .checkbox input[type="checkbox"] {
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading3">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse4" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse4" aria-expanded="false" 
               aria-controls="collapse4" data-expandable="false">
               4. Buying improvements
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
@@ -63,7 +63,7 @@ form .checkbox input[type="checkbox"] {
 
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="answer-survey" />
+        <input type="hidden" name="nextScreen" value="answer-survey" />
         <input type="submit" value='BUY IMPROVEMENTS, ANSWER SURVEY' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
@@ -71,8 +71,11 @@ form .checkbox input[type="checkbox"] {
   </div>
   
   <script>
+  
+    var choicesOk = true;
+    var buttonOk = false;
+
     $(document).ready(function() {
-      var choicseOk = true;
       check();
     });
     
@@ -80,8 +83,10 @@ form .checkbox input[type="checkbox"] {
       $.post("/housinggame-player/get-round-status", {jsp: 'view-improvements'},
         function(data, status) {
           if (data == "OK" && choicesOk) {
+            buttonOk = true;
             $("#hg-submit").removeAttr("disabled");
           } else {
+            buttonOk = false;
             setTimeout(check, 5000);
           }
         });
@@ -104,8 +109,11 @@ form .checkbox input[type="checkbox"] {
         		json = JSON.parse(result);
             if (json.ok == "OK") {
               choicesOk = true;
+              if (buttonOk)
+            	  $("#hg-submit").removeAttr("disabled");
             } else {
             	choicesOk = false;
+              $("#hg-submit").prop("disabled", true);
             }
             $('#calculation-result').replaceWith(json.html);
           });
