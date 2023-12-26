@@ -1,5 +1,6 @@
 package nl.tudelft.simulation.housinggame.player;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +10,14 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -161,55 +164,64 @@ public class PlayerData
         readDynamicData();
     }
 
-    public void readDynamicData()
+    public boolean readDynamicData()
     {
-        DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
-        this.groupRound = null;
-        this.groupRoundNumber = -1;
-        this.groupRoundList.clear();
-        for (int i = 0; i <= this.scenario.getHighestRoundNumber(); i++)
+        try
         {
-            GrouproundRecord gr = dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(i))
-                    .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
-            if (gr == null)
-                break;
-            this.groupRound = gr;
-            this.groupRoundNumber = i;
-            this.groupRoundList.add(gr);
-        }
-
-        if (this.groupRound == null)
-        {
-            this.groupRound = SqlUtils.makeGroupRound0(this);
-            this.groupRoundList.add(this.groupRound);
-            this.groupRoundNumber = 0;
-        }
-
-        this.playerRound = null;
-        this.prevPlayerRound = null;
-        this.playerRoundNumber = -1;
-        for (int i = 0; i < this.groupRoundList.size(); i++)
-        {
-            PlayerroundRecord pr = dslContext.selectFrom(Tables.PLAYERROUND)
-                    .where(Tables.PLAYERROUND.GROUPROUND_ID.eq(this.groupRoundList.get(i).getId()))
-                    .and(Tables.PLAYERROUND.PLAYER_ID.eq(this.player.getId())).fetchAny();
-            if (pr != null)
+            DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
+            this.groupRound = null;
+            this.groupRoundNumber = -1;
+            this.groupRoundList.clear();
+            for (int i = 0; i <= this.scenario.getHighestRoundNumber(); i++)
             {
-                this.prevPlayerRound = this.playerRound == null ? pr : this.playerRound;
-                this.playerRound = pr;
-                this.playerRoundNumber = i;
+                GrouproundRecord gr = dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(i))
+                        .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
+                if (gr == null)
+                    break;
+                this.groupRound = gr;
+                this.groupRoundNumber = i;
+                this.groupRoundList.add(gr);
             }
-        }
 
-        if (this.playerRound == null)
+            if (this.groupRound == null)
+            {
+                this.groupRound = SqlUtils.makeGroupRound0(this);
+                this.groupRoundList.add(this.groupRound);
+                this.groupRoundNumber = 0;
+            }
+
+            this.playerRound = null;
+            this.prevPlayerRound = null;
+            this.playerRoundNumber = -1;
+            for (int i = 0; i < this.groupRoundList.size(); i++)
+            {
+                PlayerroundRecord pr = dslContext.selectFrom(Tables.PLAYERROUND)
+                        .where(Tables.PLAYERROUND.GROUPROUND_ID.eq(this.groupRoundList.get(i).getId()))
+                        .and(Tables.PLAYERROUND.PLAYER_ID.eq(this.player.getId())).fetchAny();
+                if (pr != null)
+                {
+                    this.prevPlayerRound = this.playerRound == null ? pr : this.playerRound;
+                    this.playerRound = pr;
+                    this.playerRoundNumber = i;
+                }
+            }
+
+            if (this.playerRound == null)
+            {
+                GrouproundRecord groupRound0 =
+                        dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(0))
+                                .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
+                this.playerRound = SqlUtils.makePlayerRound0(this, groupRound0);
+                this.prevPlayerRound = this.playerRound;
+                this.playerRoundNumber = 0;
+            }
+            return true;
+        }
+        catch (Exception e)
         {
-            GrouproundRecord groupRound0 = dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(0))
-                    .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
-            this.playerRound = SqlUtils.makePlayerRound0(this, groupRound0);
-            this.prevPlayerRound = this.playerRound;
-            this.playerRoundNumber = 0;
+            e.printStackTrace();
+            return false;
         }
-
     }
 
     public ScenarioRecord getScenario()
@@ -315,6 +327,23 @@ public class PlayerData
     public void setError(final String error)
     {
         this.error = error;
+    }
+
+    public void errorRedirect(final HttpServletResponse response, final String message) throws IOException
+    {
+        System.err.println(message);
+        setError(message);
+        response.sendRedirect("/housinggame-player/error");
+    }
+
+    public void errorNoRedirect(final HttpServletResponse response, final String message) throws IOException
+    {
+        System.err.println(message);
+        setError(message);
+        JsonObject json = new JsonObject();
+        json.addProperty("error", message);
+        response.setContentType("text/plain");
+        response.getWriter().write(json.toString());
     }
 
     public HouseRecord getHouse()
