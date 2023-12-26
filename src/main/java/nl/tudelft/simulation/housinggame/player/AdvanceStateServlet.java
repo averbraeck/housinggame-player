@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
-import nl.tudelft.simulation.housinggame.common.RoundState;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 
@@ -105,23 +104,6 @@ public class AdvanceStateServlet extends HttpServlet
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_SELL_HOUSE.toString());
             data.getPlayerRound().store();
             response.sendRedirect("/housinggame-player/sell-house");
-            return;
-        }
-
-        // player decided which house to buy with BUY HOUSE and has entered the price on the buy-house screen
-        if (nextScreen.equals("buy-house-wait"))
-        {
-            // handle the entered buy-house data: Parameter house[e.g., N07], Parameter price[e.g., 105]
-            String house = request.getParameter("house");
-            String price = request.getParameter("price");
-            if (!SqlUtils.makeHouseTransaction(data, house, price))
-            {
-                response.sendRedirect("/housinggame-player/buy-house");
-                return;
-            }
-            data.getPlayerRound().setPlayerState(PlayerState.BUY_HOUSE_WAIT.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/buy-house-wait");
             return;
         }
 

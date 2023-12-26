@@ -77,19 +77,21 @@ option:not(:checked) {
               = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }
             </p>
             
-            <form action="/housinggame-player/advance-state" method="post">
+            <form>
               <div class="form-group pmd-textfield form-group-sm">
                 <label for="houses" class="control-label pmd-textfield-floating-label">Select house*</label> 
-                <select name="houses" id="houses" class="form-control"">
+                <select name="houses" id="houses" class="form-control">
                    ${playerData.getContentHtml("house/options") }
                 </select>
                 <br/>
-                ${playerData.getContentHtml("house/prices") }
+                <div id="house-price-input-div">
+                  <!--  will be filled with dynamic data -->
+                </div>
               </div>
             </form>
             
-            <div>
-              ${playerData.getContentHtml("house/details") }
+            <div id="house-buy-feedback-div">
+              <!--  will be filled with dynamic data -->
             </div>
           </div>
         </div>
@@ -97,9 +99,9 @@ option:not(:checked) {
 
     </div>
     
-    <form action="/housinggame-player/advance-state" method="post">
+    <form action="/housinggame-player/buy-house-done" method="post">
       <div class="hg-button">
-        <input type="hidden" name="okButton" value="buy-house" />
+        <input type="hidden" name="nextScreen" value="buy-house-wait" />
         <input type="hidden" id="form-house-code" name="house" value="" />
         <input type="hidden" id="form-house-price" name="price" value="" />
         <input type="submit" value="BUY HOUSE" class="btn btn-primary" id="hg-submit" disabled />
@@ -111,43 +113,59 @@ option:not(:checked) {
   </div>
 
   <script>
+  
+    var choiceOk = true;
+    var buttonOk = false;
+
     $(document).ready(function() {
-      $(".house-details").hide();
-      $(".house-price-label").hide();
-      $(".house-price-input").hide();
-      $("#house-details-" + $("#houses").find(":selected").text()).show();
-      $("#house-price-label-" + $("#houses").find(":selected").text()).show();
-      $("#house-price-input-" + $("#houses").find(":selected").text()).show();
       check();
     });
+    
     $('#houses').on('change', function() {
-      // hide all house details
-      $(".house-details").hide();
-      $(".house-price-label").hide();
-      $(".house-price-input").hide();
-      
-      // show the house details of the chosen house  
-      $("#house-details-" + this.value).show();
-      $("#house-price-label-" + this.value).show();
-      $("#house-price-input-" + this.value).show();
-      
-      // fill return values
-      $("#form-house-code").val(this.value);
-      $("#form-house-price").val($("#house-price-input-" + this.value).val());
+      let hgId = this.value;
+      $.post("/housinggame-player/check-buy-house", {
+        houseGroupId: this.value
+      }, function(result, status) {
+        json = JSON.parse(result);
+        if (json.error.length > 0) {
+          window.location.replace("/housinggame-player/error");
+        } else {
+          $('#house-price-input-div').replaceWith(json.housePriceInput);
+          $('#house-buy-feedback-div').replaceWith(json.houseBuyFeedback);
+          $("#form-house-code").val(hgId);
+          $("#form-house-price").val(json.housePrice);
+        }
+      });
+      if (this.value == "NONE") {
+        choiceOk = false;
+        $("#form-house-code").val("");
+        $("#form-house-price").val("");
+        $("#hg-submit").prop("disabled", true);
+      } else {
+        choiceOk = true;
+        if (buttonOk)
+          $("#hg-submit").removeAttr("disabled");
+      }
     });
-    $('.house-price-input').on('input', function() {
-      $("#form-house-price").val($("#house-price-input-" + $("#form-house-code").val()).val());
-    });
-    function check() {
-        $.post("/housinggame-player/get-round-status", {jsp: 'buy-house'},
-          function(data, status) {
-            if (data == "OK") {
-              $("#hg-submit").removeAttr("disabled");
-            } else {
-              setTimeout(check, 5000);
-            }
-          });
+    
+    function changePrice() {
+      $("#form-house-price").val($('#house-price-input').val());
     }
+    
+    function check() {
+      $.post("/housinggame-player/get-round-status", {jsp: 'buy-house'},
+        function(data, status) {
+          if (data == "OK" && choiceOk) {
+            buttonOk = true;
+            $("#hg-submit").removeAttr("disabled");
+          } else {
+            buttonOk = false;
+            setTimeout(check, 5000);
+          }
+        }
+      );
+    }
+    
   </script>
   
 </body>

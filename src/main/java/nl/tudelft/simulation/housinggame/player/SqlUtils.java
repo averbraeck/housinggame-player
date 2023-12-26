@@ -225,48 +225,4 @@ public final class SqlUtils
         return groupRound;
     }
 
-    public static boolean makeHouseTransaction(final PlayerData data, final String houseCode, final String priceStr)
-    {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-
-        HousegroupRecord houseGroup =
-                dslContext.selectFrom(Tables.HOUSEGROUP).where(Tables.HOUSEGROUP.CODE.eq(houseCode)
-                        .and(Tables.HOUSEGROUP.GROUP_ID.eq(data.getGroup().getId()))).fetchOne();
-
-        if (houseGroup == null)
-        {
-            System.err.println("Could not locate house " + houseCode);
-            return false;
-        }
-
-        int price;
-        try
-        {
-            price = 1000 * Integer.valueOf(priceStr);
-        }
-        catch (Exception e)
-        {
-            System.err.println("Could not translate house price " + priceStr + " into a number");
-            return false;
-        }
-
-        // make HouseTransaction record
-        HousetransactionRecord transaction = dslContext.newRecord(Tables.HOUSETRANSACTION);
-        transaction.setPrice(price);
-        transaction.setComment("");
-        transaction.setTransactionStatus(TransactionStatus.UNAPPROVED_BUY);
-        transaction.setHousegroupId(houseGroup.getId());
-        transaction.setPlayerroundId(data.getPlayerRound().getId());
-        transaction.setGrouproundId(data.getGroupRound().getId());
-        transaction.store();
-
-        data.getPlayerRound().setActiveTransactionId(transaction.getId());
-        data.getPlayerRound().store();
-
-        PlayerroundRecord playerRound = data.getPlayerRound();
-        playerRound.setActiveTransactionId(transaction.getId());
-        playerRound.store();
-
-        return true;
-    }
 }
