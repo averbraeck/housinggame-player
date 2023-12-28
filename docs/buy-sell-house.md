@@ -4,11 +4,11 @@ The interaction between facilitator and players during buying and selling a hous
 
 The steps for buying a house in round 1 (and after selling their houses in later rounds) are as follows:
 
-### 1. Player state: `READ_NEWS`, facilitator state: `ANNOUNCE_NEWS`
+#### 1. Player state: `READ_NEWS`, facilitator state: `ANNOUNCE_NEWS`
 - Player is on `read-news` screen. VIEW HOUSES button is grey.
 - Facilitator's SHOW HOUSES button is not clicked yet.
 
-### 2. Player state: `READ_NEWS`, facilitator state: `SHOW_HOUSES_BUY`
+#### 2. Player state: `READ_NEWS`, facilitator state: `SHOW_HOUSES_BUY`
 - Facilitator clicks SHOW HOUSES button.
 - Player is on read-news screen. VIEW HOUSES button is blue.
 
