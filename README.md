@@ -26,3 +26,4 @@ The following technical choices have been made for the player app:
 1. [Game flow](docs/flow.md)
 2. [Use of servlets and jsp-pages](docs/servlets.md)
 3. [Design choices](docs/design-choices.md)
+4. [Error handling](docs/error-handling.md)
