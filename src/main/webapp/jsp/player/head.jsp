@@ -22,6 +22,9 @@
 <script type="text/javascript" src="../../js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../../js/propeller.min.js"></script>
 
+<!--  favicon -->
+<link rel="shortcut icon" href="/housinggame-player/favicon.ico" type="image/x-icon">
+
 <script>
 initPage = function() {
     /* logged in? */
