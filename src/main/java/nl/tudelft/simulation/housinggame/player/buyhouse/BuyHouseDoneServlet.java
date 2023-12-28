@@ -52,8 +52,6 @@ public class BuyHouseDoneServlet extends HttpServlet
             // handle the entered buy-house data: Parameter house[e.g., "24" = N07], Parameter price[e.g., 105]
             String houseGroupIdStr = request.getParameter("house");
             String priceStr = request.getParameter("price");
-System.out.println("house = " + houseGroupIdStr);
-System.out.println("price = " + priceStr);
             if (!makeHouseTransaction(data, houseGroupIdStr, priceStr))
             {
                 response.sendRedirect("/housinggame-player/buy-house");
@@ -125,9 +123,6 @@ System.out.println("price = " + priceStr);
         transaction.setPlayerroundId(data.getPlayerRound().getId());
         transaction.setGrouproundId(data.getGroupRound().getId());
         transaction.store();
-
-        data.getPlayerRound().setActiveTransactionId(transaction.getId());
-        data.getPlayerRound().store();
 
         PlayerroundRecord playerRound = data.getPlayerRound();
         playerRound.setActiveTransactionId(transaction.getId());
