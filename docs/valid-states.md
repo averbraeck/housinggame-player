@@ -5,7 +5,7 @@ The table below shows the group round state and the player state that are 'compa
 | Group round state  | Gnr  | Player state      | Pnr  | Screen            | Button           | Button enabled      |
 | ------------------ | ---: | ----------------- | ---: | ----------------- | ---------------- | ------------------- |
 | ANY                | any  | ANY               | any  | login             | LOGIN            | always              |
-| LOGIN              | 10   | LOGIN             | 10   | login-wait        | START GAME       | Gnr>Pnr (G >= 20)   |
+| LOGIN              | 10   | LOGIN             | 10   | welcome-wait      | START GAME       | Gnr>Pnr (G >= 20)   |
 | NEW_ROUND          | 20   | READ_BUDGET       | 20   | read-budget       | READ NEWS        | Gnr>Pnr (G >= 30)   |
 | ANNOUNCE_NEWS      | 30   | READ_NEWS         | 30   | read-news         | VIEW HOUSES      | Gnr>Pnr (G >= 40)   |
 | SHOW_HOUSES_SELL   | 40   | VIEW_SELL_HOUSE   | 40   | sell-house        | STAY / SELL      | Gnr>Pnr & APPROVE   |
