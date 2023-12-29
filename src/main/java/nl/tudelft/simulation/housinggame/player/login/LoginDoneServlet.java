@@ -142,8 +142,11 @@ public class LoginDoneServlet extends HttpServlet
 
     public static void redirect(final PlayerData data, final HttpServletResponse response) throws IOException, ServletException
     {
-        if (!ValidStates.isValidState(data, response))
+        if (!ValidStates.isValidState(data))
+        {
+            response.sendRedirect("/housinggame-player/error");
             return;
+        }
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
 
         switch (playerState)

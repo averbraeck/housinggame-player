@@ -1,10 +1,5 @@
 package nl.tudelft.simulation.housinggame.player;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.RoundState;
 
@@ -32,11 +27,8 @@ public final class ValidStates
      * @param data PlayerData; data on the player
      * @param response HttpServletResponse; to be used for redirect to error page
      * @return boolean; whether the player state is valid or not
-     * @throws IOException on redirect error
-     * @throws ServletException on redirect error
      */
-    public static boolean isValidState(final PlayerData data, final HttpServletResponse response)
-            throws IOException, ServletException
+    public static boolean isValidState(final PlayerData data)
     {
         data.setError("");
         data.readDynamicData();
@@ -47,7 +39,6 @@ public final class ValidStates
         {
             data.setError("Player " + data.getPlayerCode() + " is in illegal state: " + data.getPlayerRound().getPlayerState()
                     + "<br>Log out and log in again when problem has been corrected.");
-            response.sendRedirect("/housinggame-player/error");
             return false;
         }
 
@@ -55,7 +46,6 @@ public final class ValidStates
         {
             data.setError("GroupRound for player " + data.getPlayerCode() + " is in illegal state: "
                     + data.getGroupRound().getRoundState() + "<br>Log out and log in again when problem has been corrected.");
-            response.sendRedirect("/housinggame-player/error");
             return false;
         }
 
@@ -64,7 +54,6 @@ public final class ValidStates
             data.setError("Player " + data.getPlayerCode() + " is in Round " + data.getPlayerRoundNumber()
                     + ", but group is only in Round " + data.getGroupRoundNumber()
                     + "<br>Log out and log in again when group has advanced to the same round.");
-            response.sendRedirect("/housinggame-player/error");
             return false;
         }
 
@@ -74,14 +63,12 @@ public final class ValidStates
         if (data.getGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.lt(PlayerState.BOUGHT_HOUSE))
         {
             data.setError("Player " + data.getPlayerCode() + " is one round behind the group, and too far behind to catch up.");
-            response.sendRedirect("/housinggame-player/error");
             return false;
         }
         if (data.getGroupRoundNumber() - data.getPlayerRoundNumber() > 1)
         {
             data.setError("Player " + data.getPlayerCode()
                     + " is more than one round behind the group, and too far behind to catch up.");
-            response.sendRedirect("/housinggame-player/error");
             return false;
         }
 
@@ -100,9 +87,50 @@ public final class ValidStates
 
         data.setError("Player " + data.getPlayerCode() + " is in State " + playerState + ", but group is only in State "
                 + roundState + "<br>Log out and log in again when group has advanced to the same state.");
-        response.sendRedirect("/housinggame-player/error");
         return false;
     }
 
+    public static boolean checkNextScreenButton(final PlayerData data, final String jsp)
+    {
+        if (!isValidState(data))
+            return false;
 
+        PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
+        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
+
+        if (jsp.equals("welcome-wait"))
+        {
+            if (data.getGroupRound() == null)
+            {
+                data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
+                return false;
+            }
+            if (data.getGroupRoundNumber() <= 1 && roundState.lt(RoundState.NEW_ROUND))
+            {
+                data.setError("jsp = 'welcome-wait', but GroupRound state is " + roundState + ", groupround = "
+                        + data.getGroupRoundNumber());
+                return false;
+            }
+            return true;
+        }
+
+        // for all other states, the same 'ok' rule holds
+        if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
+            return true;
+        if (roundState.nr > playerState.nr)
+            return true;
+        if (playerState.eq(PlayerState.BOUGHT_HOUSE) && roundState.ge(RoundState.ALLOW_BUYING))
+            return true;
+        if (playerState.eq(PlayerState.STAYED_HOUSE) && roundState.ge(RoundState.ALLOW_BUYING))
+            return true;
+        if (playerState.eq(PlayerState.SURVEY_COMPLETED) && roundState.ge(RoundState.SHOW_SURVEY))
+            return true;
+        // summary screen in last round: OK should not be true there
+        if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber() && jsp.equals("summary"))
+            return false;
+
+        data.setError("jsp = " + jsp + ", groupState = " + roundState + ", playerState = " + playerState
+                + "<br>This is an incompatible combination. Please ask the facilitator for help.");
+        return false;
+    }
 }
