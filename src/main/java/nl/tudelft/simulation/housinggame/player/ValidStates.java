@@ -119,11 +119,11 @@ public final class ValidStates
             return true;
         if (groupState.nr > playerState.nr)
             return true;
-        if (playerState.eq(PlayerState.BOUGHT_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
+        if (playerState.eq(PlayerState.BUY_HOUSE_WAIT) && groupState.ge(GroupState.ALLOW_BUYING))
             return true;
-        if (playerState.eq(PlayerState.STAYED_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
+        if (playerState.eq(PlayerState.STAY_HOUSE_WAIT) && groupState.ge(GroupState.ALLOW_BUYING))
             return true;
-        if (playerState.eq(PlayerState.SURVEY_COMPLETED) && groupState.ge(GroupState.SHOW_SURVEY))
+        if (playerState.eq(PlayerState.ANSWER_SURVEY) && groupState.ge(GroupState.SHOW_SURVEY))
             return true;
         // summary screen in last round: OK should not be true there
         if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber() && jsp.equals("summary"))
