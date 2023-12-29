@@ -107,25 +107,6 @@ public class AdvanceStateServlet extends HttpServlet
             return;
         }
 
-        // player clicked MOVE IN on the buy-house-wait screen
-        if (nextScreen.equals("move-in"))
-        {
-            data.getPlayerRound().setPlayerState(PlayerState.BOUGHT_HOUSE.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/bought-house");
-            return;
-        }
-
-        // player clicked REJECT BUY on the buy-house-wait screen
-        if (nextScreen.equals("reject-buy"))
-        {
-            // TODO undo the entered buy-house data
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/buy-house");
-            return;
-        }
-
         // the player clicked the VIEW IMPROVEMENTS button in the view-taxes screen
         if (nextScreen.equals("view-improvements"))
         {
