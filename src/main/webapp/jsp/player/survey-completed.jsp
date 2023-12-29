@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
   <jsp:include page="head.jsp"></jsp:include>
-  <title>Housing Game Survey</title>
+  <title>Housing Game - Wait for the Dice</title>
 </head>
 
 <body style="background-color: white;" onLoad = initPage()>
@@ -125,7 +125,7 @@
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="view-damage" />
-        <input type="submit" value='STORE SURVEY' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="submit" value='WAIT FOR THE DICE' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
     
