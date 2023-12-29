@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.boughthouse;
 
 import java.io.IOException;
 
@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.player.ContentUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
 import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
