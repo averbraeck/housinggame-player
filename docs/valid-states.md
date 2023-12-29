@@ -22,6 +22,7 @@ The table below shows the group round state and the player state that are 'compa
 | ROLLED_DICE        | 130  | VIEW_DAMAGE       | 130  | view-damage       | VIEW SUMMARY     | Gnr>Pnr (G >= 140)  |
 | SHOW_SUMMARY       | 140  | VIEW_SUMMARY      | 140  | view-summary      | NEXT ROUND       | G-round > P-round   |
 
+<br/>
 
 Legal combinations:
 
