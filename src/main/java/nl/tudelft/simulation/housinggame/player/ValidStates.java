@@ -60,6 +60,8 @@ public final class ValidStates
         // if the player is in the previous round, but beyond buying a house, the player can still continue
         if (data.getGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.ge(PlayerState.BOUGHT_HOUSE))
             return true;
+        if (data.getGroupRoundNumber() == 1 && data.getPlayerRoundNumber() == 0 && groupState.le(GroupState.BUYING_FINISHED))
+            return true;
         if (data.getGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.lt(PlayerState.BOUGHT_HOUSE))
         {
             data.setError("Player " + data.getPlayerCode() + " is one round behind the group, and too far behind to catch up.");
@@ -129,8 +131,6 @@ public final class ValidStates
         if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber() && jsp.equals("summary"))
             return false;
 
-        data.setError("jsp = " + jsp + ", groupState = " + groupState + ", playerState = " + playerState
-                + "<br>This is an incompatible combination. Please ask the facilitator for help.");
         return false;
     }
 }
