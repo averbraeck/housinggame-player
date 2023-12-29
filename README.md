@@ -27,5 +27,6 @@ The following technical choices have been made for the player app:
 2. [Detailed workflow for buying a house](docs/buy-house.md)
 2. [Detailed workflow for selling a house](docs/sell-house.md)
 4. [Use of servlets and jsp-pages](docs/servlets.md)
-5. [Design choices](docs/design-choices.md)
-6. [Error handling](docs/error-handling.md)
+5. [Map of states and advance button triggers](docs/valid-states.md)
+6. [Design choices](docs/design-choices.md)
+7. [Error handling](docs/error-handling.md)
