@@ -2,7 +2,7 @@
 
 | Group round state  | Gnr  | Player state      | Pnr  | Screen            | Button           | Button enabled     |
 | ------------------ | ---: | ----------------- | ---: | ----------------- | ---------------- | ------------------ |
-| ANY                | any  | ANY               | any  | login             | LOGIN            |                    |
+| ANY                | any  | ANY               | any  | login             | LOGIN            | always             |
 | LOGIN              | 10   | LOGIN             | 10   | login-wait        | START GAME       | Gnr>Pnr (G >= 20)  |
 | NEW_ROUND          | 20   | READ_BUDGET       | 20   | read-budget       | READ NEWS        | Gnr>Pnr (G >= 30)  |
 | ANNOUNCE_NEWS      | 30   | READ_NEWS         | 30   | read-news         | VIEW HOUSES      | Gnr>Pnr (G >= 40)  |
