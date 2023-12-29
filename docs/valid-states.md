@@ -10,7 +10,7 @@ The table below shows the group round state and the player state that are 'compa
 | ANNOUNCE_NEWS      | 30   | READ_NEWS         | 30   | read-news         | VIEW HOUSES      | Gnr>Pnr (G >= 40)   |
 | SHOW_HOUSES_SELL   | 40   | VIEW_SELL_HOUSE   | 40   | sell-house        | STAY / SELL      | Gnr>Pnr & APPROVE   |
 | ALLOW_SELLING      | 50   | SELL_HOUSE_WAIT   | 50   | sell-house-wait   | MOVE OUT         | Gnr>Pnr (G >= 60)   |
-| ALLOW_SELLING      | 50   | STAY_HOUSE_WAIT   | 55   | stay-house-wait   | ENJOY STAY       | Gnr >= 80           |
+| ALLOW_SELLING      | 50   | STAY_HOUSE_WAIT   | 55   | stay-house-wait   | ENJOY STAY       | Gnr >= 70           |
 | SHOW_HOUSES_BUY    | 60   | VIEW_BUY_HOUSE    | 60   | buy-house         | BUY HOUSE        | Gnr>Pnr (G >= 70)   |
 | ALLOW_BUYING       | 70   | BUY_HOUSE_WAIT    | 70   | buy-house-wait    | MOVE IN          | Gnr >= 70 & APPROVE |  
 | BUYING_FINISHED    | 80   | BOUGHT_HOUSE      | 80   | bought-house      | VIEW TAXES       | Gnr>Pnr (G >= 90)   |
