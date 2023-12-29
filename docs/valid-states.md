@@ -22,3 +22,24 @@ The table below shows the group round state and the player state that are 'compa
 | ROLLED_DICE        | 130  | VIEW_DAMAGE       | 130  | view-damage       | VIEW SUMMARY     | Gnr>Pnr (G >= 140)  |
 | SHOW_SUMMARY       | 140  | VIEW_SUMMARY      | 140  | view-summary      | NEXT ROUND       | G-round > P-round   |
 
+
+Legal combinations:
+
+| Screen            | Player state      | Pnr  | Typical group state  | Valid group states | 
+| ----------------- | ----------------- | ---: | -------------------- | ------------------ | 
+| welcome-wait      | LOGIN             | 10   | LOGIN                | Gnr >= 10          | 
+| read-budget       | READ_BUDGET       | 20   | NEW_ROUND            | Gnr >= 20          | 
+| read-news         | READ_NEWS         | 30   | ANNOUNCE_NEWS        | Gnr >= 30          | 
+| sell-house        | VIEW_SELL_HOUSE   | 40   | SHOW_HOUSES_SELL     | Gnr >= 40          | 
+| sell-house-wait   | SELL_HOUSE_WAIT   | 50   | ALLOW_SELLING        | Gnr >= 50          | 
+| stay-house-wait   | STAY_HOUSE_WAIT   | 55   | ALLOW_SELLING        | Gnr >= 50          | 
+| buy-house         | VIEW_BUY_HOUSE    | 60   | SHOW_HOUSES_BUY      | Gnr >= 60          | 
+| buy-house-wait    | BUY_HOUSE_WAIT    | 70   | ALLOW_BUYING         | Gnr >= 70          | 
+| bought-house      | BOUGHT_HOUSE      | 80   | BUYING_FINISHED      | Gnr >= 70 (*)      | 
+| stayed-house      | STAYED_HOUSE      | 85   | BUYING_FINISHED      | Gnr >= 70 (*)      | 
+| view-taxes        | VIEW TAXES        | 90   | SHOW_TAXES           | Gnr >= 90          | 
+| view-improvem.    | VIEW_IMPROVEMENTS | 100  | ALLOW_IMPROVEMENTS   | Gnr >= 100         | 
+| answer-survey     | ANSWER_SURVEY     | 110  | SHOW_SURVEY          | Gnr >= 110         | 
+| survey-completed  | SURVEY_COMPLETED  | 120  | SURVEY_COMPLETED     | Gnr >= 110 (*)     | 
+| view-damage       | VIEW_DAMAGE       | 130  | ROLLED_DICE          | Gnr >= 130         | 
+| view-summary      | VIEW_SUMMARY      | 140  | SHOW_SUMMARY         | Gnr >= 140         | 
