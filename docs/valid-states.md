@@ -18,4 +18,4 @@
 | SURVEY_COMPLETED   | 110  | SURVEY_COMPLETED  | 110  | survey-completed  | VIEW DAMAGE      | Gnr > Pnr (Gnr >= 120)    |
 | ROLLED_DICE        | 120  | VIEW_DAMAGE       | 120  | view-damage       | VIEW SUMMARY     | Gnr > Pnr (Gnr >= 130)    |
 | SHOW_SUMMARY       | 130  | VIEW_SUMMARY      | 130  | view-summary      | NEXT ROUND       | G-round > P-round         |
-| ------------------ | ---: | ----------------- | ---: | ----------------- | ---------------- | ------------------------- |
+
