@@ -14,13 +14,13 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
-import nl.tudelft.simulation.housinggame.common.RoundState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.ValidStates;
 
 @WebServlet("/login-done")
 public class LoginDoneServlet extends HttpServlet
@@ -142,32 +142,9 @@ public class LoginDoneServlet extends HttpServlet
 
     public static void redirect(final PlayerData data, final HttpServletResponse response) throws IOException, ServletException
     {
-        data.setError("");
-        data.readDynamicData();
+        if (!ValidStates.isValidState(data, response))
+            return;
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
-        if (playerState == null)
-        {
-            data.setError("Player " + data.getPlayerCode() + " is in illegal state: " + data.getPlayerRound().getPlayerState()
-                    + "<br>Log out and log in again when problem has been corrected.");
-            response.sendRedirect("/housinggame-player/error");
-            return;
-        }
-        if (data.getPlayerRoundNumber() > data.getGroupRoundNumber())
-        {
-            data.setError("Player " + data.getPlayerCode() + " is in Round " + data.getPlayerRoundNumber()
-                    + ", but group is only in Round " + data.getGroupRoundNumber()
-                    + "<br>Log out and log in again when group has advanced to the same round.");
-            response.sendRedirect("/housinggame-player/error");
-            return;
-        }
-        if (data.getPlayerRoundNumber() == data.getGroupRoundNumber() && playerState.nr > roundState.nr)
-        {
-            data.setError("Player " + data.getPlayerCode() + " is in State " + playerState + ", but group is only in State "
-                    + roundState + "<br>Log out and log in again when group has advanced to the same state.");
-            response.sendRedirect("/housinggame-player/error");
-            return;
-        }
 
         switch (playerState)
         {
@@ -209,6 +186,10 @@ public class LoginDoneServlet extends HttpServlet
 
             case STAYED_HOUSE:
                 response.sendRedirect("/housinggame-player/sell-house-stay");
+                break;
+
+            case VIEW_TAXES:
+                response.sendRedirect("/housinggame-player/view-taxes");
                 break;
 
             case VIEW_IMPROVEMENTS:
