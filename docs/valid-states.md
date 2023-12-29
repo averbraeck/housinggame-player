@@ -13,7 +13,7 @@
 | ALLOW_BUYING       | 70   | BUY_HOUSE_WAIT    | 70   | buy-house-wait    | MOVE IN          | Gnr>=Pnr & APPROVE |  
 | BUYING_FINISHED    | 80   | BOUGHT_HOUSE      | 80   | bought-house      | VIEW TAXES       | Gnr>Pnr (G >= 90)  |
 | BUYING_FINISHED    | 80   | STAYED_HOUSE      | 85   | stayed-house      | VIEW TAXES       | Gnr>Pnr (G >= 90)  |
-| ALLOW_IMPROVEMENTS | 90   | VIEW_IMPROVEMENTS | 90   | view-improvements | BUY IMPROVEMENTS | Gnr>Pnr (G >= 100) |
+| ALLOW_IMPROVEMENTS | 90   | VIEW_IMPROVEMENTS | 90   | view-improvem.    | BUY IMPROVEM.    | Gnr>Pnr (G >= 100) |
 | SHOW_SURVEY        | 100  | ANSWER_SURVEY     | 100  | answer-survey     | WAIT FOR DICE    | always             |
 | SURVEY_COMPLETED   | 110  | SURVEY_COMPLETED  | 110  | survey-completed  | VIEW DAMAGE      | Gnr>Pnr (G >= 120) |
 | ROLLED_DICE        | 120  | VIEW_DAMAGE       | 120  | view-damage       | VIEW SUMMARY     | Gnr>Pnr (G >= 130) |
