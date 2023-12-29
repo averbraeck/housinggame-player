@@ -60,13 +60,13 @@
     </div>
    
    <div style="display:flex; flex-direction: row; justify-content: space-around;"> 
-    <form action="/housinggame-player/advance-state" method="post">
+    <form action="/housinggame-player/buy-house-accept-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="move-in" />
         <input type="submit" value="APPROVED: MOVE IN" class="btn btn-primary" id="hg-movein" disabled />
       </div>
      </form>
-     <form action="/housinggame-player/advance-state" method="post">
+     <form action="/housinggame-player/buy-house-reject-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="reject-buy" />
         <input type="submit" value="REJECTED: GO BACK" class="btn btn-primary" id="hg-goback" disabled />
