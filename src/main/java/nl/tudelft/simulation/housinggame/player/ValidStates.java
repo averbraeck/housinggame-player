@@ -1,7 +1,7 @@
 package nl.tudelft.simulation.housinggame.player;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
-import nl.tudelft.simulation.housinggame.common.RoundState;
+import nl.tudelft.simulation.housinggame.common.GroupState;
 
 /**
  * ValidStates checks whether the combination of PlayerState and GroupState is valid, and whether the nextScreen button can be
@@ -33,7 +33,7 @@ public final class ValidStates
         data.setError("");
         data.readDynamicData();
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
+        GroupState groupState = GroupState.valueOf(data.getGroupRound().getGroupState());
 
         if (playerState == null)
         {
@@ -42,10 +42,10 @@ public final class ValidStates
             return false;
         }
 
-        if (roundState == null)
+        if (groupState == null)
         {
             data.setError("GroupRound for player " + data.getPlayerCode() + " is in illegal state: "
-                    + data.getGroupRound().getRoundState() + "<br>Log out and log in again when problem has been corrected.");
+                    + data.getGroupRound().getGroupState() + "<br>Log out and log in again when problem has been corrected.");
             return false;
         }
 
@@ -75,18 +75,18 @@ public final class ValidStates
         // check if the player is in the same round and in a valid combination
         if (data.getPlayerRoundNumber() == data.getGroupRoundNumber())
         {
-            if (roundState.nr > playerState.nr)
+            if (groupState.nr > playerState.nr)
                 return true;
-            if (playerState.eq(PlayerState.BOUGHT_HOUSE) && roundState.ge(RoundState.ALLOW_BUYING))
+            if (playerState.eq(PlayerState.BOUGHT_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
                 return true;
-            if (playerState.eq(PlayerState.STAYED_HOUSE) && roundState.ge(RoundState.ALLOW_BUYING))
+            if (playerState.eq(PlayerState.STAYED_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
                 return true;
-            if (playerState.eq(PlayerState.SURVEY_COMPLETED) && roundState.ge(RoundState.SHOW_SURVEY))
+            if (playerState.eq(PlayerState.SURVEY_COMPLETED) && groupState.ge(GroupState.SHOW_SURVEY))
                 return true;
         }
 
         data.setError("Player " + data.getPlayerCode() + " is in State " + playerState + ", but group is only in State "
-                + roundState + "<br>Log out and log in again when group has advanced to the same state.");
+                + groupState + "<br>Log out and log in again when group has advanced to the same state.");
         return false;
     }
 
@@ -96,7 +96,7 @@ public final class ValidStates
             return false;
 
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
+        GroupState groupState = GroupState.valueOf(data.getGroupRound().getGroupState());
 
         if (jsp.equals("welcome-wait"))
         {
@@ -105,9 +105,9 @@ public final class ValidStates
                 data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
                 return false;
             }
-            if (data.getGroupRoundNumber() <= 1 && roundState.lt(RoundState.NEW_ROUND))
+            if (data.getGroupRoundNumber() <= 1 && groupState.lt(GroupState.NEW_ROUND))
             {
-                data.setError("jsp = 'welcome-wait', but GroupRound state is " + roundState + ", groupround = "
+                data.setError("jsp = 'welcome-wait', but GroupRound state is " + groupState + ", groupround = "
                         + data.getGroupRoundNumber());
                 return false;
             }
@@ -117,19 +117,19 @@ public final class ValidStates
         // for all other states, the same 'ok' rule holds
         if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
             return true;
-        if (roundState.nr > playerState.nr)
+        if (groupState.nr > playerState.nr)
             return true;
-        if (playerState.eq(PlayerState.BOUGHT_HOUSE) && roundState.ge(RoundState.ALLOW_BUYING))
+        if (playerState.eq(PlayerState.BOUGHT_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
             return true;
-        if (playerState.eq(PlayerState.STAYED_HOUSE) && roundState.ge(RoundState.ALLOW_BUYING))
+        if (playerState.eq(PlayerState.STAYED_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
             return true;
-        if (playerState.eq(PlayerState.SURVEY_COMPLETED) && roundState.ge(RoundState.SHOW_SURVEY))
+        if (playerState.eq(PlayerState.SURVEY_COMPLETED) && groupState.ge(GroupState.SHOW_SURVEY))
             return true;
         // summary screen in last round: OK should not be true there
         if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber() && jsp.equals("summary"))
             return false;
 
-        data.setError("jsp = " + jsp + ", groupState = " + roundState + ", playerState = " + playerState
+        data.setError("jsp = " + jsp + ", groupState = " + groupState + ", playerState = " + playerState
                 + "<br>This is an incompatible combination. Please ask the facilitator for help.");
         return false;
     }

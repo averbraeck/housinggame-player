@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
-import nl.tudelft.simulation.housinggame.common.RoundState;
+import nl.tudelft.simulation.housinggame.common.GroupState;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
@@ -45,12 +45,12 @@ public class WelcomeWaitDoneServlet extends HttpServlet
             // reload with the latest state
             data.readDynamicData();
             PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-            RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
+            GroupState groupState = GroupState.valueOf(data.getGroupRound().getGroupState());
 
             if (!playerState.equals(PlayerState.LOGIN))
                 System.err.println("jsp = 'welcome-wait', but player state is '" + playerState + "'");
-            if (roundState.nr < RoundState.NEW_ROUND.nr)
-                System.err.println("jsp = 'welcome-wait', but group state is '" + roundState + "'");
+            if (groupState.nr < GroupState.NEW_ROUND.nr)
+                System.err.println("jsp = 'welcome-wait', but group state is '" + groupState + "'");
             if (data.getPlayerRoundNumber() != 0)
             {
                 data.setError("jsp = 'welcome-wait', but player round is " + data.getPlayerRoundNumber()

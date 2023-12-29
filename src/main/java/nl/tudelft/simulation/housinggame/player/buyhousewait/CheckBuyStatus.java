@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
-import nl.tudelft.simulation.housinggame.common.RoundState;
+import nl.tudelft.simulation.housinggame.common.GroupState;
 import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
@@ -74,11 +74,11 @@ public class CheckBuyStatus extends HttpServlet
     private static boolean checkStatus(final PlayerData data)
     {
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
+        GroupState groupState = GroupState.valueOf(data.getGroupRound().getGroupState());
 
         if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
             return true;
-        if (roundState.nr >= playerState.nr)
+        if (groupState.nr >= playerState.nr)
             return true;
         return false;
     }

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import nl.tudelft.simulation.housinggame.common.RoundState;
+import nl.tudelft.simulation.housinggame.common.GroupState;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 
 @WebServlet("/welcome-wait")
@@ -33,7 +33,7 @@ public class WelcomeWaitServlet extends HttpServlet
         }
 
         // depending on whether the game has started, a test is shown to wait for the facilitator (or not)
-        if (data.getGroupRoundNumber() <= 0 || RoundState.LOGIN.eq(data.getGroupRound().getRoundState()))
+        if (data.getGroupRoundNumber() <= 0 || GroupState.LOGIN.eq(data.getGroupRound().getGroupState()))
             data.putContentHtml("welcome-wait/wait-or-not", data.getLabel("welcome/wait/text"));
         else
             data.putContentHtml("welcome-wait/wait-or-not", data.getLabel("welcome/wait/nowait"));

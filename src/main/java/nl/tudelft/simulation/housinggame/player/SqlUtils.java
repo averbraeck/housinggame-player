@@ -12,7 +12,7 @@ import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
-import nl.tudelft.simulation.housinggame.common.RoundState;
+import nl.tudelft.simulation.housinggame.common.GroupState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
@@ -217,7 +217,7 @@ public final class SqlUtils
         groupRound.setRoundNumber(0);
         groupRound.setFluvialFloodIntensity(0);
         groupRound.setPluvialFloodIntensity(0);
-        groupRound.setRoundState(RoundState.LOGIN.toString());
+        groupRound.setGroupState(GroupState.LOGIN.toString());
         groupRound.store();
         return groupRound;
     }
