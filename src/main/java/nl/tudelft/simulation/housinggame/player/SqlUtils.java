@@ -13,11 +13,8 @@ import org.jooq.impl.DSL;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.RoundState;
-import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.UserRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;

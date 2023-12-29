@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.buyhousewait;
 
 import java.io.IOException;
 
@@ -10,10 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
+import nl.tudelft.simulation.housinggame.common.RoundState;
 import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
+import nl.tudelft.simulation.housinggame.player.PlayerData;
+import nl.tudelft.simulation.housinggame.player.SqlUtils;
 
 @WebServlet("/check-buy-status")
 public class CheckBuyStatus extends HttpServlet
@@ -46,30 +49,42 @@ public class CheckBuyStatus extends HttpServlet
         }
         else
         {
-            HousetransactionRecord transaction = SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, transactionId);
-            if (transaction.getTransactionStatus().equals(TransactionStatus.REJECTED_BUY))
+            if (checkStatus(data))
             {
-                response.setContentType("text/plain");
-                response.getWriter().write("REJECTED");
-                prr.setFinalHousegroupId(null);
-                prr.setActiveTransactionId(null);
-                prr.store();
-                prr.setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
-                return;
-            }
-            else if (transaction.getTransactionStatus().equals(TransactionStatus.APPROVED_BUY))
-            {
-                response.setContentType("text/plain");
-                response.getWriter().write("APPROVED");
-                prr.setFinalHousegroupId(transaction.getHousegroupId());
-                prr.setActiveTransactionId(null);
-                prr.store();
-                return;
+                HousetransactionRecord transaction = SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, transactionId);
+                if (transaction.getTransactionStatus().equals(TransactionStatus.REJECTED_BUY))
+                {
+                    response.setContentType("text/plain");
+                    response.getWriter().write("REJECTED");
+                    return;
+                }
+                else if (transaction.getTransactionStatus().equals(TransactionStatus.APPROVED_BUY))
+                {
+                    response.setContentType("text/plain");
+                    response.getWriter().write("APPROVED");
+                    return;
+                }
             }
         }
 
         response.setContentType("text/plain");
-        response.getWriter().write("");
+        response.getWriter().write("WAIT");
+    }
+
+    private static boolean checkStatus(final PlayerData data)
+    {
+        PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
+        RoundState roundState = RoundState.valueOf(data.getGroupRound().getRoundState());
+
+        System.out.println("roundState.nr=" + roundState.nr + ", playerState.nr=" + playerState.nr);
+        if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
+            return true;
+        if (roundState.nr > playerState.nr)
+            return true;
+        if (data.getPlayerRoundNumber() == data.getScenario().getHighestRoundNumber()
+                && playerState.eq(PlayerState.VIEW_SUMMARY))
+            return false;
+        return false;
     }
 
 }
