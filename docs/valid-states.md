@@ -1,5 +1,7 @@
 # Valid player states to enable next screen button
 
+The table below shows the group round state and the player state that are 'compatible'. The group can move forward in state, where the player stays behind, but the opposite is not possible (the player should never be ahead of the group in terms of state). The last column shows under what conditions the next screen button will be enabled. Note that states 40, 70, 100 and 130 are different from the standard conditions when to enable the next screen button. 
+
 | Group round state  | Gnr  | Player state      | Pnr  | Screen            | Button           | Button enabled     |
 | ------------------ | ---: | ----------------- | ---: | ----------------- | ---------------- | ------------------ |
 | ANY                | any  | ANY               | any  | login             | LOGIN            | always             |
