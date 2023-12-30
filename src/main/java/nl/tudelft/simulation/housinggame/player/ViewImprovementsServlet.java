@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.player.house.HouseAccordion;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
 import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
@@ -35,7 +36,7 @@ public class ViewImprovementsServlet extends HttpServlet
         data.getContentHtml().clear();
         BudgetAccordion.makeBudgetAccordion(data);
         NewsAccordion.makeNewsAccordion(data);
-        ContentUtils.makeHouseConfirmationAccordion(data);
+        HouseAccordion.makeHouseConfirmationAccordion(data);
         ContentUtils.makeImprovementsAccordion(data);
 
         response.sendRedirect("jsp/player/view-improvements.jsp");
