@@ -17,14 +17,19 @@
 
     <h1 style="text-align: center; color: blue;">View taxes for your community</h1>
     
-    <p>
-      View Taxes
-    </p>
+    <div class="panel-group pmd-accordion" id="hg-accordion" role="tablist" aria-multiselectable="true" > 
+      <jsp:include page="accordion1.jsp"></jsp:include>
+      <jsp:include page="accordion2.jsp"></jsp:include>
+      <jsp:include page="accordion3.jsp"></jsp:include>
+      <jsp:include page="accordion4.jsp">
+        <jsp:param name="open" value="in" />
+      </jsp:include>
+    </div>
     
    <form action="/housinggame-player/advance-state" method="post">
       <div class="hg-button">
-        <input type="hidden" name="nextScreen" value="view-taxes" />
-        <input type="submit" value='${playerData.getLabel("welcome/button/finish") }' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="hidden" name="nextScreen" value="view-improvements" />
+        <input type="submit" value='VIEW IMPROVEMENTS' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
     

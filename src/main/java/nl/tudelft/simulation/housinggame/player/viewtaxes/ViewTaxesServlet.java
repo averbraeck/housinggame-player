@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.viewtaxes;
 
 import java.io.IOException;
 
@@ -8,6 +8,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import nl.tudelft.simulation.housinggame.player.PlayerData;
+import nl.tudelft.simulation.housinggame.player.house.HouseAccordion;
+import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
+import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
 @WebServlet("/view-taxes")
 public class ViewTaxesServlet extends HttpServlet
@@ -28,6 +33,12 @@ public class ViewTaxesServlet extends HttpServlet
             response.sendRedirect("/housinggame-player/login");
             return;
         }
+
+        data.getContentHtml().clear();
+        BudgetAccordion.makeBudgetAccordion(data);
+        NewsAccordion.makeNewsAccordion(data);
+        HouseAccordion.makeHouseConfirmationAccordion(data);
+        TaxAccordion.makeTaxAccordion(data);
 
         response.sendRedirect("jsp/player/view-taxes.jsp");
     }
