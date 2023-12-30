@@ -77,7 +77,7 @@ public final class ValidStates
         // check if the player is in the same round and in a valid combination
         if (data.getPlayerRoundNumber() == data.getGroupRoundNumber())
         {
-            if (groupState.nr > playerState.nr)
+            if (groupState.nr >= playerState.nr)
                 return true;
             if (playerState.eq(PlayerState.BOUGHT_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
                 return true;
