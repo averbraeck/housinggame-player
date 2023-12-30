@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import nl.tudelft.simulation.housinggame.common.HouseGroupStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.CommunityRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
@@ -33,13 +34,13 @@ public class TaxAccordion
         s.append("You live in house " + data.getHouse().getCode() + "<br/>\n");
         CommunityRecord community = SqlUtils.readRecordFromId(data, Tables.COMMUNITY, data.getHouse().getCommunityId());
         s.append("This house is in community " + community.getName() + "<br/><br/>\n");
-        s.append("The taxes for this community are as follows\n");
+        s.append("The taxes for this community are as follows:<br/>\n");
         List<TaxRecord> taxList = dslContext.selectFrom(Tables.TAX).where(Tables.TAX.COMMUNITY_ID.eq(community.getId())).fetch()
                 .sortAsc(Tables.TAX.MINIMUM_INHABITANTS);
         for (TaxRecord tax : taxList)
         {
             s.append(tax.getMinimumInhabitants() + " - " + tax.getMaximumInhabitants() + " inhabitants: "
-                    + data.k(tax.getTaxCost().intValue()) + " k/round<br/>\n");
+                    + data.k(tax.getTaxCost().intValue()) + "/round<br/>\n");
         }
         List<HousegroupRecord> houseGroupList =
                 dslContext.selectFrom(Tables.HOUSEGROUP).where(Tables.HOUSEGROUP.GROUP_ID.eq(data.getGroup().getId())).fetch();
@@ -47,12 +48,16 @@ public class TaxAccordion
         for (HousegroupRecord houseGroup : houseGroupList)
         {
             HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
-            if (house.getCommunityId().equals(community.getId()))
+            if (house.getCommunityId().equals(community.getId()) && houseGroup.getStatus().equals(HouseGroupStatus.OCCUPIED))
                 nrCommunity++;
         }
-        s.append("Your community has " + nrCommunity +" inhabitants<br/>\n");
-        s.append("Your paid taxes are: " + data.k(data.getPlayerRound().getCostTaxes()) + " k<br/>\n");
-        s.append("(note that the taxes can be based on an earlier count of the number of inhabitaants in the community)\n");
+
+        // TODO: tax increases based on measures
+
+        s.append("<br/>Your community has " + nrCommunity + " inhabitants<br/>\n");
+        s.append("Your paid taxes are: " + data.k(data.getPlayerRound().getCostTaxes()) + "<br/>\n");
+        s.append("<span style=\"color:grey;\">" + "(note that the taxes can be based on an earlier count "
+                + "of the number of inhabitants in the community)</span><br/>\n");
         s.append("            </div>\n");
         data.getContentHtml().put("tax/content", s.toString());
     }
