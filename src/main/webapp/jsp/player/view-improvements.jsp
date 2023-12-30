@@ -32,20 +32,21 @@ form .checkbox input[type="checkbox"] {
       <jsp:include page="accordion1.jsp"></jsp:include>
       <jsp:include page="accordion2.jsp"></jsp:include>
       <jsp:include page="accordion3.jsp"></jsp:include>
+      <jsp:include page="accordion4.jsp"></jsp:include>
 
       <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading3">
+        <div class="panel-heading" role="tab" id="heading5">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse4" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse5" aria-expanded="false" 
               aria-controls="collapse4" data-expandable="false">
-              4. Buying improvements
+              5. Buying improvements
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
                 keyboard_arrow_down
               </i>
             </a>
           </h4>
         </div>
-        <div id="collapse4" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading3">
+        <div id="collapse5" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading5">
           <div class="panel-body">
             <p>
               ${playerData.getContentHtml("house/improvements") }
@@ -61,9 +62,11 @@ form .checkbox input[type="checkbox"] {
 
     </div>
 
-   <form action="/housinggame-player/advance-state" method="post">
+   <form action="/housinggame-player/view-improvements-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="answer-survey" />
+        <input type="hidden" id="form-options" name="form-options" value="" />
+        <input type="hidden" id="form-selected-points" name="form-selected-points" value="" />
         <input type="submit" value='BUY IMPROVEMENTS, ANSWER SURVEY' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
@@ -101,6 +104,8 @@ form .checkbox input[type="checkbox"] {
     });
     
     function checkCosts() {
+        $('#form-options').val($('#improvements-form').serialize());
+        $('#form-selected-points').val($('#selected-points').val());
         $.post("/housinggame-player/check-improvements-costs", {
         	  'jsp': 'view-improvements',
         	  'form': $('#improvements-form').serialize(),

@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.viewimprovements;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +20,8 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
+import nl.tudelft.simulation.housinggame.player.PlayerData;
+import nl.tudelft.simulation.housinggame.player.SqlUtils;
 
 @WebServlet("/check-improvements-costs")
 public class CheckImprovementsCostsServlet extends HttpServlet
