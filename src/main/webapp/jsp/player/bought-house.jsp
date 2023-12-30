@@ -25,10 +25,10 @@
       </jsp:include>
     </div>
     
-   <form action="/housinggame-player/advance-state" method="post">
+   <form action="/housinggame-player/bought-house-done" method="post">
       <div class="hg-button">
-        <input type="hidden" name="nextScreen" value="view-improvements" />
-        <input type="submit" value='VIEW IMPROVEMENTS' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="hidden" name="nextScreen" value="view-taxes" />
+        <input type="submit" value='VIEW TAXES' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
     
