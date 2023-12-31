@@ -39,7 +39,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading1">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse1" aria-expanded="true" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse1" aria-expanded="true" 
               aria-controls="collapse1" data-expandable="false">
               1. Your budget and expectations
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
@@ -58,7 +58,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading2">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse2" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse2" aria-expanded="false" 
               aria-controls="collapse2" data-expandable="false">
               2. News for this round
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
@@ -77,7 +77,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading3">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse3" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse3" aria-expanded="false" 
               aria-controls="collapse3" data-expandable="false">
               3. Your house choice
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">

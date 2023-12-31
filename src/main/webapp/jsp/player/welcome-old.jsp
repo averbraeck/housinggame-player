@@ -24,7 +24,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading1">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse1" aria-expanded="true" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse1" aria-expanded="true" 
               aria-controls="collapse1" data-expandable="false">
               <span class="badge badge-info pmd-ripple-effect">1</span>
               ${playerData.getLabel("welcome/1/header") }
@@ -44,7 +44,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading2">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse2" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse2" aria-expanded="false" 
               aria-controls="collapse2" data-expandable="false">
               ${playerData.getLabel("welcome/2/header") }
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
@@ -63,7 +63,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading3">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse3" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse3" aria-expanded="false" 
               aria-controls="collapse3" data-expandable="false">
               <span class="badge badge-info pmd-ripple-effect">3</span>
               ${playerData.getLabel("welcome/3/header") }
@@ -83,7 +83,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading4">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse4" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse4" aria-expanded="false" 
               aria-controls="collapse4" data-expandable="false">
               <span class="badge badge-info pmd-ripple-effect">4</span>
               ${playerData.getLabel("welcome/4/header") }
@@ -103,7 +103,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading5">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse5" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse5" aria-expanded="false" 
               aria-controls="collapse5" data-expandable="false">
               <span class="badge badge-info pmd-ripple-effect">5</span>
               ${playerData.getLabel("welcome/5/header") }
@@ -123,7 +123,7 @@
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading6">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#welcome-accordion" href="#collapse6" aria-expanded="false" 
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse6" aria-expanded="false" 
               aria-controls="collapse6" data-expandable="false">
               <span class="badge badge-info pmd-ripple-effect">6</span>
               ${playerData.getLabel("welcome/6/header") }
