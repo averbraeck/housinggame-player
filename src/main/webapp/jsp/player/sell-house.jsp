@@ -98,7 +98,7 @@
               = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }
             </p>
             
-            <form action="/housinggame-player/advance-state" method="post">
+            <form action="/housinggame-player/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" method="post">
               <div class="form-group pmd-textfield form-group-sm">
                 <label for="gamesession" class="control-label pmd-textfield-floating-label">Select house</label> 
                 <select name="houses" id="houses" class="form-control">
@@ -116,14 +116,14 @@
 
     </div>
     
-   <form action="/housinggame-player/advance-state" method="post">
+   <form action="/housinggame-player/sell-house-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="stay" />
         <input type="submit" value="STAY" class="btn btn-primary" id="hg-submit-stay" disabled />
       </div>
     </form>
 
-   <form action="/housinggame-player/advance-state" method="post">
+   <form action="/housinggame-player/sell-house-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="sell-house" />
         <input type="submit" value="SELL HOUSE" class="btn btn-primary" id="hg-submit-sell" disabled />

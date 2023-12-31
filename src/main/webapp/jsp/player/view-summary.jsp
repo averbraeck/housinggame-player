@@ -27,7 +27,7 @@
       Round Summary
     </p>
     
-   <form action="/housinggame-player/advance-state" method="post">
+   <form action="/housinggame-player/view-summary-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="read-news" />
         <input type="submit" value='NEW ROUND' class="btn btn-primary" id="hg-submit" disabled />

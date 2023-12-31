@@ -122,7 +122,7 @@
     </div>
 
     
-   <form action="/housinggame-player/advance-state" method="post">
+   <form action="/housinggame-player/survey-completed-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="view-damage" />
         <input type="submit" value='WAIT FOR THE DICE' class="btn btn-primary" id="hg-submit" disabled />
