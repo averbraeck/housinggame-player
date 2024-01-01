@@ -17,7 +17,7 @@
 
     <h1 style="text-align: center; color: blue;">View the round summary</h1>
     
-    <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
+    <div class="panel-group pmd-accordion" id="hg-accordion" role="tablist" aria-multiselectable="true" > 
       <jsp:include page="accordion1.jsp"></jsp:include>
       <jsp:include page="accordion2.jsp"></jsp:include>
       <jsp:include page="accordion3.jsp"></jsp:include>

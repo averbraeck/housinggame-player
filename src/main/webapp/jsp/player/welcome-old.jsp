@@ -19,7 +19,7 @@
     
     <!--  accordion -->
     
-    <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
+    <div class="panel-group pmd-accordion" id="hg-accordion" role="tablist" aria-multiselectable="true" > 
       
       <div class="panel panel-default"> 
         <div class="panel-heading" role="tab" id="heading1">
