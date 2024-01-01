@@ -15,105 +15,35 @@
     
     <jsp:include page="header.jsp"></jsp:include>
 
-    <h1 style="text-align: center; color: blue;">Answer survey questions</h1>
-    <div class="panel-group pmd-accordion" id="welcome-accordion" role="tablist" aria-multiselectable="true" > 
-      
-      <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading1">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse1" aria-expanded="true" 
-              aria-controls="collapse1" data-expandable="false">
-              1. Your budget and expectations
-              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
-                keyboard_arrow_down
-              </i>
-            </a>
-          </h4>
-        </div>
-        <div id="collapse1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
-          <div class="panel-body">
-            ${playerData.getContentHtml("panel/budget") }
-          </div>
-        </div>
-      </div>
+    <h1 style="text-align: center; color: blue;">Wait for survey completion</h1>
+
+    <div class="panel-group pmd-accordion" id="hg-accordion" role="tablist" aria-multiselectable="true" > 
+      <jsp:include page="accordion1.jsp"></jsp:include>
+      <jsp:include page="accordion2.jsp"></jsp:include>
+      <jsp:include page="accordion3.jsp"></jsp:include>
+      <jsp:include page="accordion4.jsp"></jsp:include>
+      <jsp:include page="accordion5.jsp"></jsp:include>
 
       <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading2">
+        <div class="panel-heading" role="tab" id="heading6">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse2" aria-expanded="false" 
-              aria-controls="collapse2" data-expandable="false">
-              2. News for this round
+            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse6" aria-expanded="false" 
+              aria-controls="collapse6" data-expandable="false">
+              6. Answer survey
               <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
                 keyboard_arrow_down
               </i>
             </a>
           </h4>
         </div>
-        <div id="collapse2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading2">
-          <div class="panel-body">
-            ${playerData.getContentHtml("news/summary/1") }
-          </div>
-        </div>
-      </div>
-      
-      <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading3">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse3" aria-expanded="false" 
-              aria-controls="collapse3" data-expandable="false">
-              3. Your house confirmation
-              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
-                keyboard_arrow_down
-              </i>
-            </a>
-          </h4>
-        </div>
-        <div id="collapse3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
+        <div id="collapse6" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading6">
           <div class="panel-body">
             <p>
-              ${playerData.getContentHtml("house/confirmation") }
+              Let's wait until all players in the group have completed the survey.
             </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading3">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse4" aria-expanded="false" 
-              aria-controls="collapse4" data-expandable="false">
-              4. Buying improvements
-              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
-                keyboard_arrow_down
-              </i>
-            </a>
-          </h4>
-        </div>
-        <div id="collapse4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading3">
-          <div class="panel-body">
             <p>
-              ${playerData.getContentHtml("house/bought-improvements") }
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-default"> 
-        <div class="panel-heading" role="tab" id="heading3">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#hg-accordion" href="#collapse5" aria-expanded="false" 
-              aria-controls="collapse5" data-expandable="false">
-              5. Answer survey
-              <i class="material-icons md-dark pmd-sm pmd-accordion-arrow">
-                keyboard_arrow_down
-              </i>
-            </a>
-          </h4>
-        </div>
-        <div id="collapse5" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading3">
-          <div class="panel-body">
-            <p>
-              ${playerData.getContentHtml("house/survey") }
+              After this, we will roll the dice to calculate the fluvial (river flooding) 
+              and pluvial (rainfall) damage to the community and to the houses for this round.
             </p>
           </div>
         </div>
@@ -122,7 +52,7 @@
     </div>
 
     
-   <form action="/housinggame-player/survey-completed-done" method="post">
+    <form action="/housinggame-player/survey-completed-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="view-damage" />
         <input type="submit" value='WAIT FOR THE DICE' class="btn btn-primary" id="hg-submit" disabled />
@@ -136,7 +66,7 @@
       check();
     });
     function check() {
-      $.post("/housinggame-player/get-round-status", {jsp: 'answer-survey'},
+      $.post("/housinggame-player/get-round-status", {jsp: 'survey-completed'},
         function(data, status) {
           if (data == "OK") {
             $("#hg-submit").removeAttr("disabled");
