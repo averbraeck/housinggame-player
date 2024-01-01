@@ -67,7 +67,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
             // the next screen button indicates the INTENTION of the player, not the screen it originates from.
             String nextScreen = request.getParameter("nextScreen");
 
-            // player clicked MOVE IN on the buy-house-wait screen
+            // player clicked BUY IMPROVEMENTS on the view-improvements screen
             if (nextScreen.equals("answer-survey"))
             {
                 // reload the round with the latest state
@@ -75,7 +75,6 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 PlayerroundRecord prr = data.getPlayerRound();
                 HousegroupRecord hgr = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, prr.getFinalHousegroupId());
 
-                // return OK if the button for the current screen can be enabled, an empty string otherwise
                 DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
                 WelfaretypeRecord wft =
                         SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
