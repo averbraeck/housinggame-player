@@ -1,4 +1,4 @@
-package nl.tudelft.simulation.housinggame.player;
+package nl.tudelft.simulation.housinggame.player.answersurvey;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +16,8 @@ import org.jooq.impl.DSL;
 
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.QuestionRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.QuestionitemRecord;
+import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.house.HouseAccordion;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
 import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
@@ -48,7 +50,7 @@ public class AnswerSurveyServlet extends HttpServlet
         HouseAccordion.makeHouseConfirmationAccordion(data);
         TaxAccordion.makeTaxAccordion(data);
         ImprovementsAccordion.makeBoughtImprovementsAccordion(data);
-        makeSurveyAccordion(data);
+        makeSurveyAccordion(response, data);
 
         response.sendRedirect("jsp/player/answer-survey.jsp");
     }
@@ -59,20 +61,60 @@ public class AnswerSurveyServlet extends HttpServlet
         doPost(req, resp);
     }
 
-    public static void makeSurveyAccordion(final PlayerData data)
+    public static void makeSurveyAccordion(final HttpServletResponse response, final PlayerData data) throws IOException
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<QuestionRecord> questionList = dslContext.selectFrom(Tables.QUESTION)
-                .where(Tables.QUESTION.SCENARIO_ID.eq(data.getScenario().getId())).fetch();
+        List<QuestionRecord> questionList =
+                dslContext.selectFrom(Tables.QUESTION).where(Tables.QUESTION.SCENARIO_ID.eq(data.getScenario().getId())).fetch()
+                        .sortAsc(Tables.QUESTION.QUESTION_NUMBER);
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
         s.append("<p>Please answer the following questions:</p>\n");
-        for (QuestionRecord question : questionList)
+        for (var question : questionList)
         {
-            s.append("Question " + question.getQuestionNumber() + ".<br/>" + question.getDescription() + "<br/>\n");
-            s.append("<br/>\n");
+            s.append(question.getName() + " " + question.getDescription() + "<br/>\n");
+            switch (question.getType())
+            {
+                case "SELECT":
+                {
+                    s.append("<select class=\"hg-required\" id=\"id-" + question.getId() + "\" name=\"id-" + question.getId()
+                            + "\">\n");
+                    List<QuestionitemRecord> itemList = dslContext.selectFrom(Tables.QUESTIONITEM)
+                            .where(Tables.QUESTIONITEM.QUESTION_ID.eq(question.getId())).fetch()
+                            .sortAsc(Tables.QUESTIONITEM.CODE);
+                    s.append("<option value=\"\"></option>\n");
+                    for (var item : itemList)
+                        s.append("<option value=\"" + item.getCode() + "\">" + item.getCode() + " " + item.getName()
+                                + "</option>\n");
+                    s.append("</select>\n");
+                    break;
+                }
+                case "STRING":
+                {
+                    s.append("<input type=\"text\" class=\"hg-required\" id=\"id-" + question.getId() + "\" name=\"id-"
+                            + question.getId() + "\">\n");
+                    break;
+                }
+                case "INTEGER":
+                {
+                    s.append("<input type=\"number\" class=\"hg-required\" id=\"id-" + question.getId() + "\" name=\"id-"
+                            + question.getId() + "\">\n");
+                    break;
+                }
+                case "TEXT":
+                {
+                    s.append("<textarea class=\"hg-required\" id=\"id-" + question.getId() + "\" name=\"id-" + question.getId()
+                            + "\"></textarea>\n");
+                    break;
+                }
+                default:
+                {
+                    data.errorRedirect(response, "Unexpected value in survey question: " + question.getType());
+                    return;
+                }
+            }
+            s.append("<br/><br/>\n");
         }
-        s.append("<br/>\n");
         s.append("            </div>\n");
         data.getContentHtml().put("house/survey", s.toString());
     }
