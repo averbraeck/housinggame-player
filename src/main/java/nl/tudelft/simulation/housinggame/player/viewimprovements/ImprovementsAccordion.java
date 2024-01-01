@@ -76,18 +76,46 @@ public class ImprovementsAccordion
     public static void makeBoughtImprovementsAccordion(final PlayerData data)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<MeasuretypeRecord> measureTypeList = dslContext.selectFrom(Tables.MEASURETYPE)
-                .where(Tables.MEASURETYPE.GAMEVERSION_ID.eq(data.getGameVersion().getId())).fetch();
+        List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
+                .where(Tables.MEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+        int satBought = data.getPlayerRound().getSatisfactionBought();
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
-        s.append("<p>You bought the following improvements:</p>\n");
-        for (MeasuretypeRecord measureType : measureTypeList)
+        if (satBought == 0 && measureList.size() == 0)
+            s.append("<p>You did not buy any improvements in this round</p>\n");
+        else
         {
-            s.append("[ ] " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) + "<br/>\n");
+            int totCost = 0;
+            int totSat = 0;
+            if (measureList.size() > 0)
+            {
+                s.append("<p>You bought the following improvements:<br/>\n");
+                for (var measure : measureList)
+                {
+                    if (measure.getRoundNumber().equals(data.getPlayerRoundNumber()))
+                    {
+                        var measureType = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+                        s.append(
+                                " - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) +
+                                ", satisfaction: " + measureType.getSatisfactionDelta() + "<br/>\n");
+                        totCost += measureType.getPrice();
+                        totSat += measureType.getSatisfactionDelta();
+                    }
+                }
+                s.append("</p>\n");
+            }
+            if (satBought > 0)
+            {
+                s.append("<p>You bought extra satisfaction:<br/>\n");
+                s.append(" - nr of points: " + satBought + ", costs: "
+                        + data.k(data.getPlayerRound().getCostSatisfactionBought()) + "</p>\n");
+                totCost += data.getPlayerRound().getCostSatisfactionBought();
+                totSat += satBought;
+            }
+            s.append("<p>Total spend on improvements: " + data.k(totCost) + "<br/>\n");
+            s.append("Total satisfaction delta: " + totSat + "</p>\n");
+
         }
-        s.append("<br/><p>You bought extra satisfaction:</p>\n");
-        WelfaretypeRecord wft = SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
-        s.append("[ ] " + " costs per point: " + data.k(wft.getSatisfactionCostPerPoint()) + "<br/>\n");
         s.append("            </div>\n");
         data.getContentHtml().put("improvements/bought", s.toString());
     }
