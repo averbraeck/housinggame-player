@@ -74,7 +74,7 @@ public class AnswerSurveyDoneServlet extends HttpServlet
                     qsr.setPlayerroundId(prr.getId());
                     qsr.setQuestionId(question.getId());
                     if (data.getGroupRoundNumber() > data.getPlayerRoundNumber()
-                            || GroupState.valueOf(data.getGroupRound().getGroupState()).gt(GroupState.SURVEY_COMPLETED))
+                            || GroupState.valueOf(data.getGroupRound().getGroupState()).ge(GroupState.SURVEY_COMPLETED))
                         qsr.setLateAnswer((byte) 1);
                     else
                         qsr.setLateAnswer((byte) 0);
