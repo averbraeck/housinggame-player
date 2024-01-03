@@ -21,16 +21,18 @@
       <jsp:include page="accordion1.jsp"></jsp:include>
       <jsp:include page="accordion2.jsp"></jsp:include>
       <jsp:include page="accordion3.jsp"></jsp:include>
+      <jsp:include page="accordion4.jsp"></jsp:include>
+      <jsp:include page="accordion5.jsp"></jsp:include>
+      <jsp:include page="accordion6.jsp"></jsp:include>
+      <jsp:include page="accordion7.jsp">
+        <jsp:param name="open" value="in" />
+      </jsp:include>
     </div>
-    
-    <p>
-      Round Summary
-    </p>
     
    <form action="/housinggame-player/view-summary-done" method="post">
       <div class="hg-button">
-        <input type="hidden" name="nextScreen" value="read-news" />
-        <input type="submit" value='NEW ROUND' class="btn btn-primary" id="hg-submit" disabled />
+        <input type="hidden" name="nextScreen" value="next-round" />
+        <input type="submit" value='NEXT ROUND' class="btn btn-primary" id="hg-submit" disabled />
       </div>
     </form>
     

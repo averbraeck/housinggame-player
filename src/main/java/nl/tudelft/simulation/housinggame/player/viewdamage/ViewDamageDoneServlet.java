@@ -9,15 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.house.HouseAccordion;
-import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
-import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
-import nl.tudelft.simulation.housinggame.player.viewimprovements.ImprovementsAccordion;
-import nl.tudelft.simulation.housinggame.player.viewtaxes.TaxAccordion;
 
-@WebServlet("/view-damage")
-public class ViewDamageServlet extends HttpServlet
+@WebServlet("/view-damage-done")
+public class ViewDamageDoneServlet extends HttpServlet
 {
 
     /** */
@@ -30,21 +26,27 @@ public class ViewDamageServlet extends HttpServlet
         HttpSession session = request.getSession();
 
         PlayerData data = (PlayerData) session.getAttribute("playerData");
-        if (data == null)
+        if (data == null || request.getParameter("nextScreen") == null)
         {
             response.sendRedirect("/housinggame-player/login");
             return;
         }
 
-        data.getContentHtml().clear();
-        BudgetAccordion.makeBudgetAccordion(data);
-        NewsAccordion.makeNewsAccordion(data);
-        HouseAccordion.makeHouseConfirmationAccordion(data);
-        TaxAccordion.makeTaxAccordion(data);
-        ImprovementsAccordion.makeBoughtImprovementsAccordion(data);
-        DamageAccordion.makeDamageAccordion(data);
+        // the next screen button indicates the INTENTION of the player, not the screen it originates from.
+        String nextScreen = request.getParameter("nextScreen");
 
-        response.sendRedirect("jsp/player/view-damage.jsp");
+        // player clicked VIEW SUMMARY on the view-damage screen
+        if (nextScreen.equals("view-summary"))
+        {
+            data.getPlayerRound().setPlayerState(PlayerState.VIEW_SUMMARY.toString());
+            data.getPlayerRound().store();
+            response.sendRedirect("/housinggame-player/view-summary");
+            return;
+        }
+
+        // if the player did not click 'VIEW SUMMARY' and enters the view-damage-done servlet, something is wrong
+        System.err.println("Player app called view-damage-done servlet, but NextScreen button is " + nextScreen);
+        response.sendRedirect("/housinggame-player/login");
     }
 
     @Override
