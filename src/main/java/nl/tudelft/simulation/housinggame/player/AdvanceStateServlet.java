@@ -107,34 +107,6 @@ public class AdvanceStateServlet extends HttpServlet
             return;
         }
 
-        // the player clicked the WAIT FOR THE DICE button in the answer-survey screen
-        if (nextScreen.equals("wait-for-dice"))
-        {
-            // TODO handle the entered survey answers, create answer records
-            data.getPlayerRound().setPlayerState(PlayerState.SURVEY_COMPLETED.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/survey-completed");
-            return;
-        }
-
-        // the player clicked the VIEW DAMAGE button in the survey-completed screen
-        if (nextScreen.equals("view-damage"))
-        {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_DAMAGE.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/view-damage");
-            return;
-        }
-
-        // the player clicked the VIEW SUMMARY button in the view-damage screen
-        if (nextScreen.equals("view-summary"))
-        {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_SUMMARY.toString());
-            data.getPlayerRound().store();
-            response.sendRedirect("/housinggame-player/view-summary");
-            return;
-        }
-
         // the player clicked the NEW ROUND button in the view-summary screen
         if (nextScreen.equals("new-round"))
         {
