@@ -144,8 +144,12 @@ public final class SqlUtils
         newPr.setActiveTransactionId(null);
 
         // flood
-        newPr.setFluvialDamage(0);
-        newPr.setPluvialDamage(0);
+        newPr.setPluvialBaseProtection(0);
+        newPr.setPluvialBaseProtection(0);
+        newPr.setPluvialCommunityDelta(0);
+        newPr.setFluvialCommunityDelta(0);
+        newPr.setPluvialHouseDelta(0);
+        newPr.setFluvialHouseDelta(0);
 
         // general
         newPr.setGrouproundId(groupRound0.getId());
@@ -198,8 +202,12 @@ public final class SqlUtils
         newPr.setActiveTransactionId(null);
 
         // flood
-        newPr.setFluvialDamage(0);
-        newPr.setPluvialDamage(0);
+        newPr.setPluvialBaseProtection(oldPr.getPluvialBaseProtection());
+        newPr.setPluvialBaseProtection(oldPr.getFluvialBaseProtection());
+        newPr.setPluvialCommunityDelta(oldPr.getPluvialCommunityDelta());
+        newPr.setFluvialCommunityDelta(oldPr.getFluvialCommunityDelta());
+        newPr.setPluvialHouseDelta(oldPr.getPluvialHouseDelta());
+        newPr.setFluvialHouseDelta(oldPr.getFluvialHouseDelta());
 
         // general
         newPr.setGrouproundId(groupRound.getId());
