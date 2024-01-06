@@ -1,7 +1,7 @@
 package nl.tudelft.simulation.housinggame.player;
 
-import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.GroupState;
+import nl.tudelft.simulation.housinggame.common.PlayerState;
 
 /**
  * ValidStates checks whether the combination of PlayerState and GroupState is valid, and whether the nextScreen button can be
@@ -49,25 +49,26 @@ public final class ValidStates
             return false;
         }
 
-        if (data.getPlayerRoundNumber() > data.getGroupRoundNumber())
+        if (data.getPlayerRoundNumber() > data.getHighestGroupRoundNumber())
         {
             data.setError("Player " + data.getPlayerCode() + " is in Round " + data.getPlayerRoundNumber()
-                    + ", but group is only in Round " + data.getGroupRoundNumber()
+                    + ", but group is only in Round " + data.getHighestGroupRoundNumber()
                     + "<br>Log out and log in again when group has advanced to the same round.");
             return false;
         }
 
         // if the player is in the previous round, but beyond buying a house, the player can still continue
-        if (data.getGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.ge(PlayerState.BOUGHT_HOUSE))
+        if (data.getHighestGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.ge(PlayerState.BOUGHT_HOUSE))
             return true;
-        if (data.getGroupRoundNumber() == 1 && data.getPlayerRoundNumber() == 0 && groupState.le(GroupState.BUYING_FINISHED))
+        if (data.getHighestGroupRoundNumber() == 1 && data.getPlayerRoundNumber() == 0
+                && groupState.le(GroupState.BUYING_FINISHED))
             return true;
-        if (data.getGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.lt(PlayerState.BOUGHT_HOUSE))
+        if (data.getHighestGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.lt(PlayerState.BOUGHT_HOUSE))
         {
             data.setError("Player " + data.getPlayerCode() + " is one round behind the group, and too far behind to catch up.");
             return false;
         }
-        if (data.getGroupRoundNumber() - data.getPlayerRoundNumber() > 1)
+        if (data.getHighestGroupRoundNumber() - data.getPlayerRoundNumber() > 1)
         {
             data.setError("Player " + data.getPlayerCode()
                     + " is more than one round behind the group, and too far behind to catch up.");
@@ -75,7 +76,7 @@ public final class ValidStates
         }
 
         // check if the player is in the same round and in a valid combination
-        if (data.getPlayerRoundNumber() == data.getGroupRoundNumber())
+        if (data.getPlayerRoundNumber() == data.getHighestGroupRoundNumber())
         {
             if (groupState.nr >= playerState.nr)
                 return true;
@@ -107,17 +108,17 @@ public final class ValidStates
                 data.setError("jsp = 'welcome-wait', but GroupRound has not yet been created");
                 return false;
             }
-            if (data.getGroupRoundNumber() <= 1 && groupState.lt(GroupState.NEW_ROUND))
+            if (data.getHighestGroupRoundNumber() <= 1 && groupState.lt(GroupState.NEW_ROUND))
             {
                 data.setError("jsp = 'welcome-wait', but GroupRound state is " + groupState + ", groupround = "
-                        + data.getGroupRoundNumber());
+                        + data.getHighestGroupRoundNumber());
                 return false;
             }
             return true;
         }
 
         // for all other states, the same 'ok' rule holds
-        if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
+        if (data.getHighestGroupRoundNumber() > data.getPlayerRoundNumber())
             return true;
         if (groupState.nr > playerState.nr)
             return true;

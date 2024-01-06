@@ -58,9 +58,9 @@ public class WelcomeWaitDoneServlet extends HttpServlet
                 response.sendRedirect("/housinggame-player/error");
                 return;
             }
-            if (data.getGroupRoundNumber() == 0)
+            if (data.getHighestGroupRoundNumber() == 0)
             {
-                data.setError("jsp = 'welcome-wait', but group round is " + data.getGroupRoundNumber());
+                data.setError("jsp = 'welcome-wait', but group round is " + data.getHighestGroupRoundNumber());
                 response.sendRedirect("/housinggame-player/error");
                 return;
             }

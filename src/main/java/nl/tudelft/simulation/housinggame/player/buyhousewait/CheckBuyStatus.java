@@ -76,7 +76,7 @@ public class CheckBuyStatus extends HttpServlet
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
         GroupState groupState = GroupState.valueOf(data.getGroupRound().getGroupState());
 
-        if (data.getGroupRoundNumber() > data.getPlayerRoundNumber())
+        if (data.getHighestGroupRoundNumber() > data.getPlayerRoundNumber())
             return true;
         if (groupState.nr >= playerState.nr)
             return true;

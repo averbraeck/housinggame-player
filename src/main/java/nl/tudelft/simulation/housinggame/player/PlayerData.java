@@ -59,6 +59,9 @@ public class PlayerData
     /** The scenario. Static during session. */
     private ScenarioRecord scenario;
 
+    /** The scenario parameters. */
+    private ScenarioparametersRecord scenarioParameters;
+
     /** The game version. Static during session. */
     private GameversionRecord gameVersion;
 
@@ -68,10 +71,10 @@ public class PlayerData
     /** The list of groupRoundRecords until now. This list is DYNAMIC. */
     private List<GrouproundRecord> groupRoundList = new ArrayList<>();
 
-    /** The current round of the group. This is DYNAMIC. */
-    private int groupRoundNumber = -1;
+    /** The highest round of the group. This is DYNAMIC. Equal to or higher than the currentPlayerRound. */
+    private int highestGroupRoundNumber = -1;
 
-    /** The game might not have started, but a groep ALWAYS has a highest group round (null if not started). */
+    /** The groupround that MATCHES the playerRound (null if not started). */
     private GrouproundRecord groupRound;
 
     /** The current round of the player. This is DYNAMIC. */
@@ -160,6 +163,8 @@ public class PlayerData
         this.gameSession = SqlUtils.readRecordFromId(this, Tables.GAMESESSION, this.group.getGamesessionId());
         this.scenario = SqlUtils.readRecordFromId(this, Tables.SCENARIO, this.group.getScenarioId());
         this.gameVersion = SqlUtils.readRecordFromId(this, Tables.GAMEVERSION, this.scenario.getGameversionId());
+        this.scenarioParameters =
+                SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
         setLanguageLabels(this.scenario);
         readDynamicData();
     }
@@ -170,7 +175,7 @@ public class PlayerData
         {
             DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
             this.groupRound = null;
-            this.groupRoundNumber = -1;
+            this.highestGroupRoundNumber = -1;
             this.groupRoundList.clear();
             for (int i = 0; i <= this.scenario.getHighestRoundNumber(); i++)
             {
@@ -179,7 +184,7 @@ public class PlayerData
                 if (gr == null)
                     break;
                 this.groupRound = gr;
-                this.groupRoundNumber = i;
+                this.highestGroupRoundNumber = i;
                 this.groupRoundList.add(gr);
             }
 
@@ -187,7 +192,7 @@ public class PlayerData
             {
                 this.groupRound = SqlUtils.makeGroupRound0(this);
                 this.groupRoundList.add(this.groupRound);
-                this.groupRoundNumber = 0;
+                this.highestGroupRoundNumber = 0;
             }
 
             this.playerRound = null;
@@ -215,6 +220,8 @@ public class PlayerData
                 this.prevPlayerRound = this.playerRound;
                 this.playerRoundNumber = 0;
             }
+
+            this.groupRound = this.groupRoundList.get(this.playerRoundNumber);
             return true;
         }
         catch (Exception e)
@@ -232,6 +239,11 @@ public class PlayerData
     public GameversionRecord getGameVersion()
     {
         return this.gameVersion;
+    }
+
+    public ScenarioparametersRecord getScenarioParameters()
+    {
+        return this.scenarioParameters;
     }
 
     public String getPlayerCode()
@@ -274,9 +286,9 @@ public class PlayerData
         return this.playerRoundNumber;
     }
 
-    public int getGroupRoundNumber()
+    public int getHighestGroupRoundNumber()
     {
-        return this.groupRoundNumber;
+        return this.highestGroupRoundNumber;
     }
 
     public List<GrouproundRecord> getGroupRoundList()

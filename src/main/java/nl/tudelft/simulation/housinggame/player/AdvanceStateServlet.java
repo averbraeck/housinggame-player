@@ -116,7 +116,8 @@ public class AdvanceStateServlet extends HttpServlet
                 return;
             if (data.getGroupRoundList().size() <= roundNr + 1)
             {
-                data.setError("jsp = 'summary' -> 'new-round', but group round is too low: " + data.getGroupRoundNumber());
+                data.setError(
+                        "jsp = 'summary' -> 'new-round', but group round is too low: " + data.getHighestGroupRoundNumber());
                 response.sendRedirect("/housinggame-player/error");
             }
             GrouproundRecord groupRoundN = data.getGroupRoundList().get(roundNr + 1);
