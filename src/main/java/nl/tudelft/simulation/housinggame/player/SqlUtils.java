@@ -201,7 +201,7 @@ public final class SqlUtils
         newPr.setMortgageLeftEnd(oldPr.getMortgageLeftEnd());
         newPr.setActiveTransactionId(null);
 
-        // flood
+        // flood (copy for now; will be adapted in damage calculation)
         newPr.setPluvialBaseProtection(oldPr.getPluvialBaseProtection());
         newPr.setPluvialBaseProtection(oldPr.getFluvialBaseProtection());
         newPr.setPluvialCommunityDelta(oldPr.getPluvialCommunityDelta());
