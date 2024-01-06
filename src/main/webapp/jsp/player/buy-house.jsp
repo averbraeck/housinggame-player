@@ -71,7 +71,7 @@ option:not(:checked) {
             </p>
             <p class="hg-box-grey">
               You cannot select a house whose price is higher than the maximum mortgage
-               (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) }) 
+               (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) })
               + your savings (${playerData.k(playerData.getSavings()) })
               - your debt (${playerData.k(playerData.getDebt()) })
               = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }

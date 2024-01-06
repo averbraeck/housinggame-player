@@ -117,7 +117,8 @@ public class BuyHouseWaitServlet extends HttpServlet
             s.append("</p>\n");
         }
         s.append("            </div>\n");
-        data.getContentHtml().put("house/wait-confirmation", s.toString());
+        data.getContentHtml().put("panel/house", s.toString());
+        data.getContentHtml().put("panel/house/title", "3. Your house choice");
     }
 
 }

@@ -117,7 +117,7 @@ public class ImprovementsAccordion
 
         }
         s.append("            </div>\n");
-        data.getContentHtml().put("improvements/bought", s.toString());
+        data.getContentHtml().put("panel/improvements", s.toString());
     }
 
 }

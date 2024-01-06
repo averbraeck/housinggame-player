@@ -187,7 +187,7 @@ public class DamageAccordion
             // @formatter:on
         }
 
-        data.getContentHtml().put("damage/content", s.toString());
+        data.getContentHtml().put("panel/damage", s.toString());
     }
 
 }

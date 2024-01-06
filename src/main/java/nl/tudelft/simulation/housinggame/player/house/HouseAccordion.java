@@ -231,9 +231,12 @@ public class HouseAccordion
         else
         {
             s.append("You did not change houses in this round.<br/>\n");
+            s.append("The left mortgage is " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + ".<br/>\n");
+            s.append("Your maximum mortgage is " + data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
         }
         s.append("            </div>\n");
-        data.getContentHtml().put("house/confirmation", s.toString());
+        data.getContentHtml().put("panel/house", s.toString());
+        data.getContentHtml().put("panel/house/title", "3. Your house confirmation");
     }
 
 }

@@ -11,7 +11,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.NewsitemRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 
 /**
- * NewsAccordion.java.
+ * NewsAccordion puts the html-code for the news item(s) in panel/news.
  * <p>
  * Copyright (c) 2020-2020 Delft University of Technology, PO Box 5, 2600 AA, Delft, the Netherlands. All rights reserved. <br>
  * BSD-style license. See <a href="https://opentrafficsim.org/docs/current/license.html">OpenTrafficSim License</a>.
@@ -27,14 +27,15 @@ public class NewsAccordion
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<NewsitemRecord> newsList = dslContext.selectFrom(Tables.NEWSITEM)
                 .where(Tables.NEWSITEM.ROUND_NUMBER.eq(data.getPlayerRoundNumber())).fetch();
-        int nr = 1;
+        StringBuilder s = new StringBuilder();
         for (NewsitemRecord news : newsList)
         {
-            data.getContentHtml().put("news/name/" + nr, news.getName());
-            data.getContentHtml().put("news/summary/" + nr, news.getSummary());
-            data.getContentHtml().put("news/content/" + nr, news.getContent());
-            nr++;
+            s.append("            <div class=\"hg-header1\">" + news.getName() + "</div>\n");
+            s.append("            <p>\n");
+            s.append(news.getSummary() + "\n");
+            s.append("            </p>\n");
         }
+        data.getContentHtml().put("panel/news", s.toString());
     }
 
 }

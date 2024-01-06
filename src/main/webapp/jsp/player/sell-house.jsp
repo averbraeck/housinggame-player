@@ -22,6 +22,18 @@
   display-vertical: center;
   opacity: 50%;
 }
+
+#collapse3 select {
+  background: #CCE6FF !important;
+}
+
+#collapse3 input {
+  background: #CCE6FF !important;
+}
+
+option:not(:checked) {
+  background-color: #fff;
+}
 </style>
 
 </head>
@@ -91,10 +103,10 @@
             <p>
               Select a house from the list to check the key features. 
               You will pay ${playerData.getMortgagePercentage() }% 
-              of the house price as the yearly mortgage. 
+              of the house price as the yearly mortgage. <br/>
               You cannot select a house whose price is higher than the maximum mortgage
-               (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) }) 
-              + your savings (${playerData.k(playerData.getPlayerRound().getSavings()) }) 
+               (${playerData.k(playerData.getPlayerRound().getMaximumMortgage()) })
+              + your savings (${playerData.k(playerData.getSavings()) }) 
               = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }
             </p>
             

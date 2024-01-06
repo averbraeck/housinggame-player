@@ -7,7 +7,8 @@ import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SqlUtils;
 
 /**
- * BudgetAccordion.java.
+ * BudgetAccordion puts the html-code for the budget in panel/budget, and progressively increases the amount of information
+ * during the round.
  * <p>
  * Copyright (c) 2020-2020 Delft University of Technology, PO Box 5, 2600 AA, Delft, the Netherlands. All rights reserved. <br>
  * BSD-style license. See <a href="https://opentrafficsim.org/docs/current/license.html">OpenTrafficSim License</a>.

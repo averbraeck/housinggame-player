@@ -59,7 +59,7 @@ public class TaxAccordion
         s.append("<span style=\"color:grey;\">" + "(note that the taxes can be based on an earlier count "
                 + "of the number of inhabitants in the community)</span><br/>\n");
         s.append("            </div>\n");
-        data.getContentHtml().put("tax/content", s.toString());
+        data.getContentHtml().put("panel/tax", s.toString());
     }
 
 }
