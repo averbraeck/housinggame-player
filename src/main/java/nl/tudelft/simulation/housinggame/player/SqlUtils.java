@@ -176,7 +176,7 @@ public final class SqlUtils
         newPr.setCostPluvialDamage(0);
         newPr.setSpendableIncome(oldPr.getSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
         if (oldPr.getSpendableIncome() < 0 && newPr.getSpendableIncome() > oldPr.getSpendableIncome())
-            newPr.setPaidDebt(newPr.getSpendableIncome() - oldPr.getSpendableIncome());
+            newPr.setPaidDebt(Math.max(0, Math.min(0, newPr.getSpendableIncome()) - oldPr.getSpendableIncome()));
 
         // satisfaction
         newPr.setPersonalSatisfaction(oldPr.getPersonalSatisfaction());
