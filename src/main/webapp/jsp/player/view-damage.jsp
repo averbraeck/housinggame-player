@@ -7,6 +7,24 @@
 <head>
   <jsp:include page="head.jsp"></jsp:include>
   <title>Housing Game View Damage</title>
+
+<style>
+.hg-table tbody tr td:nth-of-type(2n), .hg-table thead tr th:nth-of-type(2n) {
+  border-right: 1px solid #4285F4;
+  border-collapse: collapse;
+}
+
+.hg-table tbody tr td:nth-of-type(1), .hg-table thead tr th:nth-of-type(1) {
+  border-left: 1px solid #4285F4;
+  border-collapse: collapse;
+}
+
+.hg-table {
+  border-bottom: 1px solid #4285F4;
+  border-collapse: collapse;
+}
+</style>
+
 </head>
 
 <body style="background-color: white;" onLoad = initPage()>

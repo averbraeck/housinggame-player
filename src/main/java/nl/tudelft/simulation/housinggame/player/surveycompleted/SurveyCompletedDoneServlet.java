@@ -36,7 +36,7 @@ public class SurveyCompletedDoneServlet extends HttpServlet
         String nextScreen = request.getParameter("nextScreen");
 
         // player clicked VIEW DAMAGE on the survey-completed screen
-        if (nextScreen.equals("survey-completed"))
+        if (nextScreen.equals("view-damage"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_DAMAGE.toString());
             data.getPlayerRound().store();

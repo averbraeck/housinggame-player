@@ -13,7 +13,6 @@ html, body {
 
 form {
   max-width: 30em;
-  
 }
 
 h1 {
@@ -93,6 +92,29 @@ h1 {
   background-color: #e5e7e9; 
 }
 
+.hg-fac-table td {
+  text-align: center;
+}
+
+.hg-table tbody tr:nth-of-type(2n+1) {
+  background-color: #cce6ff;
+}
+
+.hg-table>tbody>tr>td, .hg-table>tbody>tr>th, .table>tfoot>tr>td, .hg-table>tfoot>tr>th,
+  .hg-table>thead>tr>td, .hg-table>thead>tr>th {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.hg-table thead th {
+  color: white;
+  background-color: #4285F4;
+  text-align: center;
+}
+
+.hg-table tbody td {
+  text-align: center;
+}
 
 /* ===================================== */
 /* MODAL WINDOWS WITH POP UP INFORMATION */
