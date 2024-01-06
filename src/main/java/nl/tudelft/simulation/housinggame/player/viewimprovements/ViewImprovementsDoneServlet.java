@@ -107,6 +107,11 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                             measure.store();
                             measureCost += mt.getPrice();
                             measureSat += mt.getSatisfactionDelta();
+
+                            // increase the house protection with the measure
+                            hgr.setPluvialHouseProtection(hgr.getPluvialBaseProtection() + mt.getPluvialProtectionDelta());
+                            hgr.setFluvialHouseProtection(hgr.getFluvialBaseProtection() + mt.getFluvialProtectionDelta());
+                            hgr.store();
                         }
                     }
                 }
