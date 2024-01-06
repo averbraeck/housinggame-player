@@ -186,7 +186,14 @@ public final class SqlUtils
         newPr.setSatisfactionBought(0);
         newPr.setSatisfactionFluvialPenalty(0);
         newPr.setSatisfactionPluvialPenalty(0);
-        newPr.setSatisfactionDebtPenalty(0);
+        if (oldPr.getSpendableIncome() < 0)
+        {
+            newPr.setSatisfactionDebtPenalty(data.getScenarioParameters().getSatisfactionDebtPenalty());
+            newPr.setPersonalSatisfaction(
+                    oldPr.getPersonalSatisfaction() - data.getScenarioParameters().getSatisfactionDebtPenalty());
+        }
+        else
+            newPr.setSatisfactionDebtPenalty(0);
 
         // house
         newPr.setStartHousegroupId(oldPr.getFinalHousegroupId());
@@ -209,6 +216,9 @@ public final class SqlUtils
         newPr.setPluvialHouseDelta(oldPr.getPluvialHouseDelta());
         newPr.setFluvialHouseDelta(oldPr.getFluvialHouseDelta());
 
+        // normalize the satisfaction based on scenario parameters
+        normalizeSatisfaction(data, newPr);
+
         // general
         newPr.setGrouproundId(groupRound.getId());
         newPr.setPlayerState(PlayerState.READ_BUDGET.toString());
@@ -228,6 +238,23 @@ public final class SqlUtils
         groupRound.setGroupState(GroupState.LOGIN.toString());
         groupRound.store();
         return groupRound;
+    }
+
+    public static void normalizeSatisfaction(final PlayerData data, final PlayerroundRecord playerRound)
+    {
+        var params = data.getScenarioParameters();
+        int hgSatisfaction = 0;
+        if (playerRound.getFinalHousegroupId() != null)
+        {
+            var houseGroup = readRecordFromId(data, Tables.HOUSEGROUP, playerRound.getFinalHousegroupId());
+            hgSatisfaction = houseGroup.getHouseSatisfaction();
+        }
+        // normalize the satisfaction scores if so dictated by the parameters
+        if (params.getAllowPersonalSatisfactionNeg() == 0)
+            playerRound.setPersonalSatisfaction(Math.max(0, playerRound.getPersonalSatisfaction()));
+        if (params.getAllowTotalSatisfactionNeg() == 0)
+            playerRound.setPersonalSatisfaction(
+                    Math.max(-hgSatisfaction, playerRound.getPersonalSatisfaction()));
     }
 
 }
