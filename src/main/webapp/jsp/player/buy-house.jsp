@@ -76,6 +76,9 @@ option:not(:checked) {
               - your debt (${playerData.k(playerData.getDebt()) })
               = ${playerData.k(playerData.getMaxMortgagePlusSavings()) }
             </p>
+            <p>
+              Leave enough savings for paying your mortgage, taxes and potential other costs.
+            </p>
             
             <form>
               <div class="form-group pmd-textfield form-group-sm">
