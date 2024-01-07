@@ -52,14 +52,14 @@ The following fields relate to the mortgage for the player round data:
 ### costs
 The following fields encode cost information for the player round:
 - `roundIncome` and `livingCosts` are fixed and copied from the `WelfareType`.
-- `mortgagePayment` is based on a percentage of the original mortgage loan from the bank for the house.
-- `costXX` are the fields for the respective costs as calculated during the round
+- `mortgagePayment` is based on a percentage of the original mortgage loan from the bank for the house. The mortgage payment is calculated **after** the sell-house and buy-house stages of the round, so it is always based on the mortgage of the new house (if any).
+- `costXX` are the fields for the respective costs as calculated during the round; each cost is calculated during a specific state of the player round.
 - `profitSoldHouse` and `spentSavingsForBuyingHouse` relate to the selling and buying of a house.
 - `paidDebt` is purely an information value and indicates how much of the `roundIncome` has been used to pay off debt from the previous round at the start of the round.
 The `spendableIncome` of a player is dynamically updated throughout a round. It is based on the following calculation:
 
 ```
-spendableIncome in the new wound =
+spendableIncome in the new round =
   + spendableIncome of the previous round 
   + roundIncome
   - livingCosts
@@ -69,7 +69,7 @@ spendableIncome in the new wound =
   - costTaxes
   - costMeasuresBought
   - costSatisfactionBought
-  - costPluvialDamage
+  - costFluvialDamage
   - costPluvialDamage
 ```
 
