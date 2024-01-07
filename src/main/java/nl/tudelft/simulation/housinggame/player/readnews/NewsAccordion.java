@@ -25,8 +25,8 @@ public class NewsAccordion
     {
         // get the news record(s) for the current round
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<NewsitemRecord> newsList = dslContext.selectFrom(Tables.NEWSITEM)
-                .where(Tables.NEWSITEM.ROUND_NUMBER.eq(data.getPlayerRoundNumber())).fetch();
+        List<NewsitemRecord> newsList = dslContext.selectFrom(Tables.NEWSITEM).where(Tables.NEWSITEM.ROUND_NUMBER
+                .eq(data.getPlayerRoundNumber()).and(Tables.NEWSITEM.SCENARIO_ID.eq(data.getScenario().getId()))).fetch();
         StringBuilder s = new StringBuilder();
         for (NewsitemRecord news : newsList)
         {
