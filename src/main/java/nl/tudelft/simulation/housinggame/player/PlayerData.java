@@ -375,6 +375,21 @@ public class PlayerData
         return null;
     }
 
+    public HousegroupRecord getHouseGroup()
+    {
+        if (this.playerRound == null)
+            return null;
+        if (this.playerRound.getFinalHousegroupId() != null)
+        {
+            return SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+        }
+        if (this.playerRound.getStartHousegroupId() != null)
+        {
+            return SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+        }
+        return null;
+    }
+
     public String getHouseCode()
     {
         if (this.playerRound == null)
