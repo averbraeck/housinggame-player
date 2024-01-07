@@ -35,6 +35,11 @@ The most important fields that might need some explanation are:
 ## PlayerRound
 The `PlayerRound` record stores all information about a player per round. It contains a breakdown of the mortgage, costs, satisfaction, house ownership, and damage for the player. The data will be broken down in a number of categories.
 
+### base info
+The following fields contain the basic information for the player round data:
+- `roundIncome` and `livingCosts` are imported from the `WelfareType`.
+- `playerState` shows the progress of the player in the current round (what screen is active), as encoded by the `PlayerState` class in the common project.
+
 ### mortgage
 The following fields relate to the mortgage for the player round data:
 - `maximumMortgage` is a static field from the `WelfareType` containing the maximum mortgage allowed for this player by the bank.
@@ -45,9 +50,30 @@ The following fields relate to the mortgage for the player round data:
 - `mortgageLeftEnd` is the debt to the bank at the end of the round. If the player stayed in the same house, it is equal to the original mortgage value for the house minus all mortgage payments up to and including the current round. If the player moved to a new house, it is the mortgage left after one payment to the bank.
 
 ### costs
+The following fields encode cost information for the player round:
+- `roundIncome` and `livingCosts` are fixed and copied from the `WelfareType`.
+- `mortgagePayment` is based on a percentage of the original mortgage loan from the bank for the house.
+- `costXX` are the fields for the respective costs as calculated during the round
+- `profitSoldHouse` and `spentSavingsForBuyingHouse` relate to the selling and buying of a house.
+- `paidDebt` is purely an information value and indicates how much of the `roundIncome` has been used to pay off debt from the previous round at the start of the round.
+The `spendableIncome` of a player is dynamically updated throughout a round. It is based on the following calculation:
 
+```
+spendableIncome in the new wound =
+  + spendableIncome of the previous round 
+  + roundIncome
+  - livingCosts
+  - mortgagePayment
+  + profitSoldHouse
+  - spentSavingsForBuyingHouse
+  - costTaxes
+  - costMeasuresBought
+  - costSatisfactionBought
+  - costPluvialDamage
+  - costPluvialDamage
+```
 
-### satisfation
+### satisfaction
 
 
 ### flooding
