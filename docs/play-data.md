@@ -46,8 +46,8 @@ The following fields relate to the mortgage for the player round data:
 - `mortgageHouseStart` is the value of the original loan from the bank for the current house at the start of the round (so, based on the house bought in an earlier round). The mortgage value does not change per round as long as the player stays in the same house.
 - `mortgageHouseEnd` is the value of the original loan from the bank for the current house. This value is equal to `mortgageHouseStart` if the player stayed in the same house, and equal to the new mortgage if the player bought a new house in this round.
 - `mortgagePayment` is the amount of money paid in this round to the bank as a redemption of the mortgage. The actual debt to the bank is reduced by this payment.
-- `mortgageLeftStart` is the debt to the bank at the start of the round. It is equal to the original mortgage value for the house minus all mortgage payments made in previous rounds.
-- `mortgageLeftEnd` is the debt to the bank at the end of the round. If the player stayed in the same house, it is equal to the original mortgage value for the house minus all mortgage payments up to and including the current round. If the player moved to a new house, it is the mortgage left after one payment to the bank.
+- `mortgageLeftStart` is the debt to the bank at the start of the round. It is equal to the original mortgage value for the house minus all mortgage payments made in previous rounds for that house.
+- `mortgageLeftEnd` is the debt to the bank at the end of the round. If the player stayed in the same house, it is equal to the original mortgage value for the house minus all mortgage payments for that house up to and including the current round. If the player moved to a new house, it is the mortgage left after one payment to the bank.
 
 ### costs
 The following fields encode cost information for the player round:
