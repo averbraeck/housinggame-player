@@ -1,6 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.buyhouse;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,10 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+
 import com.google.gson.JsonObject;
 
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SqlUtils;
 
@@ -102,8 +108,8 @@ public class CheckBuyHouseServlet extends HttpServlet
         s.append("  <div id=\"house-price-input-div\">\n");
         s.append("  <label for=" + priceInputId + " id=" + "\"house-price-label\""
                 + " class=\"house-price-label\">House price (in k)*</label>\n");
-        s.append("  <input type=\"number\" id=" + priceInputId + " name=" + priceInputId + " value=" + houseValue
-                + " class=" + priceInputId + " oninput=\"changePrice();\">\n");
+        s.append("  <input type=\"number\" id=" + priceInputId + " name=" + priceInputId + " value=" + houseValue + " class="
+                + priceInputId + " oninput=\"changePrice();\">\n");
         s.append("</div>\n");
         return s.toString();
     }
@@ -154,7 +160,22 @@ public class CheckBuyHouseServlet extends HttpServlet
 
         s.append("<br /><p>\n");
         s.append("Measures implemented:<br/> \n");
-        s.append("- None\n"); // TODO: iterate over measures
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<MeasureRecord> measureList =
+                dslContext.selectFrom(Tables.MEASURE).where(Tables.MEASURE.HOUSEGROUP_ID.eq(houseGroup.getId())).fetch();
+        int count = 0;
+        for (var measure : measureList)
+        {
+            if (measure.getConsumedInRound() == null || measure.getConsumedInRound().intValue() == 0)
+            {
+                var measureType = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+                s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) + ", satisfaction: "
+                        + measureType.getSatisfactionDelta() + "<br/>\n");
+                count++;
+            }
+        }
+        if (count == 0)
+            s.append(" - None\n");
         s.append("<br /></p>\n");
 
         if (data.getMaxMortgagePlusSavings() >= houseGroup.getMarketValue())
