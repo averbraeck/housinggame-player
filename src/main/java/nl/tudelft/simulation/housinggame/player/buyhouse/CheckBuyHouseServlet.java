@@ -16,6 +16,7 @@ import org.jooq.impl.DSL;
 
 import com.google.gson.JsonObject;
 
+import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
@@ -87,8 +88,10 @@ public class CheckBuyHouseServlet extends HttpServlet
             return;
         }
 
-        String housePriceInput = makeHousePriceInput(houseGroup);
-        String houseBuyFeedback = makeHouseBuyFeedback(data, houseGroup);
+        // for sell house, no house price input is needed; we just browse the possibilities
+        String housePriceInput = data.ltState(PlayerState.VIEW_BUY_HOUSE) ? "" : makeHousePriceInput(houseGroup);
+        boolean includeSalesEstimate = data.ltState(PlayerState.VIEW_BUY_HOUSE);
+        String houseBuyFeedback = makeHouseBuyFeedback(data, houseGroup, includeSalesEstimate);
 
         JsonObject json = new JsonObject();
         json.addProperty("housePriceInput", housePriceInput);
@@ -114,7 +117,8 @@ public class CheckBuyHouseServlet extends HttpServlet
         return s.toString();
     }
 
-    private String makeHouseBuyFeedback(final PlayerData data, final HousegroupRecord houseGroup)
+    private String makeHouseBuyFeedback(final PlayerData data, final HousegroupRecord houseGroup,
+            final boolean includeSellingEstimate)
     {
         StringBuilder s = new StringBuilder();
         int mortgage = Math.min(data.getPlayerRound().getMaximumMortgage(), houseGroup.getMarketValue());
@@ -178,7 +182,13 @@ public class CheckBuyHouseServlet extends HttpServlet
             s.append(" - None\n");
         s.append("<br /></p>\n");
 
-        if (data.getMaxMortgagePlusSavings() >= houseGroup.getMarketValue())
+        int maxSpend = data.getPlayerRound().getMaximumMortgage() + data.getPlayerRound().getSpendableIncome();
+        if (includeSellingEstimate)
+        {
+            HousegroupRecord currentHouse = data.getHouseGroup();
+            maxSpend += currentHouse.getMarketValue().intValue() - data.getPlayerRound().getMortgageLeftStart();
+        }
+        if (maxSpend >= houseGroup.getMarketValue())
         {
             s.append("<p class=\"hg-box-green\">\n");
             s.append("Great! Your maximum mortgage plus savings are enough to buy this house.\n");

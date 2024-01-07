@@ -57,6 +57,7 @@ public class BuyHouseServlet extends HttpServlet
         doPost(req, resp);
     }
 
+    // TODO: move to makeHousePicklist in HouseAccordion
     private static boolean makeHousePicklist(final PlayerData data, final HttpServletResponse response) throws IOException
     {
         // loop through the houses that are valid for this round and available

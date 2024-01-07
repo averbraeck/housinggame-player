@@ -52,7 +52,7 @@ public class BuyHouseDoneServlet extends HttpServlet
             // handle the entered buy-house data: Parameter house[e.g., "24" = N07], Parameter price[e.g., 105]
             String houseGroupIdStr = request.getParameter("house");
             String priceStr = request.getParameter("price");
-            if (!makeHouseTransaction(data, houseGroupIdStr, priceStr))
+            if (!makeBuyHouseTransaction(data, houseGroupIdStr, priceStr))
             {
                 response.sendRedirect("/housinggame-player/buy-house");
                 return;
@@ -63,7 +63,7 @@ public class BuyHouseDoneServlet extends HttpServlet
             return;
         }
 
-        // if the player did not click 'view house' and enters the read-news-done servlet, something is wrong
+        // if the player did not click 'buy house' and enters the buy-house-done servlet, something is wrong
         System.err.println("Player app called buy-house-done servlet, but NextScreen button is " + nextScreen);
         response.sendRedirect("/housinggame-player/login");
     }
@@ -74,7 +74,7 @@ public class BuyHouseDoneServlet extends HttpServlet
         doPost(req, resp);
     }
 
-    private static boolean makeHouseTransaction(final PlayerData data, final String houseGroupIdStr, final String priceStr)
+    private static boolean makeBuyHouseTransaction(final PlayerData data, final String houseGroupIdStr, final String priceStr)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
 
