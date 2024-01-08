@@ -99,7 +99,8 @@ public final class ValidStates
             return false;
 
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-        GroupState groupState = GroupState.valueOf(data.getGroupRound().getGroupState());
+        GroupState groupState =
+                GroupState.valueOf(data.getGroupRoundList().get(data.getHighestGroupRoundNumber()).getGroupState());
 
         if (jsp.equals("welcome-wait"))
         {
@@ -110,8 +111,6 @@ public final class ValidStates
             }
             if (data.getHighestGroupRoundNumber() <= 1 && groupState.lt(GroupState.NEW_ROUND))
             {
-                data.setError("jsp = 'welcome-wait', but GroupRound state is " + groupState + ", groupround = "
-                        + data.getHighestGroupRoundNumber());
                 return false;
             }
             return true;

@@ -45,7 +45,8 @@ public class WelcomeWaitDoneServlet extends HttpServlet
             // reload with the latest state
             data.readDynamicData();
             PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-            GroupState groupState = GroupState.valueOf(data.getGroupRound().getGroupState());
+            GroupState groupState =
+                    GroupState.valueOf(data.getGroupRoundList().get(data.getHighestGroupRoundNumber()).getGroupState());
 
             if (!playerState.equals(PlayerState.LOGIN))
                 System.err.println("jsp = 'welcome-wait', but player state is '" + playerState + "'");
