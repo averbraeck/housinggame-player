@@ -35,7 +35,7 @@ public class BoughtHouseDoneServlet extends HttpServlet
         // the next screen button indicates the INTENTION of the player, not the screen it originates from.
         String nextScreen = request.getParameter("nextScreen");
 
-        // player clicked VIEW HOUSES on the read-news screen, and we are in round 1 (buy house)
+        // player clicked VIEW TAXES on the bough-house screen
         if (nextScreen.equals("view-taxes"))
         {
             data.getPlayerRound().setPlayerState(PlayerState.VIEW_TAXES.toString());
