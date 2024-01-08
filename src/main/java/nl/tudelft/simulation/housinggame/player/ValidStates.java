@@ -102,6 +102,7 @@ public final class ValidStates
         GroupState groupState =
                 GroupState.valueOf(data.getGroupRoundList().get(data.getHighestGroupRoundNumber()).getGroupState());
 
+        System.out.println("PlayerState=" + playerState + ", GroupState=" + groupState);
         if (jsp.equals("welcome-wait"))
         {
             if (data.getGroupRound() == null)
@@ -124,6 +125,8 @@ public final class ValidStates
         if (playerState.eq(PlayerState.BUY_HOUSE_WAIT) && groupState.ge(GroupState.ALLOW_BUYING))
             return true;
         if (playerState.eq(PlayerState.STAY_HOUSE_WAIT) && groupState.ge(GroupState.ALLOW_BUYING))
+            return true;
+        if (playerState.eq(PlayerState.VIEW_IMPROVEMENTS) && groupState.ge(GroupState.ALLOW_IMPROVEMENTS))
             return true;
         if (playerState.eq(PlayerState.ANSWER_SURVEY) && groupState.ge(GroupState.SHOW_SURVEY))
             return true;
