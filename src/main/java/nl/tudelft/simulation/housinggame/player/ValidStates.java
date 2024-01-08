@@ -102,7 +102,6 @@ public final class ValidStates
         GroupState groupState =
                 GroupState.valueOf(data.getGroupRoundList().get(data.getHighestGroupRoundNumber()).getGroupState());
 
-        System.out.println("PlayerState=" + playerState + ", GroupState=" + groupState);
         if (jsp.equals("welcome-wait"))
         {
             if (data.getGroupRound() == null)
