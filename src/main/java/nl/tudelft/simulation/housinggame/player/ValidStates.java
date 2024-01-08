@@ -82,6 +82,8 @@ public final class ValidStates
                 return true;
             if (playerState.eq(PlayerState.BOUGHT_HOUSE) && groupState.ge(GroupState.ALLOW_BUYING))
                 return true;
+            if (playerState.eq(PlayerState.STAY_HOUSE_WAIT) && groupState.ge(GroupState.ALLOW_SELLING))
+                return true;
             if (playerState.eq(PlayerState.STAYED_HOUSE) && groupState.ge(GroupState.ALLOW_SELLING))
                 return true;
             if (playerState.eq(PlayerState.SURVEY_COMPLETED) && groupState.ge(GroupState.SHOW_SURVEY))
