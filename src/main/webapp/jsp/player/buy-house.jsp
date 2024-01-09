@@ -117,7 +117,7 @@ option:not(:checked) {
 
   <script>
   
-    var choiceOk = true;
+    var choiceOk = false;
     var buttonOk = false;
 
     $(document).ready(function() {
