@@ -188,7 +188,7 @@ public class LoginDoneServlet extends HttpServlet
                 break;
 
             case STAYED_HOUSE:
-                response.sendRedirect("/housinggame-player/sell-house-stay");
+                response.sendRedirect("/housinggame-player/stayed-house");
                 break;
 
             case VIEW_TAXES:
