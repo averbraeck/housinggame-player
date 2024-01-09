@@ -25,7 +25,7 @@
       </jsp:include>
     </div>
     
-   <form action="/housinggame-player/stayed-house" method="post">
+    <form action="/housinggame-player/stayed-house-done" method="post">
       <div class="hg-button">
         <input type="hidden" name="nextScreen" value="view-taxes" />
         <input type="submit" value='VIEW TAXES' class="btn btn-primary" id="hg-submit" disabled />
