@@ -66,7 +66,7 @@
       check();
     });
     function check() {
-        $.post("/housinggame-player/check-buy-status", {jsp: 'stay-house-wait'},
+        $.post("/housinggame-player/check-stay-status", {jsp: 'stay-house-wait'},
           function(data, status) {
             if (data == "APPROVED") {
               $("#hg-stay").removeAttr("disabled");
