@@ -61,7 +61,7 @@ public class StayHouseRejectDoneServlet extends HttpServlet
                     prr.setActiveTransactionId(null);
                     prr.setPlayerState(PlayerState.VIEW_SELL_HOUSE.toString());
                     prr.store();
-                    response.sendRedirect("/housinggame-player/stay-house");
+                    response.sendRedirect("/housinggame-player/sell-house");
                     return;
                 }
                 else
