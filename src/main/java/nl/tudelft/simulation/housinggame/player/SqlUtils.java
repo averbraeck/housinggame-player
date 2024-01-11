@@ -11,8 +11,8 @@ import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
-import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.GroupState;
+import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
@@ -253,8 +253,7 @@ public final class SqlUtils
         if (params.getAllowPersonalSatisfactionNeg() == 0)
             playerRound.setPersonalSatisfaction(Math.max(0, playerRound.getPersonalSatisfaction()));
         if (params.getAllowTotalSatisfactionNeg() == 0)
-            playerRound.setPersonalSatisfaction(
-                    Math.max(-hgSatisfaction, playerRound.getPersonalSatisfaction()));
+            playerRound.setPersonalSatisfaction(Math.max(-hgSatisfaction, playerRound.getPersonalSatisfaction()));
     }
 
 }
