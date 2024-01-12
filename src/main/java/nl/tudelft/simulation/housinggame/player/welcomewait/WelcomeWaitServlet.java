@@ -33,7 +33,8 @@ public class WelcomeWaitServlet extends HttpServlet
         }
 
         // depending on whether the game has started, a test is shown to wait for the facilitator (or not)
-        if (data.getHighestGroupRoundNumber() <= 0 || GroupState.LOGIN.eq(data.getGroupRound().getGroupState()))
+        if (data.getHighestGroupRoundNumber() <= 0
+                || GroupState.LOGIN.eq(data.getGroupRoundList().get(data.getHighestGroupRoundNumber()).getGroupState()))
             data.putContentHtml("welcome-wait/wait-or-not", data.getLabel("welcome/wait/text"));
         else
             data.putContentHtml("welcome-wait/wait-or-not", data.getLabel("welcome/wait/nowait"));
