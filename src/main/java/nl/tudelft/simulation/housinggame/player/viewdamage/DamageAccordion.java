@@ -1,11 +1,17 @@
 package nl.tudelft.simulation.housinggame.player.viewdamage;
 
+import java.util.List;
+
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import nl.tudelft.simulation.housinggame.common.CumulativeNewsEffects;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SqlUtils;
@@ -36,10 +42,30 @@ public class DamageAccordion
             DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
             var prr = data.getPlayerRound();
             var grr = data.getGroupRound();
-            int pCommProt = prr.getPluvialBaseProtection() + prr.getPluvialCommunityDelta();
-            int fCommProt = prr.getFluvialBaseProtection() + prr.getFluvialCommunityDelta();
-            int pHouseProt = pCommProt + prr.getPluvialHouseDelta();
-            int fHouseProt = fCommProt + prr.getFluvialHouseDelta();
+            // TODO: Make sure that data in database is calculated correctly
+            // int pCommProt = prr.getPluvialBaseProtection() + prr.getPluvialCommunityDelta();
+            // int fCommProt = prr.getFluvialBaseProtection() + prr.getFluvialCommunityDelta();
+            // int pHouseProt = pCommProt + prr.getPluvialHouseDelta();
+            // int fHouseProt = fCommProt + prr.getFluvialHouseDelta();
+
+            // replacement code https://github.com/averbraeck/housinggame-player/issues/45
+            var houseGroup = data.getHouseGroup();
+            HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
+            var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(), data.getScenario(),
+                    data.getPlayerRoundNumber());
+            int fCommBaseProt = houseGroup.getFluvialBaseProtection();
+            int pCommBaseProt = houseGroup.getPluvialBaseProtection();
+            int fCommDelta = cumulativeNewsEffects.get(house.getCommunityId()).getFluvialProtectionDelta();
+            int pCommDelta = cumulativeNewsEffects.get(house.getCommunityId()).getPluvialProtectionDelta();
+            var fpRecord = fpMeasureProtectionTillRound(data, data.getPlayerRoundNumber(), houseGroup);
+            int fHouseDelta = fpRecord.fluvial();
+            int pHouseDelta = fpRecord.pluvial();
+            int fCommProt = fCommBaseProt + fCommDelta;
+            int pCommProt = pCommBaseProt + pCommDelta;
+            int fHouseProt = fCommProt + fHouseDelta;
+            int pHouseProt = pCommProt + pHouseDelta;
+            // end replacement code https://github.com/averbraeck/housinggame-player/issues/45
+
             int pDice = grr.getPluvialFloodIntensity();
             int fDice = grr.getFluvialFloodIntensity();
 
@@ -69,7 +95,7 @@ public class DamageAccordion
 
             // Costs and Penalties
 
-            s.append("            <div class=\"hg-header1\">Costs and penalties</div>\n");
+            s.append("            <div class=\"hg-header1\">Cumulative costs and penalties</div>\n");
             s.append("            <div class=\"hg-box-grey\">\n");
             s.append("              Costs for rain damage repairs: " + prr.getCostPluvialDamage() + "<br/>\n");
             s.append("              Costs for river damage repairs: " + prr.getCostFluvialDamage() + "<br/>\n");
@@ -125,7 +151,7 @@ public class DamageAccordion
                     int pcp = p.getPluvialBaseProtection() + p.getPluvialCommunityDelta();
                     int fcp = p.getFluvialBaseProtection() + p.getFluvialCommunityDelta();
                     int php = pcp + p.getPluvialHouseDelta();
-                    int fhp = pcp + p.getFluvialHouseDelta();
+                    int fhp = fcp + p.getFluvialHouseDelta();
                     s.append("<td>" + pcp + "</td>\n");
                     s.append("<td>" + fcp + "</td>\n");
                     s.append("<td>" + php + "</td>\n");
@@ -138,7 +164,7 @@ public class DamageAccordion
 
             // Damage history
 
-            s.append("            <div class=\"hg-header1\">Damage history</div>\n");
+            s.append("            <div class=\"hg-header1\">Cumulative damage history</div>\n");
             s.append("            <table class=\"hg-table\">\n");
             s.append("              <thead>\n");
             s.append("                <tr>\n");
@@ -189,5 +215,34 @@ public class DamageAccordion
 
         data.getContentHtml().put("panel/damage", s.toString());
     }
+
+    // Replacement code https://github.com/averbraeck/housinggame-player/issues/45
+
+    private static FPRecord fpMeasureProtectionTillRound(final PlayerData data, final int round,
+            final HousegroupRecord houseGroup)
+    {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
+                .where(Tables.MEASURE.HOUSEGROUP_ID.eq(houseGroup.getId())).fetch().sortAsc(Tables.MEASURE.ROUND_NUMBER);
+        int fluvial = 0;
+        int pluvial = 0;
+        for (var measure : measureList)
+        {
+            if (measure.getRoundNumber() <= round
+                    && (measure.getConsumedInRound() == null || measure.getConsumedInRound().intValue() == 0))
+            {
+                var mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+                fluvial += mt.getFluvialProtectionDelta();
+                pluvial += mt.getPluvialProtectionDelta();
+            }
+        }
+        return new FPRecord(fluvial, pluvial);
+    }
+
+    record FPRecord(int fluvial, int pluvial)
+    {
+    }
+
+    // End replacement code https://github.com/averbraeck/housinggame-player/issues/45
 
 }
