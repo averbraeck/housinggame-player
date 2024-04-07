@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import nl.tudelft.simulation.housinggame.common.CumulativeNewsEffects;
 import nl.tudelft.simulation.housinggame.common.HouseGroupStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.CommunityRecord;
@@ -47,12 +48,25 @@ public class TaxAccordion
         int nrCommunity = 0;
         for (HousegroupRecord houseGroup : houseGroupList)
         {
-            HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
-            if (house.getCommunityId().equals(community.getId()) && houseGroup.getStatus().equals(HouseGroupStatus.OCCUPIED))
+            HouseRecord hgHouse = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
+            if (hgHouse.getCommunityId().equals(community.getId()) && houseGroup.getStatus().equals(HouseGroupStatus.OCCUPIED))
                 nrCommunity++;
         }
 
-        // TODO: tax increases based on measures
+        // see if there are tax changes
+        var houseGroup = data.getHouseGroup();
+        HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
+        var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(), data.getScenario(),
+                data.getPlayerRoundNumber());
+        var txc = (int) cumulativeNewsEffects.get(house.getCommunityId()).getTaxChange();
+        if (txc != 0)
+        {
+            s.append("<div class=\"hg-header1\">Tax change for your community</div>\n");
+            if (txc > 0)
+                s.append("Your community has a tax increase of +" + txc + "\n");
+            else
+                s.append("Your community has a tax decrease of " + txc + "\n");
+        }
 
         s.append("<div class=\"hg-header1\">Tax payment</div>\n");
         s.append("Your community has " + nrCommunity + " inhabitants<sup>(*)</sup><br/>\n");
