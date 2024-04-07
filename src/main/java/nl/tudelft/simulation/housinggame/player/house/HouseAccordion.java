@@ -214,6 +214,7 @@ public class HouseAccordion
     {
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
+
         if (data.getPlayerRound().getHousePriceBought() != null && data.getPlayerRound().getHousePriceBought().intValue() > 0)
         {
             s.append("You have bought house " + data.getHouse().getCode() + " in this round.<br/>\n");
@@ -233,11 +234,11 @@ public class HouseAccordion
             s.append("The rating of the house is " + data.getHouse().getRating() + ".<br/>\n");
             s.append("Satisfaction change is " + (data.getHouse().getRating() - data.getPlayerRound().getPreferredHouseRating())
                     + " points.<br/>\n");
-            s.append("            </div>\n");
         }
+
         else
+
         {
-            s.append("            <div>\n");
             s.append("You stayed in the same house " + data.getHouse().getCode() + ".<br/>\n");
 
             s.append("<div class=\"hg-header1\">Mortgage payment</div>\n");
@@ -252,9 +253,8 @@ public class HouseAccordion
                 s.append("Satisfaction change is "
                         + (data.getHouse().getRating() - data.getPlayerRound().getPreferredHouseRating()) + " points.<br/>\n");
             }
-            s.append("            </div>\n");
-
         }
+        s.append("            </div>\n");
         data.getContentHtml().put("panel/house", s.toString());
         data.getContentHtml().put("panel/house/title", "3. Your house confirmation");
     }

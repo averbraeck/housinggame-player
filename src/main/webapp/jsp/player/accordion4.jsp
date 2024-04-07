@@ -10,9 +10,7 @@
         </div>
         <div id="collapse4" class="panel-collapse collapse ${param.open}" role="tabpanel" aria-labelledby="heading4">
           <div class="panel-body">
-            <p>
-              ${playerData.getContentHtml("panel/tax") }
-            </p>
+            ${playerData.getContentHtml("panel/tax") }
           </div>
         </div>
       </div>
