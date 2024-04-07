@@ -214,27 +214,47 @@ public class HouseAccordion
     {
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
-        s.append("You live in house " + data.getHouse().getCode() + "<br/>\n");
-        if (data.getPlayerRound().getHousePriceBought() != null)
+        if (data.getPlayerRound().getHousePriceBought() != null && data.getPlayerRound().getHousePriceBought().intValue() > 0)
         {
-            s.append("You have bought a house in this round.<br/>\n");
+            s.append("You have bought house " + data.getHouse().getCode() + " in this round.<br/>\n");
+
+            s.append("<div class=\"hg-header1\">House choice</div>\n");
             s.append("The price you paid is " + data.k(data.getPlayerRound().getHousePriceBought()) + ".<br/>\n");
-            s.append("The left mortgage is " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + ".<br/>\n");
             s.append("Your maximum mortgage is " + data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
             s.append("Savings used to buy the house are " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse())
                     + ".<br/>\n");
+
+            s.append("<div class=\"hg-header1\">Mortgage payment</div>\n");
+            s.append("This round you paid " + data.k(data.getPlayerRound().getMortgagePayment()) + ".<br/>\n");
+            s.append("The left mortgage is " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + ".<br/>\n");
+
+            s.append("<div class=\"hg-header1\">Satisfaction points</div>\n");
             s.append("Your preferred house rating is " + data.getPlayerRound().getPreferredHouseRating() + ".<br/>\n");
             s.append("The rating of the house is " + data.getHouse().getRating() + ".<br/>\n");
-            s.append("Satisfaction change: " + (data.getHouse().getRating() - data.getPlayerRound().getPreferredHouseRating())
+            s.append("Satisfaction change is " + (data.getHouse().getRating() - data.getPlayerRound().getPreferredHouseRating())
                     + " points.<br/>\n");
+            s.append("            </div>\n");
         }
         else
         {
-            s.append("You did not change houses in this round.<br/>\n");
+            s.append("            <div>\n");
+            s.append("You stayed in the same house " + data.getHouse().getCode() + ".<br/>\n");
+
+            s.append("<div class=\"hg-header1\">Mortgage payment</div>\n");
+            s.append("This round you paid " + data.k(data.getPlayerRound().getMortgagePayment()) + ".<br/>\n");
             s.append("The left mortgage is " + data.k(data.getPlayerRound().getMortgageLeftEnd()) + ".<br/>\n");
-            s.append("Your maximum mortgage is " + data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
+
+            if (data.getScenarioParameters().getSatisfactionHouseRatingPerRound() != 0)
+            {
+                s.append("<div class=\"hg-header1\">Satisfaction points</div>\n");
+                s.append("Your preferred house rating is " + data.getPlayerRound().getPreferredHouseRating() + ".<br/>\n");
+                s.append("The rating of the house is " + data.getHouse().getRating() + ".<br/>\n");
+                s.append("Satisfaction change is "
+                        + (data.getHouse().getRating() - data.getPlayerRound().getPreferredHouseRating()) + " points.<br/>\n");
+            }
+            s.append("            </div>\n");
+
         }
-        s.append("            </div>\n");
         data.getContentHtml().put("panel/house", s.toString());
         data.getContentHtml().put("panel/house/title", "3. Your house confirmation");
     }
