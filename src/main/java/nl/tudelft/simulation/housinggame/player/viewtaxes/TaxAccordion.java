@@ -33,7 +33,7 @@ public class TaxAccordion
         s.append("            <div>\n");
         s.append("You live in house " + data.getHouse().getCode() + "<br/>\n");
         CommunityRecord community = SqlUtils.readRecordFromId(data, Tables.COMMUNITY, data.getHouse().getCommunityId());
-        s.append("This house is in community " + community.getName() + "<br/><br/>\n");
+        s.append("This house is in the community " + community.getName() + "<br/><br/>\n");
         s.append("The taxes for this community are as follows:<br/>\n");
         List<TaxRecord> taxList = dslContext.selectFrom(Tables.TAX).where(Tables.TAX.COMMUNITY_ID.eq(community.getId())).fetch()
                 .sortAsc(Tables.TAX.MINIMUM_INHABITANTS);
@@ -54,10 +54,11 @@ public class TaxAccordion
 
         // TODO: tax increases based on measures
 
-        s.append("<br/>Your community has " + nrCommunity + " inhabitants<br/>\n");
-        s.append("Your paid taxes are: " + data.k(data.getPlayerRound().getCostTaxes()) + "<br/>\n");
-        s.append("<span style=\"color:grey;\">" + "(note that the taxes can be based on an earlier count "
-                + "of the number of inhabitants in the community)</span><br/>\n");
+        s.append("<div class=\"hg-header1\">Tax payment</div>\n");
+        s.append("Your community has " + nrCommunity + " inhabitants<sup>(*)</sup><br/>\n");
+        s.append("Your paid taxes are: " + data.k(data.getPlayerRound().getCostTaxes()) + "<br/><br/>\n");
+        s.append("<span style=\"color:grey;\">" + "(*) The number of inhabitants in the community "
+                + "may be different if another player joined late.</span><br/>\n");
         s.append("            </div>\n");
         data.getContentHtml().put("panel/tax", s.toString());
     }
