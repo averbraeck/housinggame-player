@@ -71,7 +71,8 @@ public class BuyHouseWaitServlet extends HttpServlet
             HousetransactionRecord transaction =
                     SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, playerRound.getActiveTransactionId());
             HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, transaction.getHousegroupId());
-            s.append("<p>You have opted for house " + houseGroup.getCode() + "<br/>\n");
+            s.append("<div class=\"hg-header1\">Your mortgage</div>\n");
+            s.append("<p>You opted for house " + houseGroup.getCode() + "<br/>\n");
             s.append("The price you plan to pay is " + data.k(transaction.getPrice()) + ".<br/>\n");
             s.append("Your maximum mortgage is " + data.k(data.getPlayerRound().getMaximumMortgage()) + ".<br/>\n");
             int mortgage = Math.min(transaction.getPrice(), data.getPlayerRound().getMaximumMortgage());
@@ -79,9 +80,12 @@ public class BuyHouseWaitServlet extends HttpServlet
             int savingsUsed = Math.max(transaction.getPrice() - data.getPlayerRound().getMaximumMortgage(), 0);
             savingsUsed = Math.min(savingsUsed, playerRound.getSpendableIncome());
             s.append("Savings used to buy the house are " + data.k(savingsUsed) + ".<br/>\n");
+
+            s.append("<div class=\"hg-header1\">Mortgage payment</div>\n");
             s.append("Mortgage payment per round will be  " + data.k(mortgage * data.getMortgagePercentage() / 100)
                     + ".<br/></p>\n");
 
+            s.append("<div class=\"hg-header1\">Choice implications</div>\n");
             if (data.getMaxMortgagePlusSavings() >= houseGroup.getMarketValue())
             {
                 s.append("<p class=\"hg-box-green\">\n");
