@@ -58,15 +58,16 @@ public class BudgetAccordion
         {
             s.append("                  Profit sold house <br />\n");
             s.append("                  Spent savings to buy house <br />\n");
-            if (data.gtState(PlayerState.VIEW_SELL_HOUSE))
+        }
+        if (data.getPlayerRound().getFinalHousegroupId() != null)
+        {
+            if (data.geState(PlayerState.BOUGHT_HOUSE))
             {
                 s.append("                  Actual mortgage payment <br />\n");
-                s.append("                  Actual taxes <br />\n");
             }
-            else
+            if (data.geState(PlayerState.VIEW_TAXES))
             {
-                s.append("                  Expected mortgage payment<br />\n");
-                s.append("                  Expected taxes <br />\n");
+                s.append("                  Actual taxes <br />\n");
             }
             if (data.geState(PlayerState.VIEW_IMPROVEMENTS))
             {
@@ -95,15 +96,16 @@ public class BudgetAccordion
         {
             s.append("                + " + data.k(data.getPlayerRound().getProfitSoldHouse()) + " <br />\n");
             s.append("                - " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + " <br />\n");
-            if (data.gtState(PlayerState.VIEW_SELL_HOUSE))
+        }
+        if (data.getPlayerRound().getFinalHousegroupId() != null)
+        {
+            if (data.geState(PlayerState.BOUGHT_HOUSE))
             {
                 s.append("                - " + data.k(data.getPlayerRound().getMortgagePayment()) + " <br />\n");
-                s.append("                - " + data.k(data.getPlayerRound().getCostTaxes()) + " <br />\n");
             }
-            else
+            if (data.geState(PlayerState.VIEW_TAXES))
             {
-                s.append("                - " + data.k(data.getExpectedMortgage()) + " <br />\n");
-                s.append("                - " + data.k(data.getExpectedTaxes()) + " <br />\n");
+                s.append("                - " + data.k(data.getPlayerRound().getCostTaxes()) + " <br />\n");
             }
             if (data.geState(PlayerState.VIEW_IMPROVEMENTS))
             {

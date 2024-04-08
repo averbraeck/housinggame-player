@@ -44,12 +44,22 @@ public class ImprovementsAccordion
                 if (measure.getMeasuretypeId().equals(measureType.getId()))
                     bought = true;
             }
-            String readonly = bought ? "readonly" : "";
-            String checked = bought ? "checked" : "";
             s.append("  <div class=\"checkbox pmd-default-theme\">\n");
             s.append("    <label class=\"pmd-checkbox pmd-checkbox-ripple-effect\">\n");
-            s.append("      <input type=\"checkbox\" name=\"measure-" + measureType.getId() + "\" id=\"measure-"
-                    + measureType.getId() + "\" value=\"" + measureType.getId() + "\" " + checked + " " + readonly + " />\n");
+            if (bought)
+            {
+                // https://stackoverflow.com/questions/155291/can-html-checkboxes-be-set-to-readonly
+                s.append("      <input type=\"hidden\" name=\"measure-" + measureType.getId() + "\" id=\"measure-"
+                        + measureType.getId() + "\" value=\"" + measureType.getId() + "\" />\n");
+                s.append("      <input type=\"checkbox\" name=\"measure-" + measureType.getId() + "_dummy\" id=\"measure-"
+                        + measureType.getId() + "_dummy\" value=\"" + measureType.getId()
+                        + "\" checked=\"checked\" disabled=\"disabled\" />\n");
+            }
+            else
+            {
+                s.append("      <input type=\"checkbox\" name=\"measure-" + measureType.getId() + "\" id=\"measure-"
+                        + measureType.getId() + "\" value=\"" + measureType.getId() + "\" />\n");
+            }
             s.append("      <span>" + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice())
                     + ", satisfaction: " + measureType.getSatisfactionDelta() + "</span>\n");
             s.append("    </label>\n");
@@ -95,9 +105,8 @@ public class ImprovementsAccordion
                     if (measure.getRoundNumber().equals(data.getPlayerRoundNumber()))
                     {
                         var measureType = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
-                        s.append(
-                                " - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) +
-                                ", satisfaction: " + measureType.getSatisfactionDelta() + "<br/>\n");
+                        s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice())
+                                + ", satisfaction: " + measureType.getSatisfactionDelta() + "<br/>\n");
                         totCost += measureType.getPrice();
                         totSat += measureType.getSatisfactionDelta();
                     }
