@@ -77,7 +77,7 @@ public class DamageAccordion
             s.append("            <div class=\"hg-box-grey\">\n");
             s.append("              Community river protection: " + fCommProt + "<br/>\n");
             s.append("              House river protection: " + fHouseProt + "<br/>\n");
-            s.append("              River flood intensity: " + fDice + "<br/>\n");
+            s.append("              River flood level: " + fDice + "<br/>\n");
             s.append("              Community damage due to river: " + Math.max(0, fDice - fCommProt) + "<br/>\n");
             s.append("              House damage due to river: " + Math.max(0, fDice - fHouseProt) + "<br/>\n");
             s.append("            </div>\n");
@@ -88,7 +88,7 @@ public class DamageAccordion
             s.append("            <div class=\"hg-box-grey\">\n");
             s.append("              Community rain protection: " + pCommProt + "<br/>\n");
             s.append("              House rain protection: " + pHouseProt + "<br/>\n");
-            s.append("              Rain flood intensity: " + pDice + "<br/>\n");
+            s.append("              Rain flood level: " + pDice + "<br/>\n");
             s.append("              Community damage due to rain: " + Math.max(0, pDice - pCommProt) + "<br/>\n");
             s.append("              House damage due to rain: " + Math.max(0, pDice - pHouseProt) + "<br/>\n");
             s.append("            </div>\n");
@@ -170,7 +170,7 @@ public class DamageAccordion
             s.append("                <tr>\n");
             s.append("                  <th>Round</th>\n");
             s.append("                  <th>Owned</th>\n");
-            s.append("                  <th colspan=\"2\">Sat. penalty</th>\n");
+            s.append("                  <th colspan=\"2\">Satisfaction penalty</th>\n");
             s.append("                  <th colspan=\"2\">Repair costs</th>\n");
             s.append("                </tr>\n");
             s.append("                <tr>\n");
