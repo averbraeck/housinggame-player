@@ -126,18 +126,29 @@ public class BudgetAccordion
         s.append("            <div class=\"hg-box-grey\" " +
                                 "style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 20px;\">\n");
         s.append("              <div>\n");
-        s.append("                  Personal satisfaction<br/>\n");
-        s.append("                  House satisfaction<br />\n");
-        s.append("                  Penalties<br />\n");
-        s.append("                  <br />\n");
+        s.append("                  Start personal satisfaction<br/>\n");
+        s.append("                  House satisfaction (measures)<br/>\n");
+        s.append("                  House rating change<br/>\n");
+        s.append("                  Damage penalty<br/>\n");
+        s.append("                  Moving penalty<br/>\n");
+        s.append("                  Debt penalty<br/>\n");
+        s.append("                  Bought satisfaction<br/>\n");
+        s.append("                  TOTAL satisfaction<br/>\n");
         s.append("              </div>\n");
         s.append("              <div>\n");
         int psat = data.getPlayerRound().getPersonalSatisfaction();
         int hsat = data.getHouseSatisfaction();
-        int penalty = data.getPlayerRound().getSatisfactionFluvialPenalty() + data.getPlayerRound().getSatisfactionPluvialPenalty();
-        s.append("                + " + (psat + penalty) + " <br/>\n");
-        s.append("                + " + hsat + " <br />\n");
-        s.append("                - " + penalty + " <br />\n");
+        int damage = data.getPlayerRound().getSatisfactionFluvialPenalty() + data.getPlayerRound().getSatisfactionPluvialPenalty();
+        s.append("                + " + data.getPrevPlayerRound().getPersonalSatisfaction() + " <br/>\n");
+        s.append("                + " + hsat + " <br/>\n");
+        if (data.getPlayerRound().getSatisfactionHouseRatingDelta() < 0)
+            s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionHouseRatingDelta()) + " <br/>\n");
+        else
+            s.append("                + " + data.getPlayerRound().getSatisfactionHouseRatingDelta() + " <br/>\n");
+        s.append("                - " + damage + " <br/>\n");
+        s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionMovePenalty()) + " <br/>\n");
+        s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionDebtPenalty()) + " <br/>\n");
+        s.append("                + " + Math.abs(data.getPlayerRound().getSatisfactionBought()) + " <br/>\n");
         s.append("                = " + (psat + hsat) + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
