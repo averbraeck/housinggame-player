@@ -57,8 +57,7 @@ public class BuyHouseDoneServlet extends HttpServlet
                 response.sendRedirect("/housinggame-player/buy-house");
                 return;
             }
-            data.getPlayerRound().setPlayerState(PlayerState.BUY_HOUSE_WAIT.toString());
-            data.getPlayerRound().store();
+            data.newPlayerState(data.getPlayerRound(), PlayerState.BUY_HOUSE_WAIT, "");
             response.sendRedirect("/housinggame-player/buy-house-wait");
             return;
         }

@@ -60,7 +60,7 @@ public class BuyHouseRejectDoneServlet extends HttpServlet
                 {
                     prr.setFinalHousegroupId(null);
                     prr.setActiveTransactionId(null);
-                    prr.setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
+                    data.newPlayerState(prr, PlayerState.VIEW_BUY_HOUSE, "Transaction=REJECTED_BUY");
                     prr.store();
                     response.sendRedirect("/housinggame-player/buy-house");
                     return;

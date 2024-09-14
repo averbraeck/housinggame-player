@@ -54,8 +54,8 @@ public class ViewSummaryDoneServlet extends HttpServlet
             }
             GrouproundRecord groupRoundN = data.getGroupRoundList().get(roundNr + 1);
             PlayerroundRecord prr = SqlUtils.makePlayerRound(data, groupRoundN);
-            prr.setPlayerState(PlayerState.READ_BUDGET.toString());
             prr.store();
+            data.newPlayerState(prr, PlayerState.READ_BUDGET, "Round=" + groupRoundN.getRoundNumber());
             data.readDynamicData();
             response.sendRedirect("/housinggame-player/read-budget");
             return;

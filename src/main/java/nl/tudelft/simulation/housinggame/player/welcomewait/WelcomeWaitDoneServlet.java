@@ -69,8 +69,8 @@ public class WelcomeWaitDoneServlet extends HttpServlet
             // advance to round 1
             GrouproundRecord groupRound1 = data.getGroupRoundList().get(1);
             PlayerroundRecord prr = SqlUtils.makePlayerRound(data, groupRound1);
-            prr.setPlayerState(PlayerState.READ_BUDGET.toString());
             prr.store();
+            data.newPlayerState(prr, PlayerState.READ_BUDGET, "Round=1");
             data.readDynamicData();
             response.sendRedirect("/housinggame-player/read-budget");
             return;

@@ -113,8 +113,7 @@ public class AnswerSurveyDoneServlet extends HttpServlet
                     }
                 }
 
-                data.getPlayerRound().setPlayerState(PlayerState.SURVEY_COMPLETED.toString());
-                data.getPlayerRound().store();
+                data.newPlayerState(prr, PlayerState.SURVEY_COMPLETED, "");
                 response.sendRedirect("/housinggame-player/survey-completed");
                 return;
             }

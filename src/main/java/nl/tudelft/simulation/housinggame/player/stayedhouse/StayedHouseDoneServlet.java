@@ -38,8 +38,7 @@ public class StayedHouseDoneServlet extends HttpServlet
         // player clicked VIEW TAXES on the stayed-house screen
         if (nextScreen.equals("view-taxes"))
         {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_TAXES.toString());
-            data.getPlayerRound().store();
+            data.newPlayerState(data.getPlayerRound(), PlayerState.VIEW_TAXES, "");
             response.sendRedirect("/housinggame-player/view-taxes");
             return;
         }

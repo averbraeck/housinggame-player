@@ -38,8 +38,7 @@ public class ReadBudgetDoneServlet extends HttpServlet
         // player clicked READ NEWS on the read-budget screen
         if (nextScreen.equals("read-news"))
         {
-            data.getPlayerRound().setPlayerState(PlayerState.READ_NEWS.toString());
-            data.getPlayerRound().store();
+            data.newPlayerState(data.getPlayerRound(), PlayerState.READ_NEWS, "");
             response.sendRedirect("/housinggame-player/read-news");
             return;
         }

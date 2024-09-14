@@ -1,6 +1,7 @@
 package nl.tudelft.simulation.housinggame.player;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.LanguageRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguagegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.PlayerstateRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioparametersRecord;
 
@@ -539,6 +541,25 @@ public class PlayerData
         ScenarioparametersRecord spr =
                 SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
         return spr.getMortgagePercentage().intValue();
+    }
+
+    public void newPlayerState(final PlayerroundRecord playerRound, final PlayerState newState, final String content)
+    {
+        DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
+        playerRound.setPlayerState(newState.toString());
+        playerRound.store();
+        PlayerstateRecord playerState =
+                dslContext.selectFrom(Tables.PLAYERSTATE).where(Tables.PLAYERSTATE.PLAYERROUND_ID.eq(playerRound.getId()))
+                        .and(Tables.PLAYERSTATE.PLAYER_STATE.eq(newState.toString())).fetchAny();
+        if (playerState == null)
+        {
+            playerState = dslContext.newRecord(Tables.PLAYERSTATE);
+            playerState.setPlayerState(newState.toString());
+            playerState.setPlayerroundId(playerRound.getId());
+            playerState.setContent(content);
+            playerState.setTimestamp(LocalDateTime.now());
+            playerState.store();
+        }
     }
 
     public boolean ltState(final PlayerState state)

@@ -153,9 +153,8 @@ public final class SqlUtils
 
         // general
         newPr.setGrouproundId(groupRound0.getId());
-        newPr.setPlayerState(PlayerState.LOGIN.toString());
+        data.newPlayerState(newPr, PlayerState.LOGIN, "Round=0"); // including store
 
-        newPr.store();
         return newPr;
     }
 
@@ -221,8 +220,8 @@ public final class SqlUtils
 
         // general
         newPr.setGrouproundId(groupRound.getId());
-        newPr.setPlayerState(PlayerState.READ_BUDGET.toString());
-        newPr.store();
+        newPr.store(); // otherwise no fk-relation can be made with PlayerRound
+        data.newPlayerState(newPr, PlayerState.READ_BUDGET, ""); // including store
 
         return newPr;
     }

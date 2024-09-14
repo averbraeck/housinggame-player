@@ -38,8 +38,7 @@ public class SurveyCompletedDoneServlet extends HttpServlet
         // player clicked VIEW DAMAGE on the survey-completed screen
         if (nextScreen.equals("view-damage"))
         {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_DAMAGE.toString());
-            data.getPlayerRound().store();
+            data.newPlayerState(data.getPlayerRound(), PlayerState.VIEW_DAMAGE, "");
             response.sendRedirect("/housinggame-player/view-damage");
             return;
         }

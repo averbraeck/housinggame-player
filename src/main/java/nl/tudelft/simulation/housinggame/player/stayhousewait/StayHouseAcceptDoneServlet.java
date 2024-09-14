@@ -59,8 +59,7 @@ public class StayHouseAcceptDoneServlet extends HttpServlet
                 if (transaction.getTransactionStatus().equals(TransactionStatus.APPROVED_STAY))
                 {
                     prr.setActiveTransactionId(null);
-                    prr.setPlayerState(PlayerState.STAYED_HOUSE.toString());
-                    prr.store();
+                    data.newPlayerState(prr, PlayerState.STAYED_HOUSE, "");
                     response.sendRedirect("/housinggame-player/stayed-house");
                     return;
                 }

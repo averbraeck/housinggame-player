@@ -45,14 +45,15 @@ public class SellHouseDoneServlet extends HttpServlet
         String nextScreen = request.getParameter("nextScreen");
         System.out.println("nextScreen = " + nextScreen);
 
+        var playerRound = data.getPlayerRound();
+
         if (nextScreen.equals("stay-house-wait"))
         {
             // player decided to stay in their current house
             makeStayHouseTransaction(data);
-            data.getPlayerRound().setMovingreasonId(null);
-            data.getPlayerRound().setMovingReasonOther("");
-            data.getPlayerRound().setPlayerState(PlayerState.STAY_HOUSE_WAIT.toString());
-            data.getPlayerRound().store();
+            playerRound.setMovingreasonId(null);
+            playerRound.setMovingReasonOther("");
+            data.newPlayerState(playerRound, PlayerState.STAY_HOUSE_WAIT, "");
             response.sendRedirect("/housinggame-player/stay-house-wait");
             return;
         }
@@ -68,10 +69,9 @@ public class SellHouseDoneServlet extends HttpServlet
                 response.sendRedirect("/housinggame-player/sell-house");
                 return;
             }
-            data.getPlayerRound().setMovingreasonId(Integer.valueOf(reasonStr));
-            data.getPlayerRound().setMovingReasonOther(otherStr);
-            data.getPlayerRound().setPlayerState(PlayerState.SELL_HOUSE_WAIT.toString());
-            data.getPlayerRound().store();
+            playerRound.setMovingreasonId(Integer.valueOf(reasonStr));
+            playerRound.setMovingReasonOther(otherStr);
+            data.newPlayerState(playerRound, PlayerState.SELL_HOUSE_WAIT, "");
             response.sendRedirect("/housinggame-player/sell-house-wait");
             return;
         }

@@ -60,8 +60,8 @@ public class BuyHouseAcceptDoneServlet extends HttpServlet
                 {
                     prr.setFinalHousegroupId(transaction.getHousegroupId());
                     prr.setActiveTransactionId(null);
-                    prr.setPlayerState(PlayerState.BOUGHT_HOUSE.toString());
                     prr.store();
+                    data.newPlayerState(prr, PlayerState.BOUGHT_HOUSE, "Transaction=APPROVED_BUY\nHouse=" + data.getHouseCode());
                     response.sendRedirect("/housinggame-player/bought-house");
                     return;
                 }

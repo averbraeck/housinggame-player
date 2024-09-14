@@ -120,16 +120,15 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 int satPointCost = satPoints * wft.getSatisfactionCostPerPoint();
 
                 hgr.setHouseSatisfaction(hgr.getHouseSatisfaction() + measureSat);
+                hgr.store();
                 prr.setSatisfactionHouseMeasures(measureSat);
                 prr.setCostMeasuresBought(measureCost);
-                hgr.store();
 
                 prr.setSatisfactionBought(satPoints);
                 prr.setCostSatisfactionBought(satPointCost);
                 prr.setPersonalSatisfaction(prr.getPersonalSatisfaction() + satPoints);
                 prr.setSpendableIncome(prr.getSpendableIncome() - measureCost - satPointCost);
-                prr.setPlayerState(PlayerState.ANSWER_SURVEY.toString());
-                prr.store();
+                data.newPlayerState(prr, PlayerState.ANSWER_SURVEY, "");
 
                 response.sendRedirect("/housinggame-player/answer-survey");
                 return;

@@ -38,8 +38,7 @@ public class ViewTaxesDoneServlet extends HttpServlet
         // player clicked VIEW IMPROVEMENTS on the view-taxes screen
         if (nextScreen.equals("view-improvements"))
         {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_IMPROVEMENTS.toString());
-            data.getPlayerRound().store();
+            data.newPlayerState(data.getPlayerRound(), PlayerState.VIEW_IMPROVEMENTS, "");
             response.sendRedirect("/housinggame-player/view-improvements");
             return;
         }

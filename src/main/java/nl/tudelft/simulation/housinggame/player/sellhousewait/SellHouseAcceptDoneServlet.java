@@ -59,8 +59,7 @@ public class SellHouseAcceptDoneServlet extends HttpServlet
                 if (transaction.getTransactionStatus().equals(TransactionStatus.APPROVED_SELL))
                 {
                     prr.setActiveTransactionId(null);
-                    prr.setPlayerState(PlayerState.VIEW_BUY_HOUSE.toString());
-                    prr.store();
+                    data.newPlayerState(prr, PlayerState.VIEW_BUY_HOUSE, "Transaction=APPROVED_SELL");
                     response.sendRedirect("/housinggame-player/buy-house");
                     return;
                 }

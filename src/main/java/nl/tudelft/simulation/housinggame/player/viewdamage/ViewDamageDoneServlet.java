@@ -38,8 +38,7 @@ public class ViewDamageDoneServlet extends HttpServlet
         // player clicked VIEW SUMMARY on the view-damage screen
         if (nextScreen.equals("view-summary"))
         {
-            data.getPlayerRound().setPlayerState(PlayerState.VIEW_SUMMARY.toString());
-            data.getPlayerRound().store();
+            data.newPlayerState(data.getPlayerRound(), PlayerState.VIEW_SUMMARY, "");
             response.sendRedirect("/housinggame-player/view-summary");
             return;
         }
