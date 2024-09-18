@@ -19,7 +19,7 @@ import com.google.gson.JsonObject;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SqlUtils;
 
@@ -165,16 +165,19 @@ public class CheckBuyHouseServlet extends HttpServlet
         s.append("<br /><p>\n");
         s.append("Measures implemented:<br/> \n");
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<MeasureRecord> measureList =
-                dslContext.selectFrom(Tables.MEASURE).where(Tables.MEASURE.HOUSEGROUP_ID.eq(houseGroup.getId())).fetch();
+        List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+                .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(houseGroup.getId())).fetch();
         int count = 0;
         for (var measure : measureList)
         {
-            if (measure.getConsumedInRound() == null || measure.getConsumedInRound().intValue() == 0)
+            var measureType = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+            int round = data.getPlayerRoundNumber();
+            // only take records that are permanent, or for one round and this is the correct round.
+            if ((measure.getRoundNumber() <= round && measureType.getValidOneRound() != 0)
+                    || (measure.getRoundNumber() == round && measureType.getValidOneRound() == 0))
             {
-                var measureType = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
-                s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice()) + ", satisfaction: "
-                        + measureType.getSatisfactionDelta() + "<br/>\n");
+                s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getCostAbsolute())
+                        + ", satisfaction: " + measureType.getSatisfactionDeltaPermanent() + "<br/>\n");
                 count++;
             }
         }

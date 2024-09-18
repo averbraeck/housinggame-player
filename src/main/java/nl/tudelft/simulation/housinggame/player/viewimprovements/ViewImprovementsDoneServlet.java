@@ -17,7 +17,7 @@ import org.jooq.impl.DSL;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
@@ -78,8 +78,8 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
                 WelfaretypeRecord wft =
                         SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
-                List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
-                        .where(Tables.MEASURE.HOUSEGROUP_ID.eq(prr.getFinalHousegroupId())).fetch();
+                List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+                        .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(prr.getFinalHousegroupId())).fetch();
                 int measureCost = 0;
                 int measureSat = 0;
                 if (formOptions.length() > 1)
@@ -92,14 +92,14 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                         int measureTypeId = Integer.parseInt(measureTypeIdStr);
                         MeasuretypeRecord mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
                         boolean found = false;
-                        for (MeasureRecord mr : measureList)
+                        for (HousemeasureRecord mr : measureList)
                         {
                             if (mr.getMeasuretypeId().equals(measureTypeId))
                                 found = true;
                         }
                         if (!found) // new measure
                         {
-                            MeasureRecord measure = dslContext.newRecord(Tables.MEASURE);
+                            HousemeasureRecord measure = dslContext.newRecord(Tables.HOUSEMEASURE);
                             measure.setRoundNumber(data.getGroupRound().getRoundNumber());
                             measure.setMeasuretypeId(mt.getId());
                             measure.setHousegroupId(hgr.getId());

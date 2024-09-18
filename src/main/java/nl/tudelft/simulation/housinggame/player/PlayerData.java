@@ -34,6 +34,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LabelRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguageRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.LanguagegroupRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerstateRecord;
@@ -478,6 +479,19 @@ public class PlayerData
             labelMap.put(key, value);
         }
         this.labelMap = labelMap;
+    }
+
+    public int getMeasurePrice(final MeasuretypeRecord mt)
+    {
+        int housePrice = getHouse() == null ? 0 : getHouse().getPrice();
+        int income = getPlayerRound().getRoundIncome();
+        return mt.getCostAbsolute() + (int) Math.round(mt.getCostPercentageHouse() * housePrice / 100.0)
+                + (int) Math.round(mt.getCostPercentageIncome() * income / 100.0);
+    }
+
+    public int getSatisfactionDelta(final MeasuretypeRecord mt)
+    {
+        return x;
     }
 
     public int getExpectedMortgage()

@@ -7,7 +7,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
@@ -29,8 +29,8 @@ public class ImprovementsAccordion
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<MeasuretypeRecord> measureTypeList = dslContext.selectFrom(Tables.MEASURETYPE)
                 .where(Tables.MEASURETYPE.GAMEVERSION_ID.eq(data.getGameVersion().getId())).fetch();
-        List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
-                .where(Tables.MEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+        List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+                .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
         s.append("<p><b>Please select your improvements:</b></p>\n");
@@ -39,7 +39,7 @@ public class ImprovementsAccordion
         for (MeasuretypeRecord measureType : measureTypeList)
         {
             boolean bought = false;
-            for (MeasureRecord measure : measureList)
+            for (HousemeasureRecord measure : measureList)
             {
                 if (measure.getMeasuretypeId().equals(measureType.getId()))
                     bought = true;
@@ -86,8 +86,8 @@ public class ImprovementsAccordion
     public static void makeBoughtImprovementsAccordion(final PlayerData data)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
-                .where(Tables.MEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+        List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+                .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
         int satBought = data.getPlayerRound().getSatisfactionBought();
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");

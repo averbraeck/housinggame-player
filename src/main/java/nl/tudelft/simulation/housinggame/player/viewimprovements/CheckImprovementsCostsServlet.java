@@ -17,7 +17,7 @@ import org.jooq.impl.DSL;
 import com.google.gson.JsonObject;
 
 import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
@@ -55,8 +55,8 @@ public class CheckImprovementsCostsServlet extends HttpServlet
             // return OK if the button for the current screen can be enabled, an empty string otherwise
             DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
             WelfaretypeRecord wft = SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
-            List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
-                    .where(Tables.MEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+            List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+                    .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
             int measureCost = 0;
             int measureSat = 0;
             // String jsp = request.getParameter("jsp");
@@ -71,15 +71,15 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                     int measureTypeId = Integer.parseInt(measureTypeIdStr);
                     MeasuretypeRecord mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
                     boolean found = false;
-                    for (MeasureRecord mr : measureList)
+                    for (HousemeasureRecord mr : measureList)
                     {
                         if (mr.getMeasuretypeId().equals(measureTypeId))
                             found = true;
                     }
                     if (!found) // new measure
                     {
-                        measureCost += mt.getPrice();
-                        measureSat += mt.getSatisfactionDelta();
+                        measureCost += data.getMeasurePrice(mt);
+                        measureSat += data.getSatisfactionDelta(mt);
                     }
                 }
             }

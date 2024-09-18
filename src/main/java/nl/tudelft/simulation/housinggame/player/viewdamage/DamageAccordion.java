@@ -11,7 +11,8 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.MeasureRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.SqlUtils;
@@ -51,8 +52,8 @@ public class DamageAccordion
             // replacement code https://github.com/averbraeck/housinggame-player/issues/45
             var houseGroup = data.getHouseGroup();
             HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
-            var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(), data.getScenario(),
-                    data.getPlayerRoundNumber());
+            var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(),
+                    data.getScenario(), data.getPlayerRoundNumber());
             int fCommBaseProt = houseGroup.getFluvialBaseProtection();
             int pCommBaseProt = houseGroup.getPluvialBaseProtection();
             int fCommDelta = cumulativeNewsEffects.get(house.getCommunityId()).getFluvialProtectionDelta();
@@ -222,16 +223,18 @@ public class DamageAccordion
             final HousegroupRecord houseGroup)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<MeasureRecord> measureList = dslContext.selectFrom(Tables.MEASURE)
-                .where(Tables.MEASURE.HOUSEGROUP_ID.eq(houseGroup.getId())).fetch().sortAsc(Tables.MEASURE.ROUND_NUMBER);
+        List<HousemeasureRecord> measureList =
+                dslContext.selectFrom(Tables.HOUSEMEASURE).where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(houseGroup.getId()))
+                        .fetch().sortAsc(Tables.HOUSEMEASURE.ROUND_NUMBER);
         int fluvial = 0;
         int pluvial = 0;
         for (var measure : measureList)
         {
-            if (measure.getRoundNumber() <= round
-                    && (measure.getConsumedInRound() == null || measure.getConsumedInRound().intValue() == 0))
+            MeasuretypeRecord mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+            // only take records that are permanent, or for one round and this is the correct round.
+            if ((measure.getRoundNumber() <= round && mt.getValidOneRound() != 0)
+                    || (measure.getRoundNumber() == round && mt.getValidOneRound() == 0))
             {
-                var mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
                 fluvial += mt.getFluvialProtectionDelta();
                 pluvial += mt.getPluvialProtectionDelta();
             }
