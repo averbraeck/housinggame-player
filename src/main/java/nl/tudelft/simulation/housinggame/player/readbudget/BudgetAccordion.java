@@ -4,7 +4,7 @@ import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 /**
  * BudgetAccordion puts the html-code for the budget in panel/budget, and progressively increases the amount of information
@@ -21,7 +21,7 @@ public class BudgetAccordion
     public static void makeBudgetAccordion(final PlayerData data)
     {
         WelfaretypeRecord welfareType =
-                SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
+                PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
         int startSavings = Math.max(data.getPrevPlayerRound().getSpendableIncome(), 0);
         int startDebt = -Math.min(data.getPrevPlayerRound().getSpendableIncome(), 0);
         StringBuilder s = new StringBuilder();

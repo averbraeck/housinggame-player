@@ -20,7 +20,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/buy-house-done")
 public class BuyHouseDoneServlet extends HttpServlet
@@ -94,7 +94,7 @@ public class BuyHouseDoneServlet extends HttpServlet
             return false;
         }
 
-        HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, houseGroupId);
+        HousegroupRecord houseGroup = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, houseGroupId);
 
         if (houseGroup == null)
         {

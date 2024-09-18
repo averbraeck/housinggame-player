@@ -15,7 +15,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 /**
  * DamageAccordion.java.
@@ -51,7 +51,7 @@ public class DamageAccordion
 
             // replacement code https://github.com/averbraeck/housinggame-player/issues/45
             var houseGroup = data.getHouseGroup();
-            HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
+            HouseRecord house = PlayerUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
             var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(),
                     data.getScenario(), data.getPlayerRoundNumber());
             int fCommBaseProt = houseGroup.getFluvialBaseProtection();
@@ -145,7 +145,7 @@ public class DamageAccordion
                 }
                 else
                 {
-                    var h = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, p.getFinalHousegroupId());
+                    var h = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, p.getFinalHousegroupId());
                     s.append("<td>" + h.getCode() + "</td>\n");
                     s.append("<td>" + g.getFluvialFloodIntensity() + "</td>\n");
                     s.append("<td>" + g.getPluvialFloodIntensity() + "</td>\n");
@@ -199,7 +199,7 @@ public class DamageAccordion
                 }
                 else
                 {
-                    var h = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, p.getFinalHousegroupId());
+                    var h = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, p.getFinalHousegroupId());
                     s.append("<td>" + h.getCode() + "</td>\n");
                     s.append("<td>" + p.getSatisfactionFluvialPenalty() + "</td>\n");
                     s.append("<td>" + p.getSatisfactionPluvialPenalty() + "</td>\n");
@@ -230,7 +230,7 @@ public class DamageAccordion
         int pluvial = 0;
         for (var measure : measureList)
         {
-            MeasuretypeRecord mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+            MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
             // only take records that are permanent, or for one round and this is the correct round.
             if ((measure.getRoundNumber() <= round && mt.getValidOneRound() != 0)
                     || (measure.getRoundNumber() == round && mt.getValidOneRound() == 0))

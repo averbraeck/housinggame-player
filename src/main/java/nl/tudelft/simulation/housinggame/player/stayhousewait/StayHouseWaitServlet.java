@@ -14,7 +14,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
 import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
@@ -69,8 +69,8 @@ public class StayHouseWaitServlet extends HttpServlet
         else
         {
             HousetransactionRecord transaction =
-                    SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, playerRound.getActiveTransactionId());
-            HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, transaction.getHousegroupId());
+                    PlayerUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, playerRound.getActiveTransactionId());
+            HousegroupRecord houseGroup = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, transaction.getHousegroupId());
             s.append("<p>You have opted to stay in house " + houseGroup.getCode() + "<br/>\n");
             s.append("<p>\n");
             s.append("If the facilitator approves your staying request, you can continue.\n");

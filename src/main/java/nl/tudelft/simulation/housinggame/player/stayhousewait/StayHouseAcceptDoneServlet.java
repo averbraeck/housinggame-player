@@ -15,7 +15,7 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/stay-house-accept-done")
 public class StayHouseAcceptDoneServlet extends HttpServlet
@@ -55,7 +55,7 @@ public class StayHouseAcceptDoneServlet extends HttpServlet
             }
             else
             {
-                HousetransactionRecord transaction = SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, transactionId);
+                HousetransactionRecord transaction = PlayerUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, transactionId);
                 if (transaction.getTransactionStatus().equals(TransactionStatus.APPROVED_STAY))
                 {
                     prr.setActiveTransactionId(null);

@@ -21,7 +21,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/check-improvements-costs")
 public class CheckImprovementsCostsServlet extends HttpServlet
@@ -54,7 +54,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
 
             // return OK if the button for the current screen can be enabled, an empty string otherwise
             DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-            WelfaretypeRecord wft = SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
+            WelfaretypeRecord wft = PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
             List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                     .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
             int measureCost = 0;
@@ -69,7 +69,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                 {
                     String measureTypeIdStr = m.split("\\=")[1].strip();
                     int measureTypeId = Integer.parseInt(measureTypeIdStr);
-                    MeasuretypeRecord mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
+                    MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
                     boolean found = false;
                     for (HousemeasureRecord mr : measureList)
                     {

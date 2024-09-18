@@ -19,7 +19,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.GamesessionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.GroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 import nl.tudelft.simulation.housinggame.player.ValidStates;
 
 @WebServlet("/login-done")
@@ -90,7 +90,7 @@ public class LoginDoneServlet extends HttpServlet
             if (ok)
             {
                 DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-                GamesessionRecord gs = SqlUtils.readRecordFromId(data, Tables.GAMESESSION, gameSessionId);
+                GamesessionRecord gs = PlayerUtils.readRecordFromId(data, Tables.GAMESESSION, gameSessionId);
                 GroupRecord groupRecord = dslContext.selectFrom(Tables.GROUP)
                         .where(Tables.GROUP.GAMESESSION_ID.eq(gs.getId()).and(Tables.GROUP.NAME.eq(group))).fetchAny();
                 if (groupRecord == null)

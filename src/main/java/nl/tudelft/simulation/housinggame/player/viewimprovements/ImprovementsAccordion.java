@@ -11,7 +11,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 /**
  * ImprovementsAccordion.java.
@@ -66,7 +66,7 @@ public class ImprovementsAccordion
             s.append("  </div>\n");
         }
         s.append("<br/><p>Please select if you want to buy extra satisfaction:</p>\n");
-        WelfaretypeRecord wft = SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
+        WelfaretypeRecord wft = PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
         s.append("  <div class=\"form-group\">\n");
         s.append("    <label for=\"regular1\" class=\"control-label\">");
         s.append("Costs per satisfaction point : " + data.k(wft.getSatisfactionCostPerPoint()));
@@ -104,7 +104,7 @@ public class ImprovementsAccordion
                 {
                     if (measure.getRoundNumber().equals(data.getPlayerRoundNumber()))
                     {
-                        var measureType = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+                        var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
                         s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getPrice())
                                 + ", satisfaction: " + measureType.getSatisfactionDelta() + "<br/>\n");
                         totCost += measureType.getPrice();

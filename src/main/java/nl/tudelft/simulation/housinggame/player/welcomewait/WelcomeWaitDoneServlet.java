@@ -14,7 +14,7 @@ import nl.tudelft.simulation.housinggame.common.GroupState;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/welcome-wait-done")
 public class WelcomeWaitDoneServlet extends HttpServlet
@@ -68,7 +68,7 @@ public class WelcomeWaitDoneServlet extends HttpServlet
 
             // advance to round 1
             GrouproundRecord groupRound1 = data.getGroupRoundList().get(1);
-            PlayerroundRecord prr = SqlUtils.makePlayerRound(data, groupRound1);
+            PlayerroundRecord prr = PlayerUtils.makePlayerRound(data, groupRound1);
             prr.store();
             data.newPlayerState(prr, PlayerState.READ_BUDGET, "Round=1");
             data.readDynamicData();

@@ -13,7 +13,7 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 /**
  * BuyHouseAccordion.java.
@@ -52,7 +52,7 @@ public class HouseAccordion
                     else if (includeOccupied)
                     {
                         houseGroupMap.put(houseGroup.getCode(), houseGroup);
-                        PlayerRecord player = SqlUtils.readRecordFromId(data, Tables.PLAYER, houseGroup.getOwnerId());
+                        PlayerRecord player = PlayerUtils.readRecordFromId(data, Tables.PLAYER, houseGroup.getOwnerId());
                         s.append("<option value=\"" + houseGroup.getId() + "\">" + houseGroup.getCode() + ", rating: "
                                 + houseGroup.getRating() + ", value: " + data.k(houseGroup.getMarketValue()) + " [owned by "
                                 + player.getCode() + "]</option>\n");

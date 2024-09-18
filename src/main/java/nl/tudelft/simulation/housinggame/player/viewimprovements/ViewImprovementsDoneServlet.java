@@ -22,7 +22,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/view-improvements-done")
 public class ViewImprovementsDoneServlet extends HttpServlet
@@ -73,11 +73,11 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 // reload the round with the latest state
                 data.readDynamicData();
                 PlayerroundRecord prr = data.getPlayerRound();
-                HousegroupRecord hgr = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, prr.getFinalHousegroupId());
+                HousegroupRecord hgr = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, prr.getFinalHousegroupId());
 
                 DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
                 WelfaretypeRecord wft =
-                        SqlUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
+                        PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
                 List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                         .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(prr.getFinalHousegroupId())).fetch();
                 int measureCost = 0;
@@ -90,7 +90,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                     {
                         String measureTypeIdStr = m.split("\\=")[1].strip();
                         int measureTypeId = Integer.parseInt(measureTypeIdStr);
-                        MeasuretypeRecord mt = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
+                        MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
                         boolean found = false;
                         for (HousemeasureRecord mr : measureList)
                         {

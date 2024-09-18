@@ -16,7 +16,7 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/check-sell-status")
 public class CheckSellStatus extends HttpServlet
@@ -51,7 +51,7 @@ public class CheckSellStatus extends HttpServlet
         {
             if (checkStatus(data))
             {
-                HousetransactionRecord transaction = SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, transactionId);
+                HousetransactionRecord transaction = PlayerUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, transactionId);
                 if (transaction.getTransactionStatus().equals(TransactionStatus.REJECTED_SELL))
                 {
                     response.setContentType("text/plain");

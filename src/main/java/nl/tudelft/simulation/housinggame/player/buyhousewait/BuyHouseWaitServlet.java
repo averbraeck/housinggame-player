@@ -14,7 +14,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousetransactionRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
 import nl.tudelft.simulation.housinggame.player.readnews.NewsAccordion;
 
@@ -69,8 +69,8 @@ public class BuyHouseWaitServlet extends HttpServlet
         else
         {
             HousetransactionRecord transaction =
-                    SqlUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, playerRound.getActiveTransactionId());
-            HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, transaction.getHousegroupId());
+                    PlayerUtils.readRecordFromId(data, Tables.HOUSETRANSACTION, playerRound.getActiveTransactionId());
+            HousegroupRecord houseGroup = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, transaction.getHousegroupId());
             s.append("<div class=\"hg-header1\">Your mortgage</div>\n");
             s.append("<p>You opted for house " + houseGroup.getCode() + "<br/>\n");
             s.append("The price you plan to pay is " + data.k(transaction.getPrice()) + ".<br/>\n");

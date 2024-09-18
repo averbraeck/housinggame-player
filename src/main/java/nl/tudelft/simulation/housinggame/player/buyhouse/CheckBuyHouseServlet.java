@@ -21,7 +21,7 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/check-buy-house")
 public class CheckBuyHouseServlet extends HttpServlet
@@ -80,7 +80,7 @@ public class CheckBuyHouseServlet extends HttpServlet
             return;
         }
 
-        HousegroupRecord houseGroup = SqlUtils.readRecordFromId(data, Tables.HOUSEGROUP, houseGroupId);
+        HousegroupRecord houseGroup = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, houseGroupId);
 
         if (houseGroup == null)
         {
@@ -170,7 +170,7 @@ public class CheckBuyHouseServlet extends HttpServlet
         int count = 0;
         for (var measure : measureList)
         {
-            var measureType = SqlUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+            var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
             int round = data.getPlayerRoundNumber();
             // only take records that are permanent, or for one round and this is the correct round.
             if ((measure.getRoundNumber() <= round && measureType.getValidOneRound() != 0)

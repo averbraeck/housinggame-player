@@ -13,7 +13,7 @@ import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 @WebServlet("/view-summary-done")
 public class ViewSummaryDoneServlet extends HttpServlet
@@ -53,7 +53,7 @@ public class ViewSummaryDoneServlet extends HttpServlet
                 response.sendRedirect("/housinggame-player/error");
             }
             GrouproundRecord groupRoundN = data.getGroupRoundList().get(roundNr + 1);
-            PlayerroundRecord prr = SqlUtils.makePlayerRound(data, groupRoundN);
+            PlayerroundRecord prr = PlayerUtils.makePlayerRound(data, groupRoundN);
             prr.store();
             data.newPlayerState(prr, PlayerState.READ_BUDGET, "Round=" + groupRoundN.getRoundNumber());
             data.readDynamicData();

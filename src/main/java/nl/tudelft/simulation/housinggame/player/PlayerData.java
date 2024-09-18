@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import nl.tudelft.simulation.housinggame.common.CommonData;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
@@ -41,14 +42,8 @@ import nl.tudelft.simulation.housinggame.data.tables.records.PlayerstateRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.ScenarioparametersRecord;
 
-public class PlayerData
+public class PlayerData extends CommonData
 {
-
-    /**
-     * the SQL datasource representing the database's connection pool.<br>
-     * the datasource is shared among the servlets and stored as a ServletContext attribute.
-     */
-    private DataSource dataSource;
 
     /** the Player record for the logged in player. Static during session. */
     private PlayerRecord player;
@@ -162,12 +157,12 @@ public class PlayerData
     public void readPlayerData(final PlayerRecord player)
     {
         this.player = player;
-        this.group = SqlUtils.readRecordFromId(this, Tables.GROUP, player.getGroupId());
-        this.gameSession = SqlUtils.readRecordFromId(this, Tables.GAMESESSION, this.group.getGamesessionId());
-        this.scenario = SqlUtils.readRecordFromId(this, Tables.SCENARIO, this.group.getScenarioId());
-        this.gameVersion = SqlUtils.readRecordFromId(this, Tables.GAMEVERSION, this.scenario.getGameversionId());
+        this.group = PlayerUtils.readRecordFromId(this, Tables.GROUP, player.getGroupId());
+        this.gameSession = PlayerUtils.readRecordFromId(this, Tables.GAMESESSION, this.group.getGamesessionId());
+        this.scenario = PlayerUtils.readRecordFromId(this, Tables.SCENARIO, this.group.getScenarioId());
+        this.gameVersion = PlayerUtils.readRecordFromId(this, Tables.GAMEVERSION, this.scenario.getGameversionId());
         this.scenarioParameters =
-                SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
+                PlayerUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
         setLanguageLabels(this.scenario);
         readDynamicData();
     }
@@ -193,7 +188,7 @@ public class PlayerData
 
             if (this.groupRound == null)
             {
-                this.groupRound = SqlUtils.makeGroupRound0(this);
+                this.groupRound = PlayerUtils.makeGroupRound0(this);
                 this.groupRoundList.add(this.groupRound);
                 this.highestGroupRoundNumber = 0;
             }
@@ -219,7 +214,7 @@ public class PlayerData
                 GrouproundRecord groupRound0 =
                         dslContext.selectFrom(Tables.GROUPROUND).where(Tables.GROUPROUND.ROUND_NUMBER.eq(0))
                                 .and(Tables.GROUPROUND.GROUP_ID.eq(this.group.getId())).fetchAny();
-                this.playerRound = SqlUtils.makePlayerRound0(this, groupRound0);
+                this.playerRound = PlayerUtils.makePlayerRound0(this, groupRound0);
                 this.prevPlayerRound = this.playerRound;
                 this.playerRoundNumber = 0;
             }
@@ -367,13 +362,13 @@ public class PlayerData
             return null;
         if (this.playerRound.getFinalHousegroupId() != null)
         {
-            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
-            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
+            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+            return PlayerUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         }
         if (this.playerRound.getStartHousegroupId() != null)
         {
-            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
-            return SqlUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
+            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+            return PlayerUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         }
         return null;
     }
@@ -384,11 +379,11 @@ public class PlayerData
             return null;
         if (this.playerRound.getFinalHousegroupId() != null)
         {
-            return SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+            return PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
         }
         if (this.playerRound.getStartHousegroupId() != null)
         {
-            return SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+            return PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
         }
         return null;
     }
@@ -399,10 +394,10 @@ public class PlayerData
             return "--";
         if (this.playerRound.getFinalHousegroupId() == null)
             return "--";
-        HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+        HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
         if (hgr == null)
             return "??";
-        HouseRecord house = SqlUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
+        HouseRecord house = PlayerUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         if (house == null)
             return "??";
         if (hgr.getStatus().equals(TransactionStatus.UNAPPROVED_BUY))
@@ -447,12 +442,12 @@ public class PlayerData
     {
         DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
         ScenarioparametersRecord spr =
-                SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, scenario.getScenarioparametersId());
-        GameversionRecord gameVersion = SqlUtils.readRecordFromId(this, Tables.GAMEVERSION, scenario.getGameversionId());
+                PlayerUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, scenario.getScenarioparametersId());
+        GameversionRecord gameVersion = PlayerUtils.readRecordFromId(this, Tables.GAMEVERSION, scenario.getGameversionId());
         int languageId = spr.getDefaultLanguageId();
-        LanguageRecord language = SqlUtils.readRecordFromId(this, Tables.LANGUAGE, languageId);
+        LanguageRecord language = PlayerUtils.readRecordFromId(this, Tables.LANGUAGE, languageId);
         LanguagegroupRecord languageGroup =
-                SqlUtils.readRecordFromId(this, Tables.LANGUAGEGROUP, gameVersion.getLanguagegroupId());
+                PlayerUtils.readRecordFromId(this, Tables.LANGUAGEGROUP, gameVersion.getLanguagegroupId());
         int languageNr = 1;
         if (languageGroup.getLanguageId1().equals(language.getId()))
             languageNr = 1;
@@ -501,7 +496,7 @@ public class PlayerData
             return 0;
         // TODO: bid?
         ScenarioparametersRecord spr =
-                SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
+                PlayerUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
         return (int) (house.getPrice() / spr.getMortgagePercentage());
     }
 
@@ -519,12 +514,12 @@ public class PlayerData
         int currentHouseSatisfaction = 0;
         if (this.playerRound.getFinalHousegroupId() != null)
         {
-            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
             currentHouseSatisfaction = hgr.getHouseSatisfaction();
         }
         else if (this.playerRound.getStartHousegroupId() != null)
         {
-            HousegroupRecord hgr = SqlUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
             currentHouseSatisfaction = hgr.getHouseSatisfaction();
         }
         return currentHouseSatisfaction;
@@ -553,7 +548,7 @@ public class PlayerData
     public int getMortgagePercentage()
     {
         ScenarioparametersRecord spr =
-                SqlUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
+                PlayerUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
         return spr.getMortgagePercentage().intValue();
     }
 

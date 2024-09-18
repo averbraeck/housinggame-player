@@ -14,7 +14,7 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.TaxRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.SqlUtils;
+import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 /**
  * TaxAccordion.java.
@@ -33,7 +33,7 @@ public class TaxAccordion
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
         s.append("You live in house " + data.getHouse().getCode() + "<br/>\n");
-        CommunityRecord community = SqlUtils.readRecordFromId(data, Tables.COMMUNITY, data.getHouse().getCommunityId());
+        CommunityRecord community = PlayerUtils.readRecordFromId(data, Tables.COMMUNITY, data.getHouse().getCommunityId());
         s.append("This house is in the community " + community.getName() + "<br/><br/>\n");
         s.append("The taxes for this community are as follows:<br/>\n");
         List<TaxRecord> taxList = dslContext.selectFrom(Tables.TAX).where(Tables.TAX.COMMUNITY_ID.eq(community.getId())).fetch()
@@ -48,14 +48,14 @@ public class TaxAccordion
         int nrCommunity = 0;
         for (HousegroupRecord houseGroup : houseGroupList)
         {
-            HouseRecord hgHouse = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
+            HouseRecord hgHouse = PlayerUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
             if (hgHouse.getCommunityId().equals(community.getId()) && houseGroup.getStatus().equals(HouseGroupStatus.OCCUPIED))
                 nrCommunity++;
         }
 
         // see if there are tax changes
         var houseGroup = data.getHouseGroup();
-        HouseRecord house = SqlUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
+        HouseRecord house = PlayerUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
         var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(), data.getScenario(),
                 data.getPlayerRoundNumber());
         var txc = (int) cumulativeNewsEffects.get(house.getCommunityId()).getTaxChange();

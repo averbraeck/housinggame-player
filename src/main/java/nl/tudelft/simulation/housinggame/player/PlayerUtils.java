@@ -19,10 +19,10 @@ import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.UserRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 
-public final class SqlUtils
+public final class PlayerUtils
 {
 
-    private SqlUtils()
+    private PlayerUtils()
     {
         // utility class
     }
