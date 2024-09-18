@@ -1,61 +1,21 @@
 package nl.tudelft.simulation.housinggame.player;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
-import org.jooq.Table;
-import org.jooq.TableField;
 import org.jooq.impl.DSL;
 
 import nl.tudelft.simulation.housinggame.common.GroupState;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
+import nl.tudelft.simulation.housinggame.common.SqlUtils;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.UserRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 
-public final class PlayerUtils
+public final class PlayerUtils extends SqlUtils
 {
-
-    private PlayerUtils()
-    {
-        // utility class
-    }
-
-    public static Connection dbConnection() throws SQLException, ClassNotFoundException
-    {
-        String jdbcURL = "jdbc:mysql://localhost:3306/housinggame";
-        String dbUser = "housinggame";
-        String dbPassword = "tudHouse#4";
-
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        return DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
-    }
-
-    public static UserRecord readUserFromUserId(final PlayerData data, final int userId)
-    {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(userId)).fetchAny();
-    }
-
-    public static UserRecord readUserFromUsername(final PlayerData data, final String username)
-    {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(Tables.USER).where(Tables.USER.USERNAME.eq(username)).fetchAny();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <R extends org.jooq.UpdatableRecord<R>> R readRecordFromId(final PlayerData data, final Table<R> table,
-            final int recordId)
-    {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(table).where(((TableField<R, Integer>) table.field("id")).eq(recordId)).fetchOne();
-    }
 
     /**
      * Return or create the PlayerRound for the given GroupRound. When there is an earlier PlayerRound, copy the latest. When
