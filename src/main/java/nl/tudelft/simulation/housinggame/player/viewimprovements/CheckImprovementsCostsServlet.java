@@ -79,7 +79,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                     if (!found) // new measure
                     {
                         measureCost += data.getMeasurePrice(mt);
-                        measureSat += data.getSatisfactionDelta(mt);
+                        measureSat += data.getSatisfactionDeltaIfBought(mt);
                     }
                 }
             }

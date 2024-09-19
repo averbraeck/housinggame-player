@@ -1,18 +1,14 @@
 package nl.tudelft.simulation.housinggame.player.viewdamage;
 
-import java.util.List;
-
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
 import nl.tudelft.simulation.housinggame.common.CumulativeNewsEffects;
+import nl.tudelft.simulation.housinggame.common.FluvialPluvial;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.GrouproundRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HouseRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.PlayerUtils;
@@ -58,7 +54,7 @@ public class DamageAccordion
             int pCommBaseProt = houseGroup.getPluvialBaseProtection();
             int fCommDelta = cumulativeNewsEffects.get(house.getCommunityId()).getFluvialProtectionDelta();
             int pCommDelta = cumulativeNewsEffects.get(house.getCommunityId()).getPluvialProtectionDelta();
-            var fpRecord = fpMeasureProtectionTillRound(data, data.getPlayerRoundNumber(), houseGroup);
+            var fpRecord = FluvialPluvial.measureProtectionTillRound(data, data.getPlayerRoundNumber(), houseGroup);
             int fHouseDelta = fpRecord.fluvial();
             int pHouseDelta = fpRecord.pluvial();
             int fCommProt = fCommBaseProt + fCommDelta;
@@ -216,36 +212,5 @@ public class DamageAccordion
 
         data.getContentHtml().put("panel/damage", s.toString());
     }
-
-    // Replacement code https://github.com/averbraeck/housinggame-player/issues/45
-
-    private static FPRecord fpMeasureProtectionTillRound(final PlayerData data, final int round,
-            final HousegroupRecord houseGroup)
-    {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<HousemeasureRecord> measureList =
-                dslContext.selectFrom(Tables.HOUSEMEASURE).where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(houseGroup.getId()))
-                        .fetch().sortAsc(Tables.HOUSEMEASURE.ROUND_NUMBER);
-        int fluvial = 0;
-        int pluvial = 0;
-        for (var measure : measureList)
-        {
-            MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
-            // only take records that are permanent, or for one round and this is the correct round.
-            if ((measure.getRoundNumber() <= round && mt.getValidOneRound() != 0)
-                    || (measure.getRoundNumber() == round && mt.getValidOneRound() == 0))
-            {
-                fluvial += mt.getFluvialProtectionDelta();
-                pluvial += mt.getPluvialProtectionDelta();
-            }
-        }
-        return new FPRecord(fluvial, pluvial);
-    }
-
-    record FPRecord(int fluvial, int pluvial)
-    {
-    }
-
-    // End replacement code https://github.com/averbraeck/housinggame-player/issues/45
 
 }

@@ -100,13 +100,13 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                         if (!found) // new measure
                         {
                             HousemeasureRecord measure = dslContext.newRecord(Tables.HOUSEMEASURE);
-                            measure.setRoundNumber(data.getGroupRound().getRoundNumber());
+                            measure.setBoughtInRound(data.getGroupRound().getRoundNumber());
                             measure.setMeasuretypeId(mt.getId());
                             measure.setHousegroupId(hgr.getId());
-                            measure.setConsumedInRound(null);
+                            measure.setUsedInRound(-1);
                             measure.store();
-                            measureCost += mt.getPrice();
-                            measureSat += mt.getSatisfactionDelta();
+                            measureCost += data.getMeasurePrice(mt);
+                            measureSat += data.getSatisfactionDeltaIfBought(mt);
 
                             // increase the house protection with the measure
                             hgr.setPluvialHouseProtection(hgr.getPluvialBaseProtection() + mt.getPluvialProtectionDelta());
