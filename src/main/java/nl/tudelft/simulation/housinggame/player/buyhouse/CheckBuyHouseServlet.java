@@ -173,8 +173,8 @@ public class CheckBuyHouseServlet extends HttpServlet
             var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
             int round = data.getPlayerRoundNumber();
             // only take records that are permanent, or for one round and this is the correct round.
-            if ((measure.getRoundNumber() <= round && measureType.getValidOneRound() != 0)
-                    || (measure.getRoundNumber() == round && measureType.getValidOneRound() == 0))
+            if ((measure.getBoughtInRound() <= round && measureType.getValidOneRound() != 0)
+                    || (measure.getBoughtInRound() == round && measureType.getValidOneRound() == 0))
             {
                 s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(measureType.getCostAbsolute())
                         + ", satisfaction: " + measureType.getSatisfactionDeltaPermanent() + "<br/>\n");
