@@ -484,9 +484,9 @@ public class PlayerData extends CommonData
                 + (int) Math.round(mt.getCostPercentageIncome() * income / 100.0);
     }
 
-    public int getSatisfactionDelta(final MeasuretypeRecord mt)
+    public int getSatisfactionDeltaIfBought(final MeasuretypeRecord mt)
     {
-        return x;
+        return mt.getSatisfactionDeltaOnce() > 0 ? mt.getSatisfactionDeltaOnce() : mt.getSatisfactionDeltaPermanent();
     }
 
     public int getExpectedMortgage()
