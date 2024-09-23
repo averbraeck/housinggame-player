@@ -527,7 +527,7 @@ public class PlayerData extends CommonData
 
     public int getTotalSatisfaction()
     {
-        return this.playerRound.getPersonalSatisfaction() + getHouseSatisfaction();
+        return this.playerRound.getSatisfactionTotal();
     }
 
     public int getSavings()

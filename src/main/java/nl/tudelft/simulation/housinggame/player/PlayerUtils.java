@@ -73,17 +73,16 @@ public final class PlayerUtils extends SqlUtils
         newPr.setSpentSavingsForBuyingHouse(0);
         newPr.setCostTaxes(0);
         newPr.setCostMeasuresBought(0);
-        newPr.setSatisfactionBought(0);
         newPr.setCostFluvialDamage(0);
         newPr.setCostPluvialDamage(0);
         newPr.setSpendableIncome(welfareType.getInitialMoney());
 
         // satisfaction
-        newPr.setPersonalSatisfaction(welfareType.getInitialSatisfaction());
+        newPr.setSatisfactionTotal(welfareType.getInitialSatisfaction());
         newPr.setSatisfactionMovePenalty(0);
         newPr.setSatisfactionHouseRatingDelta(0);
         newPr.setSatisfactionHouseMeasures(0);
-        newPr.setSatisfactionBought(0);
+        newPr.setSatisfactionPersonalMeasures(0);
         newPr.setSatisfactionFluvialPenalty(0);
         newPr.setSatisfactionPluvialPenalty(0);
         newPr.setSatisfactionDebtPenalty(0);
@@ -130,7 +129,6 @@ public final class PlayerUtils extends SqlUtils
         newPr.setSpentSavingsForBuyingHouse(0);
         newPr.setCostTaxes(0);
         newPr.setCostMeasuresBought(0);
-        newPr.setSatisfactionBought(0);
         newPr.setCostFluvialDamage(0);
         newPr.setCostPluvialDamage(0);
         newPr.setSpendableIncome(oldPr.getSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
@@ -138,18 +136,18 @@ public final class PlayerUtils extends SqlUtils
             newPr.setPaidDebt(Math.max(0, Math.min(0, newPr.getSpendableIncome()) - oldPr.getSpendableIncome()));
 
         // satisfaction
-        newPr.setPersonalSatisfaction(oldPr.getPersonalSatisfaction());
+        newPr.setSatisfactionTotal(oldPr.getSatisfactionTotal());
         newPr.setSatisfactionMovePenalty(0);
         newPr.setSatisfactionHouseRatingDelta(0);
         newPr.setSatisfactionHouseMeasures(0);
-        newPr.setSatisfactionBought(0);
+        newPr.setSatisfactionPersonalMeasures(0);
         newPr.setSatisfactionFluvialPenalty(0);
         newPr.setSatisfactionPluvialPenalty(0);
         if (oldPr.getSpendableIncome() < 0)
         {
             newPr.setSatisfactionDebtPenalty(data.getScenarioParameters().getSatisfactionDebtPenalty());
-            newPr.setPersonalSatisfaction(
-                    oldPr.getPersonalSatisfaction() - data.getScenarioParameters().getSatisfactionDebtPenalty());
+            newPr.setSatisfactionTotal(
+                    newPr.getSatisfactionTotal() - data.getScenarioParameters().getSatisfactionDebtPenalty());
         }
         else
             newPr.setSatisfactionDebtPenalty(0);
@@ -210,9 +208,9 @@ public final class PlayerUtils extends SqlUtils
         }
         // normalize the satisfaction scores if so dictated by the parameters
         if (params.getAllowPersonalSatisfactionNeg() == 0)
-            playerRound.setPersonalSatisfaction(Math.max(0, playerRound.getPersonalSatisfaction()));
+            playerRound.setSatisfactionTotal(Math.max(0, playerRound.getSatisfactionTotal()));
         if (params.getAllowTotalSatisfactionNeg() == 0)
-            playerRound.setPersonalSatisfaction(Math.max(-hgSatisfaction, playerRound.getPersonalSatisfaction()));
+            playerRound.setSatisfactionTotal(Math.max(-hgSatisfaction, playerRound.getSatisfactionTotal()));
     }
 
 }

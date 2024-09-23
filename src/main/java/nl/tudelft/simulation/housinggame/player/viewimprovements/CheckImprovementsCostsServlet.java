@@ -99,8 +99,8 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                 s.append("  <p class=\"hg-box-green\">\n");
                 s.append("      You CAN afford these measures / bought satisfaction.<br/>\n");
                 s.append("      Your satisfaction will grow with " + (measureSat + satPoints)
-                        + " points, growing your personal satisfaction from " + data.getPlayerRound().getPersonalSatisfaction()
-                        + " to " + (measureSat + satPoints + data.getPlayerRound().getPersonalSatisfaction()) + ".\n");
+                        + " points, growing your personal satisfaction from " + data.getPlayerRound().getSatisfactionTotal()
+                        + " to " + (measureSat + satPoints + data.getPlayerRound().getSatisfactionTotal()) + ".\n");
                 s.append("  </p>\n");
                 retValue = "OK";
             }

@@ -29,7 +29,7 @@ public class ImprovementsAccordion
     public static void makeImprovementsAccordion(final PlayerData data)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<MeasureTypeList> measureTypeList = MeasureTypeList.getMeasureListRecords(data, data.getGameVersion());
+        List<MeasureTypeList> measureTypeList = MeasureTypeList.getMeasureListRecords(data, data.getScenario());
         List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                 .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
         StringBuilder s = new StringBuilder();
@@ -96,10 +96,9 @@ public class ImprovementsAccordion
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                 .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
-        int satBought = data.getPlayerRound().getSatisfactionBought();
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
-        if (satBought == 0 && measureList.size() == 0)
+        if (measureList.size() == 0)
             s.append("<p>You did not buy any improvements in this round</p>\n");
         else
         {
@@ -120,14 +119,6 @@ public class ImprovementsAccordion
                     }
                 }
                 s.append("</p>\n");
-            }
-            if (satBought > 0)
-            {
-                s.append("<p>You bought extra satisfaction:<br/>\n");
-                s.append(" - nr of points: " + satBought + ", costs: "
-                        + data.k(data.getPlayerRound().getCostSatisfactionBought()) + "</p>\n");
-                totCost += data.getPlayerRound().getCostSatisfactionBought();
-                totSat += satBought;
             }
             s.append("<p>Total spend on improvements: " + data.k(totCost) + "<br/>\n");
             s.append("Total satisfaction delta: " + totSat + "</p>\n");

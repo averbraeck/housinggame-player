@@ -20,7 +20,6 @@ import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
@@ -45,15 +44,6 @@ public class ViewImprovementsDoneServlet extends HttpServlet
             return;
         }
 
-        String satPointsStr = request.getParameter("form-selected-points");
-        if (satPointsStr == null)
-        {
-            data.errorRedirect(response,
-                    "Player app called view-improvements-done servlet, but form-selected-points field is null");
-            return;
-        }
-        satPointsStr = satPointsStr.strip();
-
         String formOptions = request.getParameter("form-options");
         if (formOptions == null)
         {
@@ -76,8 +66,6 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 HousegroupRecord hgr = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, prr.getFinalHousegroupId());
 
                 DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-                WelfaretypeRecord wft =
-                        PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
                 List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                         .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(prr.getFinalHousegroupId())).fetch();
                 int measureCost = 0;
@@ -116,18 +104,11 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                     }
                 }
 
-                int satPoints = satPointsStr.length() == 0 ? 0 : Integer.parseInt(satPointsStr);
-                int satPointCost = satPoints * wft.getSatisfactionCostPerPoint();
-
                 hgr.setHouseSatisfaction(hgr.getHouseSatisfaction() + measureSat);
                 hgr.store();
                 prr.setSatisfactionHouseMeasures(measureSat);
                 prr.setCostMeasuresBought(measureCost);
-
-                prr.setSatisfactionBought(satPoints);
-                prr.setCostSatisfactionBought(satPointCost);
-                prr.setPersonalSatisfaction(prr.getPersonalSatisfaction() + satPoints);
-                prr.setSpendableIncome(prr.getSpendableIncome() - measureCost - satPointCost);
+                prr.setSpendableIncome(prr.getSpendableIncome() - measureCost);
                 data.newPlayerState(prr, PlayerState.ANSWER_SURVEY, "");
 
                 response.sendRedirect("/housinggame-player/answer-survey");

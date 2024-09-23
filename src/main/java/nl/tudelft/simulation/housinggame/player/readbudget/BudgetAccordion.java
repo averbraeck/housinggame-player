@@ -126,21 +126,19 @@ public class BudgetAccordion
         s.append("            <div class=\"hg-box-grey\" " +
                                 "style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 20px;\">\n");
         s.append("              <div>\n");
-        s.append("                  Start personal satisfaction<br/>\n");
-        s.append("                  House satisfaction (measures)<br/>\n");
-        s.append("                  House rating change<br/>\n");
-        s.append("                  Damage penalty<br/>\n");
+        s.append("                  Start satisfaction<br/>\n");
+        s.append("                  House measures satisfaction<br/>\n");
+        s.append("                  House rating penalty<br/>\n");
+        s.append("                  Flood damage penalty<br/>\n");
         s.append("                  Moving penalty<br/>\n");
         s.append("                  Debt penalty<br/>\n");
-        s.append("                  Bought satisfaction<br/>\n");
+        s.append("                  Personal satisfaction<br/>\n");
         s.append("                  TOTAL satisfaction<br/>\n");
         s.append("              </div>\n");
         s.append("              <div>\n");
-        int psat = data.getPlayerRound().getPersonalSatisfaction();
-        int hsat = data.getHouseSatisfaction();
         int damage = data.getPlayerRound().getSatisfactionFluvialPenalty() + data.getPlayerRound().getSatisfactionPluvialPenalty();
-        s.append("                + " + data.getPrevPlayerRound().getPersonalSatisfaction() + " <br/>\n");
-        s.append("                + " + hsat + " <br/>\n");
+        s.append("                + " + data.getPrevPlayerRound().getSatisfactionTotal() + " <br/>\n");
+        s.append("                + " + data.getPlayerRound().getSatisfactionHouseMeasures() + " <br/>\n");
         if (data.getPlayerRound().getSatisfactionHouseRatingDelta() < 0)
             s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionHouseRatingDelta()) + " <br/>\n");
         else
@@ -148,8 +146,8 @@ public class BudgetAccordion
         s.append("                - " + damage + " <br/>\n");
         s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionMovePenalty()) + " <br/>\n");
         s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionDebtPenalty()) + " <br/>\n");
-        s.append("                + " + Math.abs(data.getPlayerRound().getSatisfactionBought()) + " <br/>\n");
-        s.append("                = " + (psat + hsat) + " \n");
+        s.append("                + " + Math.abs(data.getPlayerRound().getSatisfactionPersonalMeasures()) + " <br/>\n");
+        s.append("                = " + data.getPlayerRound().getSatisfactionTotal() + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
         // @formatter:on
