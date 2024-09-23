@@ -1,6 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.viewimprovements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -19,6 +20,7 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.PersonalmeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.PlayerroundRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.PlayerUtils;
@@ -66,10 +68,21 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 HousegroupRecord hgr = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, prr.getFinalHousegroupId());
 
                 DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-                List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
-                        .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(prr.getFinalHousegroupId())).fetch();
+                // TODO: filter out ones you can buy again
+                List<HousemeasureRecord> houseMeasureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+                        .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+                List<PersonalmeasureRecord> personalMeasureList = new ArrayList<>();
+                for (var playerRound : data.getPlayerRoundList())
+                {
+                    // TODO: filter out ones you can buy again
+                    personalMeasureList.addAll(dslContext
+                            .selectFrom(
+                                    Tables.PERSONALMEASURE.where(Tables.PERSONALMEASURE.PLAYERROUND_ID.eq(playerRound.getId())))
+                            .fetch());
+                }
                 int measureCost = 0;
-                int measureSat = 0;
+                int measureHouseSat = 0;
+                int measurePersSat = 0;
                 if (formOptions.length() > 1)
                 {
                     // regex escape characters: <([{\^-=$!|]})?*+.>
@@ -80,35 +93,62 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                         int measureTypeId = Integer.parseInt(measureTypeIdStr);
                         MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
                         boolean found = false;
-                        for (HousemeasureRecord mr : measureList)
+                        for (HousemeasureRecord mr : houseMeasureList)
                         {
                             if (mr.getMeasuretypeId().equals(measureTypeId))
                                 found = true;
                         }
+                        for (PersonalmeasureRecord measure : personalMeasureList)
+                        {
+                            if (measure.getMeasuretypeId().equals(measureTypeId))
+                                found = true;
+                        }
                         if (!found) // new measure
                         {
-                            HousemeasureRecord measure = dslContext.newRecord(Tables.HOUSEMEASURE);
-                            measure.setBoughtInRound(data.getGroupRound().getRoundNumber());
-                            measure.setMeasuretypeId(mt.getId());
-                            measure.setHousegroupId(hgr.getId());
-                            measure.setUsedInRound(-1);
-                            measure.store();
-                            measureCost += data.getMeasurePrice(mt);
-                            measureSat += data.getSatisfactionDeltaIfBought(mt);
+                            if (mt.getHouseMeasure() == (byte) 0)
+                            {
+                                // personal measure
+                                PersonalmeasureRecord measure = dslContext.newRecord(Tables.PERSONALMEASURE);
+                                measure.setMeasuretypeId(mt.getId());
+                                measure.setPlayerroundId(prr.getId());
+                                measure.store();
 
-                            // increase the house protection with the measure
-                            hgr.setPluvialHouseProtection(hgr.getPluvialBaseProtection() + mt.getPluvialProtectionDelta());
-                            hgr.setFluvialHouseProtection(hgr.getFluvialBaseProtection() + mt.getFluvialProtectionDelta());
-                            hgr.store();
+                                // calculate cost and satisfaction
+                                measureCost += data.getMeasurePrice(mt);
+                                measurePersSat += data.getSatisfactionDeltaIfBought(mt);
+                            }
+                            else
+                            {
+                                // house measure
+                                HousemeasureRecord measure = dslContext.newRecord(Tables.HOUSEMEASURE);
+                                measure.setBoughtInRound(data.getGroupRound().getRoundNumber());
+                                measure.setMeasuretypeId(mt.getId());
+                                measure.setHousegroupId(hgr.getId());
+                                measure.setUsedInRound(-1);
+                                measure.store();
+
+                                // calculate cost and satisfaction
+                                measureCost += data.getMeasurePrice(mt);
+                                measureHouseSat += data.getSatisfactionDeltaIfBought(mt);
+
+                                // increase the house protection with the measure
+                                hgr.setPluvialHouseProtection(hgr.getPluvialBaseProtection() + mt.getPluvialProtectionDelta());
+                                hgr.setFluvialHouseProtection(hgr.getFluvialBaseProtection() + mt.getFluvialProtectionDelta());
+                                hgr.store();
+                            }
                         }
                     }
                 }
 
-                hgr.setHouseSatisfaction(hgr.getHouseSatisfaction() + measureSat);
+                hgr.setHouseSatisfaction(hgr.getHouseSatisfaction() + measureHouseSat);
                 hgr.store();
-                prr.setSatisfactionHouseMeasures(measureSat);
+
+                prr.setSatisfactionHouseMeasures(measureHouseSat);
+                prr.setSatisfactionPersonalMeasures(measurePersSat);
                 prr.setCostMeasuresBought(measureCost);
                 prr.setSpendableIncome(prr.getSpendableIncome() - measureCost);
+                prr.store();
+
                 data.newPlayerState(prr, PlayerState.ANSWER_SURVEY, "");
 
                 response.sendRedirect("/housinggame-player/answer-survey");

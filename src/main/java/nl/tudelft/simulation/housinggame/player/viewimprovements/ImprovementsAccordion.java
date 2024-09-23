@@ -1,5 +1,6 @@
 package nl.tudelft.simulation.housinggame.player.viewimprovements;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.DSLContext;
@@ -11,7 +12,7 @@ import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasurecategoryRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
+import nl.tudelft.simulation.housinggame.data.tables.records.PersonalmeasureRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
@@ -30,8 +31,17 @@ public class ImprovementsAccordion
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<MeasureTypeList> measureTypeList = MeasureTypeList.getMeasureListRecords(data, data.getScenario());
-        List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+        // TODO: filter out ones you can buy again
+        List<HousemeasureRecord> houseMeasureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                 .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+        List<PersonalmeasureRecord> personalMeasureList = new ArrayList<>();
+        for (var playerRound : data.getPlayerRoundList())
+        {
+            // TODO: filter out ones you can buy again
+            personalMeasureList.addAll(dslContext
+                    .selectFrom(Tables.PERSONALMEASURE.where(Tables.PERSONALMEASURE.PLAYERROUND_ID.eq(playerRound.getId())))
+                    .fetch());
+        }
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
         s.append("<p><b>Please select your improvements:</b></p>\n");
@@ -45,7 +55,12 @@ public class ImprovementsAccordion
             for (MeasuretypeRecord measureType : mtl.measureTypeList())
             {
                 boolean bought = false;
-                for (HousemeasureRecord measure : measureList)
+                for (HousemeasureRecord measure : houseMeasureList)
+                {
+                    if (measure.getMeasuretypeId().equals(measureType.getId()))
+                        bought = true;
+                }
+                for (PersonalmeasureRecord measure : personalMeasureList)
                 {
                     if (measure.getMeasuretypeId().equals(measureType.getId()))
                         bought = true;
@@ -73,19 +88,6 @@ public class ImprovementsAccordion
             }
             s.append(" </p>\n");
         }
-        s.append("<br/><p>Please select if you want to buy extra satisfaction:</p>\n");
-        WelfaretypeRecord wft = PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
-        s.append("  <div class=\"form-group\">\n");
-        s.append("    <label for=\"regular1\" class=\"control-label\">");
-        s.append("Costs per satisfaction point : " + data.k(wft.getSatisfactionCostPerPoint()));
-        s.append("</label>\n");
-        s.append("     <select class=\"form-control\" id=\"selected-points\">\n");
-        s.append("       <option value=\"0\">no extra satisfaction points</option>\n");
-        for (int i = 1; i <= 10; i++)
-            s.append("       <option value=\"" + i + "\">" + i + "x - cost = " + data.k(i * wft.getSatisfactionCostPerPoint())
-                    + "</option>\n");
-        s.append("     </select>\n");
-        s.append("  </div>\n");
         s.append("</form>\n");
         s.append("            </div>\n");
         data.getContentHtml().put("house/improvements", s.toString());

@@ -274,6 +274,12 @@ public class PlayerData extends CommonData
         return this.prevPlayerRound;
     }
 
+    public List<PlayerroundRecord> getPlayerRoundList()
+    {
+        DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
+        return dslContext.selectFrom(Tables.PLAYERROUND).where(Tables.PLAYERROUND.PLAYER_ID.eq(getPlayer().getId())).fetch();
+    }
+
     public GrouproundRecord getGroupRound()
     {
         return this.groupRound;
@@ -362,12 +368,14 @@ public class PlayerData extends CommonData
             return null;
         if (this.playerRound.getFinalHousegroupId() != null)
         {
-            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+            HousegroupRecord hgr =
+                    PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
             return PlayerUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         }
         if (this.playerRound.getStartHousegroupId() != null)
         {
-            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+            HousegroupRecord hgr =
+                    PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
             return PlayerUtils.readRecordFromId(this, Tables.HOUSE, hgr.getHouseId());
         }
         return null;
@@ -514,12 +522,14 @@ public class PlayerData extends CommonData
         int currentHouseSatisfaction = 0;
         if (this.playerRound.getFinalHousegroupId() != null)
         {
-            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
+            HousegroupRecord hgr =
+                    PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getFinalHousegroupId());
             currentHouseSatisfaction = hgr.getHouseSatisfaction();
         }
         else if (this.playerRound.getStartHousegroupId() != null)
         {
-            HousegroupRecord hgr = PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
+            HousegroupRecord hgr =
+                    PlayerUtils.readRecordFromId(this, Tables.HOUSEGROUP, this.playerRound.getStartHousegroupId());
             currentHouseSatisfaction = hgr.getHouseSatisfaction();
         }
         return currentHouseSatisfaction;

@@ -19,7 +19,6 @@ import com.google.gson.JsonObject;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
-import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
@@ -54,7 +53,6 @@ public class CheckImprovementsCostsServlet extends HttpServlet
 
             // return OK if the button for the current screen can be enabled, an empty string otherwise
             DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-            WelfaretypeRecord wft = PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
             List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                     .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
             int measureCost = 0;
@@ -83,28 +81,23 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                     }
                 }
             }
-            String satPointsStr = request.getParameter("selected-points").strip();
-            int satPoints = Integer.parseInt(satPointsStr);
-            int satPointCost = satPoints * wft.getSatisfactionCostPerPoint();
-            boolean canAfford = data.getPlayerRound().getSpendableIncome() - measureCost - satPointCost >= 0;
+            boolean canAfford = data.getPlayerRound().getSpendableIncome() - measureCost >= 0;
 
             s.append("  <p>\n");
             s.append("      Total measure cost: " + data.k(measureCost) + "<br/>\n");
-            s.append("      Bought satisfaction cost: " + data.k(satPointCost) + "<br/>\n");
-            s.append("      Total cost: " + data.k(measureCost + satPointCost) + "<br/>\n");
             s.append("      Spendable income: " + data.k(data.getPlayerRound().getSpendableIncome()) + "<br/>\n");
             s.append("  </p>\n");
             if (canAfford)
             {
                 s.append("  <p class=\"hg-box-green\">\n");
                 s.append("      You CAN afford these measures / bought satisfaction.<br/>\n");
-                s.append("      Your satisfaction will grow with " + (measureSat + satPoints)
+                s.append("      Your satisfaction will grow with " + (measureSat)
                         + " points, growing your personal satisfaction from " + data.getPlayerRound().getSatisfactionTotal()
-                        + " to " + (measureSat + satPoints + data.getPlayerRound().getSatisfactionTotal()) + ".\n");
+                        + " to " + (measureSat + data.getPlayerRound().getSatisfactionTotal()) + ".\n");
                 s.append("  </p>\n");
                 retValue = "OK";
             }
-            else if (measureCost + satPointCost > 0)
+            else if (measureCost > 0)
             {
                 s.append("  <p class=\"hg-box-red\">\n");
                 s.append(
