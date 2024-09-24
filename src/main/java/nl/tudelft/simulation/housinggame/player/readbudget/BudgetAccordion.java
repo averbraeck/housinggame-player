@@ -1,10 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.readbudget;
 
 import nl.tudelft.simulation.housinggame.common.PlayerState;
-import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.WelfaretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
-import nl.tudelft.simulation.housinggame.player.PlayerUtils;
 
 /**
  * BudgetAccordion puts the html-code for the budget in panel/budget, and progressively increases the amount of information
@@ -20,8 +17,6 @@ public class BudgetAccordion
 
     public static void makeBudgetAccordion(final PlayerData data)
     {
-        WelfaretypeRecord welfareType =
-                PlayerUtils.readRecordFromId(data, Tables.WELFARETYPE, data.getPlayer().getWelfaretypeId());
         int startSavings = Math.max(data.getPrevPlayerRound().getSpendableIncome(), 0);
         int startDebt = -Math.min(data.getPrevPlayerRound().getSpendableIncome(), 0);
         StringBuilder s = new StringBuilder();
@@ -39,11 +34,6 @@ public class BudgetAccordion
         s.append("            <div class=\"hg-header1\">House expectations</div>\n");
         s.append("            <div class=\"hg-box-grey\">\n");
         s.append("              Preferred house rating: " + data.getPlayerRound().getPreferredHouseRating() + " <br/>\n");
-        s.append("            </div>\n");
-
-        s.append("            <div class=\"hg-header1\">Satisfaction costs</div>\n");
-        s.append("            <div class=\"hg-box-grey\">\n");
-        s.append("              Satisfaction increase per point: " + data.k(welfareType.getSatisfactionCostPerPoint()) + " <br/>\n");
         s.append("            </div>\n");
 
         s.append("            <div class=\"hg-header1\">Spendable income</div>\n");
