@@ -80,7 +80,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
             if (canAfford)
             {
                 s.append("  <p class=\"hg-box-green\">\n");
-                s.append("      You CAN afford these measures / bought satisfaction.<br/>\n");
+                s.append("      You CAN afford these house / personal measures.<br/>\n");
                 s.append("      Your satisfaction will grow with " + (measureSat)
                         + " points, growing your personal satisfaction from " + data.getPlayerRound().getSatisfactionTotal()
                         + " to " + (measureSat + data.getPlayerRound().getSatisfactionTotal()) + ".\n");
@@ -91,7 +91,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
             {
                 s.append("  <p class=\"hg-box-red\">\n");
                 s.append(
-                        "      You CANNOT afford these measures / bought satisfaction with your current spendable income.<br/>\n");
+                        "      You CANNOT afford these house / personal measures with your current spendable income.<br/>\n");
                 s.append("  </p>\n");
                 retValue = "NO";
             }
