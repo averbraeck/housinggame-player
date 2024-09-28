@@ -72,7 +72,8 @@ public final class PlayerUtils extends SqlUtils
         newPr.setProfitSoldHouse(0);
         newPr.setSpentSavingsForBuyingHouse(0);
         newPr.setCostTaxes(0);
-        newPr.setCostMeasuresBought(0);
+        newPr.setCostHouseMeasuresBought(0);
+        newPr.setCostPersonalMeasuresBought(0);
         newPr.setCostFluvialDamage(0);
         newPr.setCostPluvialDamage(0);
         newPr.setSpendableIncome(welfareType.getInitialMoney());
@@ -128,7 +129,8 @@ public final class PlayerUtils extends SqlUtils
         newPr.setProfitSoldHouse(0);
         newPr.setSpentSavingsForBuyingHouse(0);
         newPr.setCostTaxes(0);
-        newPr.setCostMeasuresBought(0);
+        newPr.setCostHouseMeasuresBought(0);
+        newPr.setCostPersonalMeasuresBought(0);
         newPr.setCostFluvialDamage(0);
         newPr.setCostPluvialDamage(0);
         newPr.setSpendableIncome(oldPr.getSpendableIncome() + oldPr.getRoundIncome() - oldPr.getLivingCosts());
