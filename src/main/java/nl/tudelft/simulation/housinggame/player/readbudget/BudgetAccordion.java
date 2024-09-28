@@ -99,8 +99,8 @@ public class BudgetAccordion
             }
             if (data.geState(PlayerState.VIEW_IMPROVEMENTS))
             {
-                s.append("                - " + data.k(data.getPlayerRound().getCostSatisfactionBought()) + " <br />\n");
-                s.append("                - " + data.k(data.getPlayerRound().getCostMeasuresBought()) + " <br />\n");
+                s.append("                - " + data.k(data.getPlayerRound().getCostPersonalMeasuresBought()) + " <br />\n");
+                s.append("                - " + data.k(data.getPlayerRound().getCostHouseMeasuresBought()) + " <br />\n");
             }
             if (data.geState(PlayerState.VIEW_DAMAGE))
             {
