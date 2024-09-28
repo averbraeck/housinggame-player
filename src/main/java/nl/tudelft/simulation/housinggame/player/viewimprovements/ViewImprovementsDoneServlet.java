@@ -145,6 +145,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
 
                 prr.setSatisfactionHouseMeasures(measureHouseSat);
                 prr.setSatisfactionPersonalMeasures(measurePersSat);
+                prr.setSatisfactionTotal(prr.getSatisfactionTotal() + measureHouseSat + measurePersSat);
                 prr.setCostMeasuresBought(measureCost);
                 prr.setSpendableIncome(prr.getSpendableIncome() - measureCost);
                 prr.store();
@@ -155,7 +156,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 return;
             }
 
-            // if the player did not click 'view house' and enters the read-news-done servlet, something is wrong
+            // wrong screen
             data.errorRedirect(response,
                     "Player app called view-improvements-done servlet, but NextScreen button is " + nextScreen);
         }

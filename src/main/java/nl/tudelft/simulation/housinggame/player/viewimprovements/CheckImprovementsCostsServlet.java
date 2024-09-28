@@ -10,14 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
 import com.google.gson.JsonObject;
 
+import nl.tudelft.simulation.housinggame.common.MeasureTypeList;
 import nl.tudelft.simulation.housinggame.data.Tables;
-import nl.tudelft.simulation.housinggame.data.tables.records.HousemeasureRecord;
 import nl.tudelft.simulation.housinggame.data.tables.records.MeasuretypeRecord;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.PlayerUtils;
@@ -52,9 +48,8 @@ public class CheckImprovementsCostsServlet extends HttpServlet
             data.readDynamicData();
 
             // return OK if the button for the current screen can be enabled, an empty string otherwise
-            DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-            List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
-                    .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+            List<MeasuretypeRecord> activeMeasureList =
+                    MeasureTypeList.getActiveMeasureListRecords(data, data.getScenario().getId(), data.getPlayerRound());
             int measureCost = 0;
             int measureSat = 0;
             // String jsp = request.getParameter("jsp");
@@ -68,12 +63,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                     String measureTypeIdStr = m.split("\\=")[1].strip();
                     int measureTypeId = Integer.parseInt(measureTypeIdStr);
                     MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
-                    boolean found = false;
-                    for (HousemeasureRecord mr : measureList)
-                    {
-                        if (mr.getMeasuretypeId().equals(measureTypeId))
-                            found = true;
-                    }
+                    boolean found = activeMeasureList.contains(mt);
                     if (!found) // new measure
                     {
                         measureCost += data.getMeasurePrice(mt);

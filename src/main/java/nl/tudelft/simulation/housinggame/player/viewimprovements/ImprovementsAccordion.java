@@ -1,6 +1,5 @@
 package nl.tudelft.simulation.housinggame.player.viewimprovements;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.DSLContext;
@@ -29,19 +28,9 @@ public class ImprovementsAccordion
 
     public static void makeImprovementsAccordion(final PlayerData data)
     {
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<MeasureTypeList> measureTypeList = MeasureTypeList.getMeasureListRecords(data, data.getScenario());
-        // TODO: filter out ones you can buy again
-        List<HousemeasureRecord> houseMeasureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
-                .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
-        List<PersonalmeasureRecord> personalMeasureList = new ArrayList<>();
-        for (var playerRound : data.getPlayerRoundList())
-        {
-            // TODO: filter out ones you can buy again
-            personalMeasureList.addAll(dslContext
-                    .selectFrom(Tables.PERSONALMEASURE.where(Tables.PERSONALMEASURE.PLAYERROUND_ID.eq(playerRound.getId())))
-                    .fetch());
-        }
+        List<MeasureTypeList> measureTypeList = MeasureTypeList.getMeasureListRecords(data, data.getScenario().getId());
+        List<MeasuretypeRecord> activeMT =
+                MeasureTypeList.getActiveMeasureListRecords(data, data.getScenario().getId(), data.getPlayerRound());
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
         s.append("<p><b>Please select your improvements:</b></p>\n");
@@ -52,19 +41,9 @@ public class ImprovementsAccordion
             MeasurecategoryRecord measureCategory = mtl.measureCategory();
             s.append(" <p><b>" + measureCategory.getName() + "</b>\n");
             s.append(" <i>" + measureCategory.getDescription() + "</i>\n");
-            for (MeasuretypeRecord measureType : mtl.measureTypeList())
+            for (MeasuretypeRecord measureType : mtl.measureTypes())
             {
-                boolean bought = false;
-                for (HousemeasureRecord measure : houseMeasureList)
-                {
-                    if (measure.getMeasuretypeId().equals(measureType.getId()))
-                        bought = true;
-                }
-                for (PersonalmeasureRecord measure : personalMeasureList)
-                {
-                    if (measure.getMeasuretypeId().equals(measureType.getId()))
-                        bought = true;
-                }
+                boolean bought = activeMT.contains(measureType);
                 s.append("  <div class=\"checkbox pmd-default-theme\">\n");
                 s.append("    <label class=\"pmd-checkbox pmd-checkbox-ripple-effect\">\n");
                 if (bought)
@@ -96,29 +75,44 @@ public class ImprovementsAccordion
     public static void makeBoughtImprovementsAccordion(final PlayerData data)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<HousemeasureRecord> measureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
-                .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
+        List<HousemeasureRecord> houseMeasureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
+                .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())
+                        .and(Tables.HOUSEMEASURE.BOUGHT_IN_ROUND.eq(data.getPlayerRoundNumber())))
+                .fetch();
+        List<PersonalmeasureRecord> persMeasureList = dslContext.selectFrom(Tables.PERSONALMEASURE)
+                .where(Tables.PERSONALMEASURE.PLAYERROUND_ID.eq(data.getPlayerRound().getId())).fetch();
+        int nrBought = houseMeasureList.size() + persMeasureList.size();
+
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
-        if (measureList.size() == 0)
+        if (nrBought == 0)
             s.append("<p>You did not buy any improvements in this round</p>\n");
         else
         {
             int totCost = 0;
             int totSat = 0;
-            if (measureList.size() > 0)
+            s.append("<p>You bought the following improvements:<br/>\n");
+            if (houseMeasureList.size() > 0)
             {
-                s.append("<p>You bought the following improvements:<br/>\n");
-                for (var measure : measureList)
+                for (var measure : houseMeasureList)
                 {
-                    if (measure.getBoughtInRound().equals(data.getPlayerRoundNumber()))
-                    {
-                        var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
-                        s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(data.getMeasurePrice(measureType))
-                                + ", satisfaction: " + data.getSatisfactionDeltaIfBought(measureType) + "<br/>\n");
-                        totCost += data.getMeasurePrice(measureType);
-                        totSat += data.getSatisfactionDeltaIfBought(measureType);
-                    }
+                    var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+                    s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(data.getMeasurePrice(measureType))
+                            + ", satisfaction: " + data.getSatisfactionDeltaIfBought(measureType) + "<br/>\n");
+                    totCost += data.getMeasurePrice(measureType);
+                    totSat += data.getSatisfactionDeltaIfBought(measureType);
+                }
+                s.append("</p>\n");
+            }
+            if (persMeasureList.size() > 0)
+            {
+                for (var measure : persMeasureList)
+                {
+                    var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
+                    s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(data.getMeasurePrice(measureType))
+                            + ", satisfaction: " + data.getSatisfactionDeltaIfBought(measureType) + "<br/>\n");
+                    totCost += data.getMeasurePrice(measureType);
+                    totSat += data.getSatisfactionDeltaIfBought(measureType);
                 }
                 s.append("</p>\n");
             }
