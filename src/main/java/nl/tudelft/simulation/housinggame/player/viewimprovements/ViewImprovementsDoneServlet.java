@@ -80,7 +80,8 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                                     Tables.PERSONALMEASURE.where(Tables.PERSONALMEASURE.PLAYERROUND_ID.eq(playerRound.getId())))
                             .fetch());
                 }
-                int measureCost = 0;
+                int measureHouseCost = 0;
+                int measurePersCost = 0;
                 int measureHouseSat = 0;
                 int measurePersSat = 0;
                 if (formOptions.length() > 1)
@@ -114,7 +115,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                                 measure.store();
 
                                 // calculate cost and satisfaction
-                                measureCost += data.getMeasurePrice(mt);
+                                measurePersCost += data.getMeasurePrice(mt);
                                 measurePersSat += data.getSatisfactionDeltaIfBought(mt);
                             }
                             else
@@ -128,7 +129,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                                 measure.store();
 
                                 // calculate cost and satisfaction
-                                measureCost += data.getMeasurePrice(mt);
+                                measureHouseCost += data.getMeasurePrice(mt);
                                 measureHouseSat += data.getSatisfactionDeltaIfBought(mt);
 
                                 // increase the house protection with the measure
@@ -146,8 +147,9 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 prr.setSatisfactionHouseMeasures(measureHouseSat);
                 prr.setSatisfactionPersonalMeasures(measurePersSat);
                 prr.setSatisfactionTotal(prr.getSatisfactionTotal() + measureHouseSat + measurePersSat);
-                prr.setCostMeasuresBought(measureCost);
-                prr.setSpendableIncome(prr.getSpendableIncome() - measureCost);
+                prr.setCostHouseMeasuresBought(measureHouseCost);
+                prr.setCostPersonalMeasuresBought(measurePersCost);
+                prr.setSpendableIncome(prr.getSpendableIncome() - measureHouseCost - measurePersCost);
                 prr.store();
 
                 data.newPlayerState(prr, PlayerState.ANSWER_SURVEY, "");
