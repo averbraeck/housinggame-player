@@ -10,8 +10,6 @@ import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
@@ -22,6 +20,8 @@ import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 import nl.tudelft.simulation.housinggame.common.CommonData;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.TransactionStatus;
