@@ -215,4 +215,24 @@ public final class PlayerUtils extends SqlUtils
             playerRound.setSatisfactionTotal(Math.max(-hgSatisfaction, playerRound.getSatisfactionTotal()));
     }
 
+    public static void calculatePlayerRoundTotals(final PlayerData data, final PlayerroundRecord pr)
+    {
+        PlayerroundRecord prPrev = data.getPlayerRoundList().get(data.getPlayerRoundNumber() - 1);
+        int incPrevRound = prPrev.getSpendableIncome();
+        int satPrevRound = prPrev.getSatisfactionTotal();
+        int newIncome = incPrevRound + pr.getRoundIncome() - pr.getLivingCosts() - pr.getMortgagePayment()
+                + pr.getProfitSoldHouse() - pr.getSpentSavingsForBuyingHouse() - pr.getCostTaxes()
+                - pr.getCostHouseMeasuresBought() - pr.getCostPersonalMeasuresBought() - pr.getCostPluvialDamage()
+                - pr.getCostFluvialDamage();
+        int newSatisfaction = satPrevRound - pr.getSatisfactionDebtPenalty() + pr.getSatisfactionHouseRatingDelta()
+                - pr.getSatisfactionMovePenalty() + pr.getSatisfactionHouseMeasures()
+                + pr.getSatisfactionPersonalMeasures() - pr.getSatisfactionPluvialPenalty()
+                - pr.getSatisfactionFluvialPenalty();
+        pr.setSpendableIncome(newIncome);
+        pr.setSatisfactionTotal(newSatisfaction);
+        if (pr.getMortgagePayment() != null && pr.getMortgagePayment() != 0)
+            pr.setMortgageHouseEnd(pr.getMortgageHouseStart()- pr.getMortgagePayment());
+        normalizeSatisfaction(data, pr);
+    }
+
 }

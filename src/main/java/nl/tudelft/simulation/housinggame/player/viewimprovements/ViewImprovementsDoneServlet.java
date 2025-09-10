@@ -145,10 +145,9 @@ public class ViewImprovementsDoneServlet extends HttpServlet
 
                 prr.setSatisfactionHouseMeasures(measureHouseSat);
                 prr.setSatisfactionPersonalMeasures(measurePersSat);
-                prr.setSatisfactionTotal(prr.getSatisfactionTotal() + measureHouseSat + measurePersSat);
                 prr.setCostHouseMeasuresBought(measureHouseCost);
                 prr.setCostPersonalMeasuresBought(measurePersCost);
-                prr.setSpendableIncome(prr.getSpendableIncome() - measureHouseCost - measurePersCost);
+                PlayerUtils.calculatePlayerRoundTotals(data, prr);
                 prr.store();
 
                 data.newPlayerState(prr, PlayerState.ANSWER_SURVEY, "");
