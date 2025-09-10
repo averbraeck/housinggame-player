@@ -57,12 +57,16 @@ public final class ValidStates
             return false;
         }
 
+        // Issue #68. Let's take out the blockage of being too far behind
+
+        /*-
         // if the player is in the previous round, but beyond buying a house, the player can still continue
         if (data.getHighestGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.ge(PlayerState.BOUGHT_HOUSE))
             return true;
         if (data.getHighestGroupRoundNumber() == 1 && data.getPlayerRoundNumber() == 0
                 && groupState.le(GroupState.BUYING_FINISHED))
             return true;
+
         if (data.getHighestGroupRoundNumber() - data.getPlayerRoundNumber() == 1 && playerState.lt(PlayerState.BOUGHT_HOUSE))
         {
             data.setError("Player " + data.getPlayerCode() + " is one round behind the group, and too far behind to catch up.");
@@ -74,6 +78,11 @@ public final class ValidStates
                     + " is more than one round behind the group, and too far behind to catch up.");
             return false;
         }
+        */
+
+        // check if the player is in a round before the current round; in that case allow to catch up
+        if (data.getHighestGroupRoundNumber() - data.getPlayerRoundNumber() > 0)
+            return true;
 
         // check if the player is in the same round and in a valid combination
         if (data.getPlayerRoundNumber() == data.getHighestGroupRoundNumber())
