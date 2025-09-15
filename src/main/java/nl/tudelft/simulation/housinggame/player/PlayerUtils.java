@@ -230,8 +230,6 @@ public final class PlayerUtils extends SqlUtils
                 - pr.getSatisfactionFluvialPenalty();
         pr.setSpendableIncome(newIncome);
         pr.setSatisfactionTotal(newSatisfaction);
-        if (pr.getMortgagePayment() != null && pr.getMortgagePayment() != 0)
-            pr.setMortgageHouseEnd(pr.getMortgageHouseStart()- pr.getMortgagePayment());
         normalizeSatisfaction(data, pr);
     }
 
