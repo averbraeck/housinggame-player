@@ -73,8 +73,8 @@ public class CheckImprovementsCostsServlet extends HttpServlet
             boolean canAfford = data.getPlayerRound().getSpendableIncome() - measureCost >= 0;
 
             s.append("  <p>\n");
-            s.append("      Total measure cost: " + data.k(measureCost) + "<br/>\n");
-            s.append("      Spendable income: " + data.k(data.getPlayerRound().getSpendableIncome()) + "<br/>\n");
+            s.append("      Total measure cost: " + data.kdig(measureCost) + "<br/>\n");
+            s.append("      Spendable income: " + data.kdig(data.getPlayerRound().getSpendableIncome()) + "<br/>\n");
             s.append("  </p>\n");
             if (canAfford)
             {

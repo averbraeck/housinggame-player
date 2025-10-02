@@ -34,7 +34,7 @@ public class ImprovementsAccordion
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
         s.append("<p><b>Please select your improvements:</b></p>\n");
-        s.append("<p>Your spendable income is: " + data.k(data.getPlayerRound().getSpendableIncome()) + "</p>\n");
+        s.append("<p>Your spendable income is: " + data.kdig(data.getPlayerRound().getSpendableIncome()) + "</p>\n");
         s.append("<form id=\"improvements-form\">\n");
         for (MeasureTypeList mtl : measureTypeList)
         {
@@ -60,7 +60,7 @@ public class ImprovementsAccordion
                     s.append("      <input type=\"checkbox\" name=\"measure-" + measureType.getId() + "\" id=\"measure-"
                             + measureType.getId() + "\" value=\"" + measureType.getId() + "\" />\n");
                 }
-                s.append("      <span>" + measureType.getShortAlias() + ", costs: " + data.k(data.getMeasurePrice(measureType))
+                s.append("      <span>" + measureType.getShortAlias() + ", costs: " + data.kdig(data.getMeasurePrice(measureType))
                         + ", satisfaction: " + data.getSatisfactionDeltaIfBought(measureType) + "</span>\n");
                 s.append("    </label>\n");
                 s.append("  </div>\n");
@@ -97,7 +97,7 @@ public class ImprovementsAccordion
                 for (var measure : houseMeasureList)
                 {
                     var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
-                    s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(data.getMeasurePrice(measureType))
+                    s.append(" - " + measureType.getShortAlias() + ", costs: " + data.kdig(data.getMeasurePrice(measureType))
                             + ", satisfaction: " + data.getSatisfactionDeltaIfBought(measureType) + "<br/>\n");
                     totCost += data.getMeasurePrice(measureType);
                     totSat += data.getSatisfactionDeltaIfBought(measureType);
@@ -109,14 +109,14 @@ public class ImprovementsAccordion
                 for (var measure : persMeasureList)
                 {
                     var measureType = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measure.getMeasuretypeId());
-                    s.append(" - " + measureType.getShortAlias() + ", costs: " + data.k(data.getMeasurePrice(measureType))
+                    s.append(" - " + measureType.getShortAlias() + ", costs: " + data.kdig(data.getMeasurePrice(measureType))
                             + ", satisfaction: " + data.getSatisfactionDeltaIfBought(measureType) + "<br/>\n");
                     totCost += data.getMeasurePrice(measureType);
                     totSat += data.getSatisfactionDeltaIfBought(measureType);
                 }
                 s.append("</p>\n");
             }
-            s.append("<p>Total spend on improvements: " + data.k(totCost) + "<br/>\n");
+            s.append("<p>Total spend on improvements: " + data.kdig(totCost) + "<br/>\n");
             s.append("Total satisfaction delta: " + totSat + "</p>\n");
 
         }
