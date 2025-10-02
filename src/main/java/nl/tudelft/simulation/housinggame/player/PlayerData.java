@@ -446,6 +446,25 @@ public class PlayerData extends CommonData
             return Integer.toString(nr / 1000) + " k";
     }
 
+    /**
+     * Express a number in thousands, except when it rounds.
+     * @param nr int; the number to display
+     * @return String; the number if less than 1000, or the rounded number divided by 1000, possibly with one digit, followed by 'k'
+     */
+    public String kdig(final int nr)
+    {
+        if (Math.abs(nr) < 1000)
+            return Integer.toString(nr);
+        else
+        {
+            int nr2 = 1000 * (nr / 1000);
+            if (nr2 == nr)
+                return Integer.toString(nr / 1000) + " k";
+            else
+                return Integer.toString(nr / 1000) + "." + Integer.toString((nr - nr2 + 50) / 100) + " k";
+        }
+    }
+
     protected void setLanguageLabels(final ScenarioRecord scenario)
     {
         DSLContext dslContext = DSL.using(getDataSource(), SQLDialect.MYSQL);
