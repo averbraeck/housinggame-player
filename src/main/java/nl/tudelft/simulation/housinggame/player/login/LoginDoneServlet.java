@@ -147,7 +147,6 @@ public class LoginDoneServlet extends HttpServlet
             return;
         }
         PlayerState playerState = PlayerState.valueOf(data.getPlayerRound().getPlayerState());
-        System.out.println(data.getPlayerRound().getPlayerState());
 
         switch (playerState)
         {
