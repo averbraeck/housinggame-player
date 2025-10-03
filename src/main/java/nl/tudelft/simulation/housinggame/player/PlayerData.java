@@ -447,7 +447,7 @@ public class PlayerData extends CommonData
     }
 
     /**
-     * Express a number in thousands, except when it rounds.
+     * Express a number in thousands, possibly with a digit when it does not round.
      * @param nr int; the number to display
      * @return String; the number if less than 1000, or the rounded number divided by 1000, possibly with one digit, followed by 'k'
      */
