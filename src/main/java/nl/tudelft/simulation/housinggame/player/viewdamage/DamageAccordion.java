@@ -78,7 +78,7 @@ public class DamageAccordion
             s.append("              - House measures: +" + fHouseDelta + "<br/>\n");
             s.append("              <br/>\n");
             s.append("              <b>Damage and penalties</b><br/>\n");
-            String fnf = (fHouseProt - fDice) > 0 ? " (No flood)" : " (Flood)";
+            String fnf = (fHouseProt - fDice) >= 0 ? " (No flood)" : " (Flood)";
             s.append("              Total protection - flood level: " + (fHouseProt - fDice) + fnf + "<br/>\n");
             s.append("              Community damage: " + Math.max(0, fDice - fCommProt) + "<br/>\n");
             s.append("              House damage: " + Math.max(0, fDice - fHouseProt) + "<br/>\n");
@@ -96,7 +96,7 @@ public class DamageAccordion
             s.append("              - House measures: +" + pHouseDelta + "<br/>\n");
             s.append("              <br/>\n");
             s.append("              <b>Damage and penalties</b><br/>\n");
-            fnf = (pHouseProt - pDice) > 0 ? " (No flood)" : " (Flood)";
+            fnf = (pHouseProt - pDice) >= 0 ? " (No flood)" : " (Flood)";
             s.append("              Total protection - flood level: " + (pHouseProt - pDice) + fnf + "<br/>\n");
             s.append("              Community damage: " + Math.max(0, pDice - pCommProt) + "<br/>\n");
             s.append("              House damage: " + Math.max(0, fDice - pHouseProt) + "<br/>\n");
