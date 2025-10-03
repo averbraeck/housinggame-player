@@ -72,32 +72,36 @@ public class DamageAccordion
 
             s.append("            <div class=\"hg-header1\">River flood info</div>\n");
             s.append("            <div class=\"hg-box-grey\">\n");
-            s.append("              Community river protection: " + fCommProt + "<br/>\n");
-            s.append("              House river protection: " + fHouseProt + "<br/>\n");
-            s.append("              River flood level: " + fDice + "<br/>\n");
-            s.append("              Community damage due to river: " + Math.max(0, fDice - fCommProt) + "<br/>\n");
-            s.append("              House damage due to river: " + Math.max(0, fDice - fHouseProt) + "<br/>\n");
+            s.append("              <b>Flood level: " + fDice + "</b><br/>\n");
+            s.append("              <b>Total protection: " + fHouseProt + "</b><br/>\n");
+            s.append("              - Community protection: " + fCommProt + "<br/>\n");
+            s.append("              - House measures: +" + fHouseDelta + "<br/>\n");
+            s.append("              <br/>\n");
+            s.append("              <b>Damage and penalties</b><br/>\n");
+            String fnf = (fHouseProt - fDice) > 0 ? " (No flood)" : " (Flood)";
+            s.append("              Total protection - flood level: " + (fHouseProt - fDice) + fnf + "<br/>\n");
+            s.append("              Community damage: " + Math.max(0, fDice - fCommProt) + "<br/>\n");
+            s.append("              House damage: " + Math.max(0, fDice - fHouseProt) + "<br/>\n");
+            s.append("              Costs for damage repairs: " + data.k(prr.getCostFluvialDamage()) + "<br/>\n");
+            s.append("              Satisfaction penalty: " + prr.getSatisfactionFluvialPenalty() + "<br/>\n");
             s.append("            </div>\n");
 
             // Rain flood info
 
             s.append("            <div class=\"hg-header1\">Rain flood info</div>\n");
             s.append("            <div class=\"hg-box-grey\">\n");
-            s.append("              Community rain protection: " + pCommProt + "<br/>\n");
-            s.append("              House rain protection: " + pHouseProt + "<br/>\n");
-            s.append("              Rain flood level: " + pDice + "<br/>\n");
-            s.append("              Community damage due to rain: " + Math.max(0, pDice - pCommProt) + "<br/>\n");
-            s.append("              House damage due to rain: " + Math.max(0, pDice - pHouseProt) + "<br/>\n");
-            s.append("            </div>\n");
-
-            // Costs and Penalties
-
-            s.append("            <div class=\"hg-header1\">Cumulative costs and penalties</div>\n");
-            s.append("            <div class=\"hg-box-grey\">\n");
-            s.append("              Costs for river damage repairs: " + prr.getCostFluvialDamage() + "<br/>\n");
-            s.append("              Costs for rain damage repairs: " + prr.getCostPluvialDamage() + "<br/>\n");
-            s.append("              Satisfaction penalty: " +
-                    (prr.getSatisfactionPluvialPenalty() + prr.getSatisfactionFluvialPenalty()) + "<br/>\n");
+            s.append("              <b>Flood level: " + pDice + "</b><br/>\n");
+            s.append("              <b>Total protection: " + pHouseProt + "</b><br/>\n");
+            s.append("              - Community protection: " + pCommProt + "<br/>\n");
+            s.append("              - House measures: +" + pHouseDelta + "<br/>\n");
+            s.append("              <br/>\n");
+            s.append("              <b>Damage and penalties</b><br/>\n");
+            fnf = (pHouseProt - pDice) > 0 ? " (No flood)" : " (Flood)";
+            s.append("              Total protection - flood level: " + (pHouseProt - pDice) + fnf + "<br/>\n");
+            s.append("              Community damage: " + Math.max(0, pDice - pCommProt) + "<br/>\n");
+            s.append("              House damage: " + Math.max(0, fDice - pHouseProt) + "<br/>\n");
+            s.append("              Costs for damage repairs: " + data.k(prr.getCostPluvialDamage()) + "<br/>\n");
+            s.append("              Satisfaction penalty: " + prr.getSatisfactionPluvialPenalty() + "<br/>\n");
             s.append("            </div>\n");
 
             // Flood history
@@ -141,18 +145,28 @@ public class DamageAccordion
                 }
                 else
                 {
-                    var h = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, p.getFinalHousegroupId());
-                    s.append("<td>" + h.getCode() + "</td>\n");
+                    var rHouseGroup = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, p.getFinalHousegroupId());
+                    s.append("<td>" + rHouseGroup.getCode() + "</td>\n");
                     s.append("<td>" + g.getFluvialFloodIntensity() + "</td>\n");
                     s.append("<td>" + g.getPluvialFloodIntensity() + "</td>\n");
-                    int fcp = p.getFluvialBaseProtection() + p.getFluvialCommunityDelta();
-                    int pcp = p.getPluvialBaseProtection() + p.getPluvialCommunityDelta();
-                    int fhp = fcp + p.getFluvialHouseDelta();
-                    int php = pcp + p.getPluvialHouseDelta();
-                    s.append("<td>" + fcp + "</td>\n");
-                    s.append("<td>" + pcp + "</td>\n");
-                    s.append("<td>" + fhp + "</td>\n");
-                    s.append("<td>" + php + "</td>\n");
+
+                    HouseRecord rHouse = PlayerUtils.readRecordFromId(data, Tables.HOUSE, rHouseGroup.getHouseId());
+                    var rCumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(),
+                            data.getScenario(), round);
+                    int rfCommBaseProt = rHouseGroup.getFluvialBaseProtection();
+                    int rpCommBaseProt = rHouseGroup.getPluvialBaseProtection();
+                    int rfCommDelta = rCumulativeNewsEffects.get(rHouse.getCommunityId()).getFluvialProtectionDelta();
+                    int rpCommDelta = rCumulativeNewsEffects.get(rHouse.getCommunityId()).getPluvialProtectionDelta();
+                    var rfpRecord = FluvialPluvial.measureProtectionTillRound(data, round, rHouseGroup);
+                    int rfHouseDelta = rfpRecord.fluvial();
+                    int rpHouseDelta = rfpRecord.pluvial();
+                    int rfCommProt = rfCommBaseProt + rfCommDelta;
+                    int rpCommProt = rpCommBaseProt + rpCommDelta;
+
+                    s.append("<td>" + rfCommProt + "</td>\n");
+                    s.append("<td>" + rpCommProt + "</td>\n");
+                    s.append("<td>+" + rfHouseDelta + "</td>\n");
+                    s.append("<td>+" + rpHouseDelta + "</td>\n");
                 }
                 s.append("                </tr>\n");
             }
