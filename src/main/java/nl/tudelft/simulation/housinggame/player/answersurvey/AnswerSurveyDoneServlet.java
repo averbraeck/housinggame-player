@@ -68,7 +68,14 @@ public class AnswerSurveyDoneServlet extends HttpServlet
                                         + question.getId());
                         return;
                     }
-                    QuestionscoreRecord qsr = dslContext.newRecord(Tables.QUESTIONSCORE);
+                    List<QuestionscoreRecord> qsrList =
+                            dslContext.selectFrom(Tables.QUESTIONSCORE).where(Tables.QUESTIONSCORE.PLAYERROUND_ID
+                                    .eq(prr.getId()).and(Tables.QUESTIONSCORE.QUESTION_ID.eq(question.getId()))).fetch();
+                    QuestionscoreRecord qsr;
+                    if (qsrList.size() > 0)
+                        qsr = qsrList.get(0);
+                    else
+                        qsr = dslContext.newRecord(Tables.QUESTIONSCORE);
                     qsr.setAnswer(answer);
                     qsr.setPlayerroundId(prr.getId());
                     qsr.setQuestionId(question.getId());
@@ -124,8 +131,7 @@ public class AnswerSurveyDoneServlet extends HttpServlet
         }
         catch (Exception e)
         {
-            data.errorRedirect(response,
-                    "Player app called view-improvements-done servlet, but error occurred: " + e.getMessage());
+            data.errorRedirect(response, "Player app called answer-survey-done servlet, but error occurred: " + e.getMessage());
         }
     }
 
