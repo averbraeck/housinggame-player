@@ -1,6 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.viewimprovements;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -29,7 +30,7 @@ public class ImprovementsAccordion
     public static void makeImprovementsAccordion(final PlayerData data)
     {
         List<MeasureTypeList> measureTypeList = MeasureTypeList.getMeasureListRecords(data, data.getScenario().getId());
-        List<MeasuretypeRecord> activeMT =
+        Map<MeasuretypeRecord, Integer> activeMT =
                 MeasureTypeList.getActiveMeasureListRecords(data, data.getScenario().getId(), data.getPlayerRound());
         StringBuilder s = new StringBuilder();
         s.append("            <div>\n");
@@ -43,7 +44,7 @@ public class ImprovementsAccordion
             s.append(" <i>" + measureCategory.getDescription() + "</i>\n");
             for (MeasuretypeRecord measureType : mtl.measureTypes())
             {
-                boolean bought = activeMT.contains(measureType);
+                boolean bought = activeMT.containsKey(measureType);
                 s.append("  <div class=\"checkbox pmd-default-theme\">\n");
                 s.append("    <label class=\"pmd-checkbox pmd-checkbox-ripple-effect\">\n");
                 if (bought)
@@ -60,8 +61,9 @@ public class ImprovementsAccordion
                     s.append("      <input type=\"checkbox\" name=\"measure-" + measureType.getId() + "\" id=\"measure-"
                             + measureType.getId() + "\" value=\"" + measureType.getId() + "\" />\n");
                 }
-                s.append("      <span>" + measureType.getShortAlias() + ", costs: " + data.kdig(data.getMeasurePrice(measureType))
-                        + ", satisfaction: " + data.getSatisfactionDeltaIfBought(measureType) + "</span>\n");
+                s.append("      <span>" + measureType.getShortAlias() + ", costs: "
+                        + data.kdig(data.getMeasurePrice(measureType)) + ", satisfaction: "
+                        + data.getSatisfactionDeltaIfBought(measureType) + "</span>\n");
                 s.append("    </label>\n");
                 s.append("  </div>\n");
             }
@@ -75,6 +77,9 @@ public class ImprovementsAccordion
     public static void makeBoughtImprovementsAccordion(final PlayerData data)
     {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        Map<MeasuretypeRecord, Integer> activeMT =
+                MeasureTypeList.getActiveMeasureListRecords(data, data.getScenario().getId(), data.getPlayerRound());
+
         List<HousemeasureRecord> houseMeasureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
                 .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())
                         .and(Tables.HOUSEMEASURE.BOUGHT_IN_ROUND.eq(data.getPlayerRoundNumber())))
@@ -118,8 +123,24 @@ public class ImprovementsAccordion
             }
             s.append("<p>Total spend on improvements: " + data.kdig(totCost) + "<br/>\n");
             s.append("Total satisfaction delta: " + totSat + "</p>\n");
-
         }
+
+        s.append("<p>Active measures from earlier rounds:<br/>\n");
+        int nr = 0;
+        for (var mt : activeMT.keySet())
+        {
+            int boughtInRound = activeMT.get(mt);
+            if (boughtInRound < data.getPlayerRoundNumber())
+            {
+                nr++;
+                s.append(" - " + mt.getShortAlias() + " (round " + boughtInRound + ")<br/>\n");
+            }
+        }
+        if (nr == 0)
+        {
+            s.append(" - none<br/>\n");
+        }
+
         s.append("            </div>\n");
         data.getContentHtml().put("panel/improvements", s.toString());
     }
