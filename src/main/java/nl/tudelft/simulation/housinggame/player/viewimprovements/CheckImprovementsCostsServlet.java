@@ -1,7 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.viewimprovements;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 
@@ -47,7 +47,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
             data.readDynamicData();
 
             // return OK if the button for the current screen can be enabled, an empty string otherwise
-            List<MeasuretypeRecord> activeMeasureList =
+            Map<MeasuretypeRecord, Integer> activeMeasureList =
                     MeasureTypeList.getActiveMeasureListRecords(data, data.getScenario().getId(), data.getPlayerRound());
             int measureCost = 0;
             int measureSat = 0;
@@ -62,7 +62,7 @@ public class CheckImprovementsCostsServlet extends HttpServlet
                     String measureTypeIdStr = m.split("\\=")[1].strip();
                     int measureTypeId = Integer.parseInt(measureTypeIdStr);
                     MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
-                    boolean found = activeMeasureList.contains(mt);
+                    boolean found = activeMeasureList.containsKey(mt);
                     if (!found) // new measure
                     {
                         measureCost += data.getMeasurePrice(mt);

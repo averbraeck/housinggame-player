@@ -1,8 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.viewimprovements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -14,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import nl.tudelft.simulation.housinggame.common.MeasureTypeList;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.HousegroupRecord;
@@ -67,18 +67,10 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 HousegroupRecord hgr = PlayerUtils.readRecordFromId(data, Tables.HOUSEGROUP, prr.getFinalHousegroupId());
 
                 DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-                // TODO: filter out ones you can buy again
-                List<HousemeasureRecord> houseMeasureList = dslContext.selectFrom(Tables.HOUSEMEASURE)
-                        .where(Tables.HOUSEMEASURE.HOUSEGROUP_ID.eq(data.getPlayerRound().getFinalHousegroupId())).fetch();
-                List<PersonalmeasureRecord> personalMeasureList = new ArrayList<>();
-                for (var playerRound : data.getPlayerRoundList())
-                {
-                    // TODO: filter out ones you can buy again
-                    personalMeasureList.addAll(dslContext
-                            .selectFrom(
-                                    Tables.PERSONALMEASURE.where(Tables.PERSONALMEASURE.PLAYERROUND_ID.eq(playerRound.getId())))
-                            .fetch());
-                }
+                // filter out ones already active
+                Map<MeasuretypeRecord, Integer> activeMeasures =
+                        MeasureTypeList.getActiveMeasureListRecords(data, data.getScenario().getId(), prr);
+
                 int measureHouseCost = 0;
                 int measurePersCost = 0;
                 int measureHouseSat = 0;
@@ -92,18 +84,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                         String measureTypeIdStr = m.split("\\=")[1].strip();
                         int measureTypeId = Integer.parseInt(measureTypeIdStr);
                         MeasuretypeRecord mt = PlayerUtils.readRecordFromId(data, Tables.MEASURETYPE, measureTypeId);
-                        boolean found = false;
-                        for (HousemeasureRecord mr : houseMeasureList)
-                        {
-                            if (mr.getMeasuretypeId().equals(measureTypeId))
-                                found = true;
-                        }
-                        for (PersonalmeasureRecord measure : personalMeasureList)
-                        {
-                            if (measure.getMeasuretypeId().equals(measureTypeId))
-                                found = true;
-                        }
-                        if (!found) // new measure
+                        if (!activeMeasures.containsKey(mt)) // new measure
                         {
                             if (mt.getHouseMeasure() == (byte) 0)
                             {
