@@ -8,6 +8,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import nl.tudelft.simulation.housinggame.common.CalcHouseGroup;
+import nl.tudelft.simulation.housinggame.common.CumulativeNewsEffects;
+import nl.tudelft.simulation.housinggame.common.SqlUtils;
+import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.house.HouseAccordion;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
@@ -34,6 +38,13 @@ public class ViewDamageServlet extends HttpServlet
             response.sendRedirect("/housinggame-player/login");
             return;
         }
+
+        // (re)calculate damage for this player and this player's house.
+        var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(), data.getScenario(),
+                data.getPlayerRoundNumber());
+        var groupRound = SqlUtils.readRecordFromId(data, Tables.GROUPROUND, data.getPlayerRound().getGrouproundId());
+        CalcHouseGroup.calcFloodHousePlayer(data, data.getHouseGroup(), data.getPlayerRoundNumber(), cumulativeNewsEffects,
+                groupRound.getPluvialFloodIntensity(), groupRound.getFluvialFloodIntensity());
 
         data.getContentHtml().clear();
         BudgetAccordion.makeBudgetAccordion(data);
