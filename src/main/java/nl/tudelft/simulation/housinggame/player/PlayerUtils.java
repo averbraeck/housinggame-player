@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import nl.tudelft.simulation.housinggame.common.CalcPlayerState;
 import nl.tudelft.simulation.housinggame.common.GroupState;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.SqlUtils;
@@ -176,7 +177,7 @@ public final class PlayerUtils extends SqlUtils
         newPr.setFluvialHouseDelta(oldPr.getFluvialHouseDelta());
 
         // normalize the satisfaction based on scenario parameters
-        normalizeSatisfaction(data, newPr);
+        CalcPlayerState.normalizeSatisfaction(data, newPr);
 
         // general
         newPr.setGrouproundId(groupRound.getId());
@@ -197,40 +198,6 @@ public final class PlayerUtils extends SqlUtils
         groupRound.setGroupState(GroupState.LOGIN.toString());
         groupRound.store();
         return groupRound;
-    }
-
-    public static void normalizeSatisfaction(final PlayerData data, final PlayerroundRecord playerRound)
-    {
-        var params = data.getScenarioParameters();
-        int hgSatisfaction = 0;
-        if (playerRound.getFinalHousegroupId() != null)
-        {
-            var houseGroup = readRecordFromId(data, Tables.HOUSEGROUP, playerRound.getFinalHousegroupId());
-            hgSatisfaction = houseGroup.getHouseSatisfaction();
-        }
-        // normalize the satisfaction scores if so dictated by the parameters
-        if (params.getAllowPersonalSatisfactionNeg() == 0)
-            playerRound.setSatisfactionTotal(Math.max(0, playerRound.getSatisfactionTotal()));
-        if (params.getAllowTotalSatisfactionNeg() == 0)
-            playerRound.setSatisfactionTotal(Math.max(-hgSatisfaction, playerRound.getSatisfactionTotal()));
-    }
-
-    public static void calculatePlayerRoundTotals(final PlayerData data, final PlayerroundRecord pr)
-    {
-        PlayerroundRecord prPrev = data.getPlayerRoundList().get(data.getPlayerRoundNumber() - 1);
-        int incPrevRound = prPrev.getSpendableIncome();
-        int satPrevRound = prPrev.getSatisfactionTotal();
-        int newIncome = incPrevRound + pr.getRoundIncome() - pr.getLivingCosts() - pr.getMortgagePayment()
-                + pr.getProfitSoldHouse() - pr.getSpentSavingsForBuyingHouse() - pr.getCostTaxes()
-                - pr.getCostHouseMeasuresBought() - pr.getCostPersonalMeasuresBought() - pr.getCostPluvialDamage()
-                - pr.getCostFluvialDamage();
-        int newSatisfaction = satPrevRound - pr.getSatisfactionDebtPenalty() + pr.getSatisfactionHouseRatingDelta()
-                - pr.getSatisfactionMovePenalty() + pr.getSatisfactionHouseMeasures()
-                + pr.getSatisfactionPersonalMeasures() - pr.getSatisfactionPluvialPenalty()
-                - pr.getSatisfactionFluvialPenalty();
-        pr.setSpendableIncome(newIncome);
-        pr.setSatisfactionTotal(newSatisfaction);
-        normalizeSatisfaction(data, pr);
     }
 
 }

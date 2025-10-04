@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import nl.tudelft.simulation.housinggame.common.CalcPlayerState;
 import nl.tudelft.simulation.housinggame.common.MeasureTypeList;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.data.Tables;
@@ -128,7 +129,7 @@ public class ViewImprovementsDoneServlet extends HttpServlet
                 prr.setSatisfactionPersonalMeasures(measurePersSat);
                 prr.setCostHouseMeasuresBought(measureHouseCost);
                 prr.setCostPersonalMeasuresBought(measurePersCost);
-                PlayerUtils.calculatePlayerRoundTotals(data, prr);
+                CalcPlayerState.calculatePlayerRoundTotals(data, prr);
                 prr.store();
 
                 data.newPlayerState(prr, PlayerState.ANSWER_SURVEY, "");
