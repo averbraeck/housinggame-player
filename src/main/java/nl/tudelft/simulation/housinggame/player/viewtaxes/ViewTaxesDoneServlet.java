@@ -42,7 +42,7 @@ public class ViewTaxesDoneServlet extends HttpServlet
             return;
         }
 
-        // if the player did not click 'view taxes' and enters the read-news-done servlet, something is wrong
+        // if the player did not click 'view improvements' and enters the view-taxes-done servlet, something is wrong
         System.err.println("Player app called view-taxes-done servlet, but NextScreen button is " + nextScreen);
         response.sendRedirect("/housinggame-player/login");
     }

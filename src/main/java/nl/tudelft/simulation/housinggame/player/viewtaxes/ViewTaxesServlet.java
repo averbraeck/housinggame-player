@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import nl.tudelft.simulation.housinggame.common.Taxes;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 import nl.tudelft.simulation.housinggame.player.house.HouseAccordion;
 import nl.tudelft.simulation.housinggame.player.readbudget.BudgetAccordion;
@@ -32,6 +33,10 @@ public class ViewTaxesServlet extends HttpServlet
             response.sendRedirect("/housinggame-player/login");
             return;
         }
+
+        // calculate and store the taxes, just to be sure...
+        var taxMap = Taxes.calcTaxMap(data, data.getGroupRound());
+        Taxes.applyTax(data, taxMap, data.getPlayerRound());
 
         data.getContentHtml().clear();
         BudgetAccordion.makeBudgetAccordion(data);
