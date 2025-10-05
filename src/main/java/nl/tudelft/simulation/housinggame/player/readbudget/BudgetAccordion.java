@@ -1,5 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.readbudget;
 
+import nl.tudelft.simulation.housinggame.common.CalcPlayerState;
+import nl.tudelft.simulation.housinggame.common.NewsSatisfactionDelta;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
 
@@ -112,6 +114,7 @@ public class BudgetAccordion
         s.append("              </div>\n");
         s.append("            </div>\n");
 
+        NewsSatisfactionDelta effects = CalcPlayerState.calcNewsSatisfactionEffects(data, data.getPlayerRound());
         s.append("            <div class=\"hg-header1\">Satisfaction points</div>\n");
         s.append("            <div class=\"hg-box-grey\" " +
                                 "style=\"display: flex; flex-direction: row; justify-content: flex-start; column-gap: 20px;\">\n");
@@ -119,6 +122,10 @@ public class BudgetAccordion
         s.append("                  Start satisfaction<br/>\n");
         s.append("                  House measures satisfaction<br/>\n");
         s.append("                  House rating penalty<br/>\n");
+        if (effects.satisfactionLivingBonus() > 0)
+            s.append("                  Community living bonus<br/>\n");
+        if (effects.satisfactionMoveChange() > 0)
+            s.append("                  Community move bonus<br/>\n");
         s.append("                  Flood damage penalty<br/>\n");
         s.append("                  Moving penalty<br/>\n");
         s.append("                  Debt penalty<br/>\n");
@@ -133,6 +140,10 @@ public class BudgetAccordion
             s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionHouseRatingDelta()) + " <br/>\n");
         else
             s.append("                + " + data.getPlayerRound().getSatisfactionHouseRatingDelta() + " <br/>\n");
+        if (effects.satisfactionLivingBonus() > 0)
+            s.append("                + " + effects.satisfactionLivingBonus() + " <br/>\n");
+        if (effects.satisfactionMoveChange() > 0)
+            s.append("                + " + effects.satisfactionMoveChange() + " <br/>\n");
         s.append("                - " + damage + " <br/>\n");
         s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionMovePenalty()) + " <br/>\n");
         s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionDebtPenalty()) + " <br/>\n");
