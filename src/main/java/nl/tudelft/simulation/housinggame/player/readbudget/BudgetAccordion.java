@@ -1,6 +1,7 @@
 package nl.tudelft.simulation.housinggame.player.readbudget;
 
 import nl.tudelft.simulation.housinggame.common.CalcPlayerState;
+import nl.tudelft.simulation.housinggame.common.HtmlUtils;
 import nl.tudelft.simulation.housinggame.common.NewsSatisfactionDelta;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
@@ -78,35 +79,35 @@ public class BudgetAccordion
         if (startSavings > 0)
             s.append("                + " + data.k(startSavings) + " <br/>\n");
         else if (startDebt > 0)
-            s.append("                - " + data.k(startDebt) + " <br/>\n");
+            s.append("                &minus; " + data.k(startDebt) + " <br/>\n");
         else
             s.append("                +0 <br/>\n");
         s.append("                + " + data.k(data.getPlayerRound().getRoundIncome()) + " <br/>\n");
-        s.append("                - " + data.k(data.getPlayerRound().getLivingCosts()) + " <br />\n");
+        s.append("                &minus; " + data.k(data.getPlayerRound().getLivingCosts()) + " <br />\n");
         if (data.getPlayerRound().getFinalHousegroupId() != null && !data.getPlayerRound().getFinalHousegroupId().equals(
                 data.getPlayerRound().getStartHousegroupId()))
         {
             s.append("                + " + data.k(data.getPlayerRound().getProfitSoldHouse()) + " <br />\n");
-            s.append("                - " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + " <br />\n");
+            s.append("                &minus; " + data.k(data.getPlayerRound().getSpentSavingsForBuyingHouse()) + " <br />\n");
         }
         if (data.getPlayerRound().getFinalHousegroupId() != null)
         {
             if (data.geState(PlayerState.BOUGHT_HOUSE))
             {
-                s.append("                - " + data.k(data.getPlayerRound().getMortgagePayment()) + " <br />\n");
+                s.append("                &minus; " + data.k(data.getPlayerRound().getMortgagePayment()) + " <br />\n");
             }
             if (data.geState(PlayerState.VIEW_TAXES))
             {
-                s.append("                - " + data.k(data.getPlayerRound().getCostTaxes()) + " <br />\n");
+                s.append("                &minus; " + data.k(data.getPlayerRound().getCostTaxes()) + " <br />\n");
             }
             if (data.geState(PlayerState.VIEW_IMPROVEMENTS))
             {
-                s.append("                - " + data.k(data.getPlayerRound().getCostPersonalMeasuresBought()) + " <br />\n");
-                s.append("                - " + data.k(data.getPlayerRound().getCostHouseMeasuresBought()) + " <br />\n");
+                s.append("                &minus; " + data.k(data.getPlayerRound().getCostPersonalMeasuresBought()) + " <br />\n");
+                s.append("                &minus; " + data.k(data.getPlayerRound().getCostHouseMeasuresBought()) + " <br />\n");
             }
             if (data.geState(PlayerState.VIEW_DAMAGE))
             {
-                s.append("                - " + data.k(data.getPlayerRound().getCostPluvialDamage()
+                s.append("                &minus; " + data.k(data.getPlayerRound().getCostPluvialDamage()
                                               + data.getPlayerRound().getCostFluvialDamage()) + " <br />\n");
             }
         }
@@ -134,21 +135,24 @@ public class BudgetAccordion
         s.append("              </div>\n");
         s.append("              <div>\n");
         int damage = data.getPlayerRound().getSatisfactionFluvialPenalty() + data.getPlayerRound().getSatisfactionPluvialPenalty();
-        s.append("                + " + data.getPrevPlayerRound().getSatisfactionTotal() + " <br/>\n");
+        if (data.getPrevPlayerRound().getSatisfactionTotal() >= 0)
+            s.append("                + " + data.getPrevPlayerRound().getSatisfactionTotal() + " <br/>\n");
+        else
+            s.append("                &minus; " + Math.abs(data.getPrevPlayerRound().getSatisfactionTotal()) + " <br/>\n");
         s.append("                + " + data.getPlayerRound().getSatisfactionHouseMeasures() + " <br/>\n");
         if (data.getPlayerRound().getSatisfactionHouseRatingDelta() < 0)
-            s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionHouseRatingDelta()) + " <br/>\n");
+            s.append("                &minus; " + Math.abs(data.getPlayerRound().getSatisfactionHouseRatingDelta()) + " <br/>\n");
         else
             s.append("                + " + data.getPlayerRound().getSatisfactionHouseRatingDelta() + " <br/>\n");
         if (effects.satisfactionLivingBonus() > 0)
             s.append("                + " + effects.satisfactionLivingBonus() + " <br/>\n");
         if (effects.satisfactionMoveChange() > 0)
             s.append("                + " + effects.satisfactionMoveChange() + " <br/>\n");
-        s.append("                - " + damage + " <br/>\n");
-        s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionMovePenalty()) + " <br/>\n");
-        s.append("                - " + Math.abs(data.getPlayerRound().getSatisfactionDebtPenalty()) + " <br/>\n");
+        s.append("                &minus; " + damage + " <br/>\n");
+        s.append("                &minus; " + Math.abs(data.getPlayerRound().getSatisfactionMovePenalty()) + " <br/>\n");
+        s.append("                &minus; " + Math.abs(data.getPlayerRound().getSatisfactionDebtPenalty()) + " <br/>\n");
         s.append("                + " + Math.abs(data.getPlayerRound().getSatisfactionPersonalMeasures()) + " <br/>\n");
-        s.append("                = " + data.getPlayerRound().getSatisfactionTotal() + " \n");
+        s.append("                = " + HtmlUtils.plusmin0(data.getPlayerRound().getSatisfactionTotal()) + " \n");
         s.append("              </div>\n");
         s.append("            </div>\n");
         // @formatter:on
