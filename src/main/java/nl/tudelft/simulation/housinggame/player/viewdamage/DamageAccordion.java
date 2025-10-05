@@ -48,8 +48,7 @@ public class DamageAccordion
             // replacement code https://github.com/averbraeck/housinggame-player/issues/45
             var houseGroup = data.getHouseGroup();
             HouseRecord house = PlayerUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
-            var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(),
-                    data.getScenario(), data.getPlayerRoundNumber());
+            var cumulativeNewsEffects = data.getCumulativeNewsEffects();
             int fCommBaseProt = houseGroup.getFluvialBaseProtection();
             int pCommBaseProt = houseGroup.getPluvialBaseProtection();
             int fCommDelta = cumulativeNewsEffects.get(house.getCommunityId()).getFluvialProtectionDelta();

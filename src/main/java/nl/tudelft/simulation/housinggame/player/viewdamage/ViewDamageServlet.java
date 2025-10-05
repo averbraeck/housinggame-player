@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import nl.tudelft.simulation.housinggame.common.CalcHouseGroup;
-import nl.tudelft.simulation.housinggame.common.CumulativeNewsEffects;
 import nl.tudelft.simulation.housinggame.common.SqlUtils;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.player.PlayerData;
@@ -40,8 +39,7 @@ public class ViewDamageServlet extends HttpServlet
         }
 
         // (re)calculate damage for this player and this player's house.
-        var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(), data.getScenario(),
-                data.getPlayerRoundNumber());
+        var cumulativeNewsEffects = data.getCumulativeNewsEffects();
         var groupRound = SqlUtils.readRecordFromId(data, Tables.GROUPROUND, data.getPlayerRound().getGrouproundId());
         CalcHouseGroup.calcFloodHousePlayer(data, data.getHouseGroup(), data.getPlayerRoundNumber(), cumulativeNewsEffects,
                 groupRound.getPluvialFloodIntensity(), groupRound.getFluvialFloodIntensity());

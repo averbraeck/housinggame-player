@@ -23,6 +23,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
 import nl.tudelft.simulation.housinggame.common.CommonData;
+import nl.tudelft.simulation.housinggame.common.CumulativeNewsEffects;
 import nl.tudelft.simulation.housinggame.common.PlayerState;
 import nl.tudelft.simulation.housinggame.common.TransactionStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
@@ -83,6 +84,9 @@ public class PlayerData extends CommonData
 
     /** Previous player round; null when not started, same as playerRound in round 0, previous one otherwise. */
     private PlayerroundRecord prevPlayerRound;
+
+    /** the news effects till the current facilitator round. */
+    private Map<Integer, CumulativeNewsEffects> cumulativeNewsEffects;
 
     /* ================================= */
     /* FULLY DYNAMIC INFO IN THE SESSION */
@@ -220,6 +224,10 @@ public class PlayerData extends CommonData
             }
 
             this.groupRound = this.groupRoundList.get(this.playerRoundNumber);
+
+            this.cumulativeNewsEffects =
+                    CumulativeNewsEffects.readCumulativeNewsEffects(this.dataSource, this.scenario, this.playerRoundNumber);
+
             return true;
         }
         catch (Exception e)
@@ -579,6 +587,14 @@ public class PlayerData extends CommonData
         ScenarioparametersRecord spr =
                 PlayerUtils.readRecordFromId(this, Tables.SCENARIOPARAMETERS, this.scenario.getScenarioparametersId());
         return spr.getMortgagePercentage().intValue();
+    }
+
+    /**
+     * @return newsEffects for the player
+     */
+    public Map<Integer, CumulativeNewsEffects> getCumulativeNewsEffects()
+    {
+        return this.cumulativeNewsEffects;
     }
 
     public void newPlayerState(final PlayerroundRecord playerRound, final PlayerState newState, final String content)

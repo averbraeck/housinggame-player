@@ -6,7 +6,6 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-import nl.tudelft.simulation.housinggame.common.CumulativeNewsEffects;
 import nl.tudelft.simulation.housinggame.common.HouseGroupStatus;
 import nl.tudelft.simulation.housinggame.data.Tables;
 import nl.tudelft.simulation.housinggame.data.tables.records.CommunityRecord;
@@ -56,8 +55,7 @@ public class TaxAccordion
         // see if there are tax changes
         var houseGroup = data.getHouseGroup();
         HouseRecord house = PlayerUtils.readRecordFromId(data, Tables.HOUSE, houseGroup.getHouseId());
-        var cumulativeNewsEffects = CumulativeNewsEffects.readCumulativeNewsEffects(data.getDataSource(), data.getScenario(),
-                data.getPlayerRoundNumber());
+        var cumulativeNewsEffects = data.getCumulativeNewsEffects();
         var txc = (int) cumulativeNewsEffects.get(house.getCommunityId()).getTaxChange();
         if (txc != 0)
         {
