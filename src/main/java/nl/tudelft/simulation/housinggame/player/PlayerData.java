@@ -469,7 +469,7 @@ public class PlayerData extends CommonData
             if (nr2 == nr)
                 return Integer.toString(nr / 1000) + " k";
             else
-                return Integer.toString(nr / 1000) + "." + Integer.toString((nr - nr2 + 50) / 100) + " k";
+                return Integer.toString(nr / 1000) + "." + Integer.toString(Math.abs(nr - nr2 + 50) / 100) + " k";
         }
     }
 
