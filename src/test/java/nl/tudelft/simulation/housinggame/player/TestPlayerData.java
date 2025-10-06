@@ -19,6 +19,11 @@ public class TestPlayerData
         report(data, 12345);
         report(data, 120000);
         report(data, 123456);
+        report(data, -12000);
+        report(data, -120);
+        report(data, -12345);
+        report(data, -120000);
+        report(data, -123456);
     }
 
     protected static void report(final PlayerData data, final int n)
