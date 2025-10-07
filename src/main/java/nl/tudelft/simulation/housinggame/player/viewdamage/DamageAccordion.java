@@ -98,7 +98,7 @@ public class DamageAccordion
             fnf = (pHouseProt - pDice) >= 0 ? " (No flood)" : " (Flood)";
             s.append("              Total protection - flood level: " + (pHouseProt - pDice) + fnf + "<br/>\n");
             s.append("              Community damage: " + Math.max(0, pDice - pCommProt) + "<br/>\n");
-            s.append("              House damage: " + Math.max(0, fDice - pHouseProt) + "<br/>\n");
+            s.append("              House damage: " + Math.max(0, pDice - pHouseProt) + "<br/>\n");
             s.append("              Costs for damage repairs: " + data.k(prr.getCostPluvialDamage()) + "<br/>\n");
             s.append("              Satisfaction penalty: " + prr.getSatisfactionPluvialPenalty() + "<br/>\n");
             s.append("            </div>\n");
